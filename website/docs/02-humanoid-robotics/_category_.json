@@ -1,0 +1,8 @@
+{
+  "label": "Chapter 2: Basics of Humanoid Robotics",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Explore humanoid robot anatomy, kinematics, and control systems."
+  }
+}

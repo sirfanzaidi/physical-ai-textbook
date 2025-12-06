@@ -1,0 +1,8 @@
+{
+  "label": "Chapter 3: ROS 2 Fundamentals",
+  "position": 3,
+  "link": {
+    "type": "generated-index",
+    "description": "Master ROS 2 nodes, topics, services, and robotic middleware essentials."
+  }
+}
