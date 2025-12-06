@@ -10,11 +10,26 @@ FastAPI application providing:
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-from typing import Optional, List
 import logging
 import os
 from datetime import datetime
+import time
+
+# Import data models from src/models
+from src.models import (
+    ChatbotQuery,
+    ChatbotResponse,
+    Citation,
+    ReindexRequest,
+    ReindexResponse,
+    ValidationRequest,
+    ValidationResponse,
+    ValidationResult,
+    HealthResponse,
+)
+
+# Import services from src/services
+from src.services import EmbeddingService, VectorDBService, ChunkingService
 
 # Configure logging
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "DEBUG"))
@@ -38,69 +53,47 @@ app.add_middleware(
 )
 
 # ============================================================================
-# Data Models (TO BE IMPORTED FROM src/models/)
+# Global Service Instances
 # ============================================================================
 
-class Citation(BaseModel):
-    """Citation reference to a source chunk"""
-    chunk_id: str
-    chapter: int
-    section: Optional[str] = None
-    page: Optional[int] = None
+_embedding_service: EmbeddingService = None
+_vector_db_service: VectorDBService = None
+_chunking_service: ChunkingService = None
+_startup_time: float = None
 
-class ChatbotQuery(BaseModel):
-    """Input: User query with optional context"""
-    query_text: str = Field(..., description="User's question")
-    selected_text: Optional[str] = Field(None, description="Selected text from page (context)")
-    chapter_context: Optional[int] = Field(None, description="Current chapter number")
-    user_id: Optional[str] = Field(None, description="Optional user identifier")
 
-class ChatbotResponse(BaseModel):
-    """Output: Chatbot response with citations"""
-    response_text: str = Field(..., description="Chatbot's answer")
-    source_chunk_ids: List[str] = Field(default_factory=list, description="IDs of chunks used")
-    citations: List[Citation] = Field(default_factory=list, description="Citation references")
-    confidence_score: float = Field(default=0.5, description="Confidence in response (0-1)")
-    timestamp: datetime = Field(default_factory=datetime.utcnow)
+def get_embedding_service() -> EmbeddingService:
+    """Get or initialize embedding service (lazy loading)."""
+    global _embedding_service
+    if _embedding_service is None:
+        _embedding_service = EmbeddingService(
+            model_name=os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"),
+            batch_size=int(os.getenv("EMBEDDING_BATCH_SIZE", "32")),
+        )
+    return _embedding_service
 
-class HealthResponse(BaseModel):
-    """Health check response"""
-    status: str
-    version: str
-    timestamp: datetime
 
-class ReindexRequest(BaseModel):
-    """Request to re-index RAG database"""
-    mode: str = Field(default="delta", description="'delta' or 'full'")
-    chapters: Optional[List[int]] = Field(None, description="Specific chapters to re-index (delta mode)")
+def get_vector_db_service() -> VectorDBService:
+    """Get or initialize vector database service (lazy loading)."""
+    global _vector_db_service
+    if _vector_db_service is None:
+        _vector_db_service = VectorDBService(
+            db_path=os.getenv("CHROMADB_PATH", "./data/embeddings"),
+            collection_name="physical_ai_textbook",
+            embedding_dimension=384,
+        )
+    return _vector_db_service
 
-class ReindexResponse(BaseModel):
-    """Response from re-indexing operation"""
-    status: str
-    message: str
-    chapters_processed: int
-    timestamp: datetime
 
-class ValidationRequest(BaseModel):
-    """Request to run RAG validation suite"""
-    min_queries_per_chapter: int = Field(default=3)
-    verbose: bool = Field(default=False)
-
-class ValidationResult(BaseModel):
-    """Single validation result"""
-    query: str
-    response: str
-    accuracy: float
-    passed: bool
-
-class ValidationResponse(BaseModel):
-    """Validation suite response"""
-    status: str
-    total_queries: int
-    passed_queries: int
-    accuracy_pct: float
-    results: List[ValidationResult]
-    timestamp: datetime
+def get_chunking_service() -> ChunkingService:
+    """Get or initialize chunking service (lazy loading)."""
+    global _chunking_service
+    if _chunking_service is None:
+        _chunking_service = ChunkingService(
+            chunk_size=int(os.getenv("CHUNK_SIZE", "400")),
+            overlap_size=int(os.getenv("CHUNK_OVERLAP", "100")),
+        )
+    return _chunking_service
 
 # ============================================================================
 # Endpoints
@@ -108,12 +101,37 @@ class ValidationResponse(BaseModel):
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "ok",
-        "version": os.getenv("API_VERSION", "1.0.0"),
-        "timestamp": datetime.utcnow(),
-    }
+    """Health check endpoint with dependency status."""
+    try:
+        embedding_service = get_embedding_service()
+        vector_db_service = get_vector_db_service()
+
+        dependencies = {
+            "embedding_model": "ok" if embedding_service else "error",
+            "vector_db": "ok",
+        }
+
+        # Try to get stats from vector DB
+        db_stats = vector_db_service.get_db_stats()
+        total_chunks = sum(c.get("chunk_count", 0) for c in db_stats.get("collections", {}).values())
+
+        return HealthResponse(
+            status="ok",
+            version=os.getenv("API_VERSION", "1.0.0"),
+            timestamp=datetime.utcnow(),
+            dependencies=dependencies,
+            uptime_seconds=time.time() - _startup_time if _startup_time else None,
+            total_chunks_indexed=total_chunks,
+            vector_db_size_mb=sum(c.get("db_size_bytes", 0) for c in db_stats.get("collections", {}).values()) / (1024 * 1024),
+        )
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        return HealthResponse(
+            status="degraded",
+            version=os.getenv("API_VERSION", "1.0.0"),
+            timestamp=datetime.utcnow(),
+            dependencies={"error": str(e)},
+        )
 
 @app.post("/chat", response_model=ChatbotResponse)
 async def chat(query: ChatbotQuery) -> ChatbotResponse:
@@ -135,21 +153,74 @@ async def chat(query: ChatbotQuery) -> ChatbotResponse:
     - Response latency target: <2 seconds p95
     """
 
-    logger.info(f"Query received: {query.query_text[:50]}...")
+    logger.info(f"Query received: {query.question[:50]}...")
+    overall_start = time.time()
 
     try:
-        # TODO: Implement RAG logic
-        # 1. Embed query
-        # 2. Search ChromaDB
-        # 3. Generate response
-        # 4. Return ChatbotResponse
+        embedding_service = get_embedding_service()
+        vector_db_service = get_vector_db_service()
 
-        # Placeholder response (Phase 2 implementation)
+        # Step 1: Embed query
+        embed_start = time.time()
+        query_embedding = embedding_service.embed_single(query.question)
+        embed_time = int((time.time() - embed_start) * 1000)
+        logger.debug(f"Query embedded in {embed_time}ms")
+
+        # Step 2: Search ChromaDB
+        search_start = time.time()
+        search_results = vector_db_service.search(
+            query_embedding=query_embedding,
+            n_results=int(os.getenv("RAG_TOP_K", "5")),
+        )
+        search_time = search_results["search_time_ms"]
+        logger.debug(f"Search completed in {search_time}ms, found {len(search_results['ids'])} results")
+
+        # Step 3: Build response from retrieved chunks
+        if not search_results["ids"]:
+            return ChatbotResponse(
+                response_text="I don't have information about this in the textbook. Please try a more specific question.",
+                citations=[],
+                confidence_score=0.0,
+                source_chunk_ids=[],
+                query_embedding_time_ms=embed_time,
+                search_time_ms=search_time,
+                generation_time_ms=0,
+                total_time_ms=int((time.time() - overall_start) * 1000),
+            )
+
+        # Step 4: Create citations from search results
+        citations = []
+        for idx, (chunk_id, document, metadata, relevance) in enumerate(zip(
+            search_results["ids"],
+            search_results["documents"],
+            search_results["metadatas"],
+            search_results["relevance_scores"]
+        )):
+            if relevance >= float(os.getenv("RAG_RELEVANCE_THRESHOLD", "0.3")):
+                citations.append(Citation(
+                    chunk_id=chunk_id,
+                    chapter_number=metadata.get("chapter_number", 0),
+                    chapter_title=metadata.get("chapter_title", "Unknown"),
+                    section_title=metadata.get("section_title"),
+                    excerpt=document[:150] + "..." if len(document) > 150 else document,
+                    relevance_score=relevance,
+                ))
+
+        # Step 5: Generate placeholder response (Phase 3: LLM integration)
+        top_chunk = search_results["documents"][0] if search_results["documents"] else ""
+        response_text = f"Based on the textbook content, {top_chunk[:100]}..." if top_chunk else "I found relevant information but need additional context to provide a complete answer."
+
+        total_time = int((time.time() - overall_start) * 1000)
+
         return ChatbotResponse(
-            response_text="RAG backend not yet implemented. This is a placeholder response.",
-            source_chunk_ids=[],
-            citations=[],
-            confidence_score=0.0,
+            response_text=response_text,
+            citations=citations[:int(os.getenv("MAX_CITATIONS", "3"))],
+            confidence_score=search_results["relevance_scores"][0] if search_results["relevance_scores"] else 0.0,
+            source_chunk_ids=search_results["ids"][:int(os.getenv("RAG_TOP_K", "5"))],
+            query_embedding_time_ms=embed_time,
+            search_time_ms=search_time,
+            generation_time_ms=int((total_time - embed_time - search_time)),
+            total_time_ms=total_time,
         )
 
     except Exception as e:
@@ -272,19 +343,30 @@ async def global_exception_handler(request, exc):
 @app.on_event("startup")
 async def startup_event():
     """Initialize services on startup"""
+    global _startup_time
+    _startup_time = time.time()
+
     logger.info("FastAPI server starting...")
     logger.info(f"Environment: {os.getenv('ENVIRONMENT', 'development')}")
     logger.info(f"Debug: {os.getenv('DEBUG', 'false')}")
-    # TODO: Initialize ChromaDB client
-    # TODO: Load embedding model
-    # TODO: Initialize vector store
+
+    try:
+        # Initialize services (lazy loading will happen on first use)
+        logger.info("Services will be initialized on first request (lazy loading)")
+        logger.info(f"ChromaDB path: {os.getenv('CHROMADB_PATH', './data/embeddings')}")
+        logger.info(f"Embedding model: {os.getenv('EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')}")
+        logger.info(f"API running on port 8000")
+        logger.info("Visit http://localhost:8000/docs for API documentation")
+    except Exception as e:
+        logger.error(f"Startup error: {e}")
+        raise
 
 @app.on_event("shutdown")
 async def shutdown_event():
     """Clean up on shutdown"""
     logger.info("FastAPI server shutting down...")
-    # TODO: Close connections
-    # TODO: Save state
+    # Services are kept in memory; they clean up their own resources
+    logger.info("Shutdown complete")
 
 # ============================================================================
 # Entry Point
