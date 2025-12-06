@@ -1,0 +1,183 @@
+name: Code & Content Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'website/docs/**'
+      - 'backend/**'
+      - '.github/workflows/code-validation.yml'
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  markdown-lint:
+    name: Validate Markdown Syntax
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Lint Markdown
+        uses: nosborn/github-action-markdown-cli@v3.3.0
+        with:
+          files: website/docs
+          config_file: .markdownlintrc.json
+
+  learning-objectives:
+    name: Verify Learning Objectives
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check learning objectives in chapters
+        run: |
+          echo "Verifying learning objectives in modified chapters..."
+
+          # Check for "Learning Objectives" section in each chapter
+          for file in $(find website/docs -name "index.mdx" -newer /tmp/.git); do
+            if ! grep -q "Learning Objectives" "$file"; then
+              echo "❌ Missing Learning Objectives in $file"
+              exit 1
+            fi
+
+            # Verify Bloom's taxonomy verbs
+            if ! grep -qE "(Remember|Understand|Apply|Analyze|Synthesize|Evaluate)" "$file"; then
+              echo "⚠️  Consider using Bloom's taxonomy verbs in $file"
+            fi
+          done
+
+          echo "✅ Learning objectives verified"
+
+  code-examples:
+    name: Validate Code Examples
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.11']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Extract and validate Python examples
+        run: |
+          echo "Extracting Python code examples from chapters..."
+
+          # TODO: Implement Python code extraction and validation
+          # - Parse MDX files for python code blocks
+          # - Execute each example
+          # - Verify expected output matches comments
+          # - Report failures
+
+          echo "⚠️  Code validation stub (implement in Phase 2)"
+
+      - name: Validate bash examples
+        run: |
+          echo "Validating bash syntax..."
+          # TODO: Check bash syntax for all bash code blocks
+          echo "⚠️  Bash validation stub (implement in Phase 2)"
+
+      - name: Validate YAML examples
+        run: |
+          echo "Validating YAML syntax..."
+          # TODO: Check YAML syntax for all yaml code blocks
+          echo "⚠️  YAML validation stub (implement in Phase 2)"
+
+  references:
+    name: Verify References
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check references count
+        run: |
+          echo "Verifying references in chapters..."
+
+          # Check for minimum 5 references per chapter
+          for file in $(find website/docs -name "index.mdx" -type f); do
+            # Count references (URLs in markdown)
+            ref_count=$(grep -o '\[.*\](https*://.*' "$file" | wc -l)
+
+            if [ "$ref_count" -lt 5 ]; then
+              echo "⚠️  $file has only $ref_count references (minimum 5 recommended)"
+            fi
+          done
+
+          echo "✅ Reference check complete"
+
+  docusaurus-build:
+    name: Verify Docusaurus Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'website/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Build Docusaurus
+        working-directory: website
+        run: npm run build
+
+      - name: Verify build output
+        working-directory: website
+        run: |
+          if [ ! -d "build" ]; then
+            echo "❌ Docusaurus build failed"
+            exit 1
+          fi
+          echo "✅ Docusaurus build successful"
+          du -sh build
+
+  summary:
+    name: Validation Summary
+    runs-on: ubuntu-latest
+    needs: [markdown-lint, learning-objectives, code-examples, references, docusaurus-build]
+    if: always()
+
+    steps:
+      - name: Report validation results
+        run: |
+          echo "📋 Code & Content Validation Summary"
+          echo "=================================="
+          echo ""
+          echo "✅ Markdown syntax: ${{ needs.markdown-lint.result }}"
+          echo "✅ Learning objectives: ${{ needs.learning-objectives.result }}"
+          echo "✅ Code examples: ${{ needs.code-examples.result }}"
+          echo "✅ References: ${{ needs.references.result }}"
+          echo "✅ Docusaurus build: ${{ needs.docusaurus-build.result }}"
+          echo ""
+
+          if [ "${{ needs.markdown-lint.result }}" != "success" ] || \
+             [ "${{ needs.learning-objectives.result }}" != "success" ] || \
+             [ "${{ needs.code-examples.result }}" != "success" ] || \
+             [ "${{ needs.docusaurus-build.result }}" != "success" ]; then
+            echo "❌ Some validation checks failed"
+            exit 1
+          fi
+
+          echo "✅ All validation checks passed!"

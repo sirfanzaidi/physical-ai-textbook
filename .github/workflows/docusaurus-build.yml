@@ -1,0 +1,147 @@
+name: Docusaurus Build & Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'website/**'
+      - '.github/workflows/docusaurus-build.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'website/**'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: docusaurus-build
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build Docusaurus
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for link checking
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: 'website/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: website
+        run: npm ci
+
+      - name: Build Docusaurus
+        working-directory: website
+        run: npm run build
+        env:
+          DEPLOYMENT_URL: ${{ github.event_name == 'push' && 'https://your-github-username.github.io/physical-ai-textbook/' || '' }}
+
+      - name: Check build output
+        working-directory: website
+        run: |
+          if [ ! -d "build" ]; then
+            echo "Build directory not found!"
+            exit 1
+          fi
+          echo "Build successful. Output size:"
+          du -sh build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docusaurus-build
+          path: website/build
+          retention-days: 7
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docusaurus-build
+          path: website/build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./website/build
+          cname: physical-ai-textbook.example.com  # TODO: Update with actual domain
+          commit_message: 'chore: deploy docusaurus site'
+          user_name: github-actions[bot]
+          user_email: github-actions[bot]@users.noreply.github.com
+
+      - name: Deployment summary
+        run: |
+          echo "✅ Docusaurus site deployed to GitHub Pages"
+          echo "📍 URL: https://your-github-username.github.io/physical-ai-textbook/"
+          echo "⏱️  Deployment time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+
+  link-check:
+    name: Check Links
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install link checker
+        run: npm install -g broken-link-checker
+
+      - name: Build Docusaurus
+        working-directory: website
+        run: |
+          npm ci
+          npm run build
+
+      - name: Check for broken links
+        working-directory: website
+        run: |
+          echo "Checking for broken links in documentation..."
+          # TODO: Configure and run link checker
+          # blc -r --exclude-external build/
+          echo "⚠️  Link checker stub (implement in Phase 2)"
+
+  notify:
+    name: Build Status Notification
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: always()
+
+    steps:
+      - name: Build status
+        run: |
+          if [ "${{ needs.build.result }}" == "success" ]; then
+            echo "✅ Docusaurus build succeeded"
+            exit 0
+          else
+            echo "❌ Docusaurus build failed"
+            exit 1
+          fi
