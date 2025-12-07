@@ -22,7 +22,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def load_chapter(chapter_number: int, docs_path: str = "website/docs") -> tuple:
+def load_chapter(chapter_number: int, docs_path: str = "../website/docs") -> tuple:
     """Load chapter content from markdown file.
 
     Args:
@@ -32,17 +32,25 @@ def load_chapter(chapter_number: int, docs_path: str = "website/docs") -> tuple:
     Returns:
         Tuple of (title, content) or (None, None) if not found
     """
-    # Look for chapter markdown file
-    chapter_file = Path(docs_path) / f"{chapter_number:02d}-*.md"
-    matching_files = list(Path(docs_path).glob(f"{chapter_number:02d}-*"))
+    # Look for chapter directory with pattern: 01-introduction, 02-humanoid-robotics, etc.
+    # Each directory should contain an index.md file
+    docs_root = Path(docs_path)
+    matching_dirs = list(docs_root.glob(f"{chapter_number:02d}-*"))
 
-    if not matching_files:
-        logger.warning(f"Chapter {chapter_number} not found in {docs_path}")
+    if not matching_dirs:
+        logger.warning(f"Chapter {chapter_number} directory not found in {docs_path}")
         return None, None
 
-    chapter_path = matching_files[0]
+    # Check for index.md in the chapter directory
+    chapter_dir = matching_dirs[0]
+    index_file = chapter_dir / "index.md"
+
+    if not index_file.exists():
+        logger.warning(f"index.md not found in {chapter_dir}")
+        return None, None
+
     try:
-        with open(chapter_path, "r", encoding="utf-8") as f:
+        with open(index_file, "r", encoding="utf-8") as f:
             content = f.read()
 
         # Extract title from first heading
@@ -52,6 +60,7 @@ def load_chapter(chapter_number: int, docs_path: str = "website/docs") -> tuple:
                 title = line.replace("# ", "").strip()
                 break
 
+        logger.info(f"Loaded chapter {chapter_number} from {index_file}")
         return title, content
     except Exception as e:
         logger.error(f"Failed to load chapter {chapter_number}: {e}")
