@@ -48,7 +48,7 @@ jobs:
         working-directory: website
         run: npm run build
         env:
-          DEPLOYMENT_URL: ${{ github.event_name == 'push' && 'https://your-github-username.github.io/physical-ai-textbook/' || '' }}
+          DEPLOYMENT_URL: ${{ github.event_name == 'push' && 'https://sirfanzaidi.github.io/physical-ai-textbook/' || '' }}
 
       - name: Check build output
         working-directory: website
@@ -88,7 +88,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./website/build
-          cname: physical-ai-textbook.example.com  # TODO: Update with actual domain
           commit_message: 'chore: deploy docusaurus site'
           user_name: github-actions[bot]
           user_email: github-actions[bot]@users.noreply.github.com
@@ -96,7 +95,7 @@ jobs:
       - name: Deployment summary
         run: |
           echo "✅ Docusaurus site deployed to GitHub Pages"
-          echo "📍 URL: https://your-github-username.github.io/physical-ai-textbook/"
+          echo "📍 URL: https://sirfanzaidi.github.io/physical-ai-textbook/"
           echo "⏱️  Deployment time: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
 
   link-check:

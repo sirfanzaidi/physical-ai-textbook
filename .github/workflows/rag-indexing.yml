@@ -100,11 +100,14 @@ jobs:
           echo "Mode: $RAG_MODE"
           echo "Chapters: $CHAPTERS"
 
-          # TODO: Implement in Phase 2
-          # python scripts/reindex.py --mode $RAG_MODE --chapters $CHAPTERS
+          if [ "$RAG_MODE" == "full" ]; then
+            python -m src.scripts.ingest --all --mode full
+          else
+            IFS=',' read -ra CHAPTER_ARRAY <<< "$CHAPTERS"
+            python -m src.scripts.ingest --chapters "${CHAPTER_ARRAY[@]}" --mode delta
+          fi
 
-          echo "⚠️  Re-indexing stub (implement in Phase 2)"
-          echo "Expected timeline: 7-13 sec (delta) or 30-60 sec (full)"
+          echo "✅ Re-indexing complete"
 
   validate:
     name: Validate RAG Accuracy
@@ -140,11 +143,9 @@ jobs:
           echo "Target accuracy: >=90%"
           echo "Test queries: >=3 per chapter (18+ total for 6 chapters)"
 
-          # TODO: Implement in Phase 2
-          # python scripts/validate_rag.py --verbose
+          python -m src.scripts.validate --verbose --threshold 0.90
 
-          echo "⚠️  Validation suite stub (implement in Phase 2)"
-          echo "Expected timeline: 10-20 sec for 18 queries"
+          echo "✅ Validation complete"
 
       - name: Fail if accuracy below threshold
         if: failure()
