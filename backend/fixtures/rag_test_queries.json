@@ -1,0 +1,130 @@
+{
+  "test_queries": [
+    {
+      "id": 1,
+      "chapter": 1,
+      "query": "What is embodied AI?",
+      "expected_chapter": 1,
+      "keywords": ["physical form", "sensors", "actuators", "real world"]
+    },
+    {
+      "id": 2,
+      "chapter": 1,
+      "query": "How does physical AI differ from traditional AI?",
+      "expected_chapter": 1,
+      "keywords": ["real-time", "physical environment", "continuous"]
+    },
+    {
+      "id": 3,
+      "chapter": 1,
+      "query": "What are examples of physical AI applications?",
+      "expected_chapter": 1,
+      "keywords": ["Atlas", "Waymo", "manufacturing", "autonomous"]
+    },
+    {
+      "id": 4,
+      "chapter": 2,
+      "query": "What is the Zero Moment Point in bipedal locomotion?",
+      "expected_chapter": 2,
+      "keywords": ["ZMP", "balance", "support polygon", "stable"]
+    },
+    {
+      "id": 5,
+      "chapter": 2,
+      "query": "How many degrees of freedom does a typical humanoid arm have?",
+      "expected_chapter": 2,
+      "keywords": ["7 DOF", "shoulder", "elbow", "wrist"]
+    },
+    {
+      "id": 6,
+      "chapter": 2,
+      "query": "What is whole-body motion planning?",
+      "expected_chapter": 2,
+      "keywords": ["coordinate", "joints", "balance", "collision"]
+    },
+    {
+      "id": 7,
+      "chapter": 3,
+      "query": "What is the difference between ROS1 and ROS2?",
+      "expected_chapter": 3,
+      "keywords": ["DDS", "real-time", "security", "multi-platform"]
+    },
+    {
+      "id": 8,
+      "chapter": 3,
+      "query": "When should I use a service vs a topic in ROS2?",
+      "expected_chapter": 3,
+      "keywords": ["synchronous", "request-reply", "publish-subscribe"]
+    },
+    {
+      "id": 9,
+      "chapter": 3,
+      "query": "What is Quality of Service in ROS2?",
+      "expected_chapter": 3,
+      "keywords": ["QoS", "reliability", "durability", "DDS"]
+    },
+    {
+      "id": 10,
+      "chapter": 4,
+      "query": "What is a digital twin?",
+      "expected_chapter": 4,
+      "keywords": ["virtual replica", "mirrors", "simulation", "real-time"]
+    },
+    {
+      "id": 11,
+      "chapter": 4,
+      "query": "What is domain randomization?",
+      "expected_chapter": 4,
+      "keywords": ["randomize", "sim-to-real", "robust", "parameters"]
+    },
+    {
+      "id": 12,
+      "chapter": 4,
+      "query": "Which physics engine should I use for robot simulation?",
+      "expected_chapter": 4,
+      "keywords": ["MuJoCo", "Isaac Sim", "Gazebo", "PyBullet"]
+    },
+    {
+      "id": 13,
+      "chapter": 5,
+      "query": "What is a Vision-Language-Action model?",
+      "expected_chapter": 5,
+      "keywords": ["VLA", "vision encoder", "language", "action decoder"]
+    },
+    {
+      "id": 14,
+      "chapter": 5,
+      "query": "What is RT-2?",
+      "expected_chapter": 5,
+      "keywords": ["Robotics Transformer", "Google", "multimodal", "reasoning"]
+    },
+    {
+      "id": 15,
+      "chapter": 5,
+      "query": "How do VLA models differ from traditional robot policies?",
+      "expected_chapter": 5,
+      "keywords": ["generalist", "language instructions", "zero-shot", "transfer"]
+    },
+    {
+      "id": 16,
+      "chapter": 6,
+      "query": "What is the CoffeeBot capstone project?",
+      "expected_chapter": 6,
+      "keywords": ["mobile manipulator", "coffee", "navigation", "manipulation"]
+    },
+    {
+      "id": 17,
+      "chapter": 6,
+      "query": "How do I integrate Nav2 for navigation?",
+      "expected_chapter": 6,
+      "keywords": ["Nav2", "path planning", "SLAM", "localization"]
+    },
+    {
+      "id": 18,
+      "chapter": 6,
+      "query": "What tools are used in the capstone project?",
+      "expected_chapter": 6,
+      "keywords": ["ROS2", "MoveIt", "YOLO", "Isaac Sim", "VLA"]
+    }
+  ]
+}

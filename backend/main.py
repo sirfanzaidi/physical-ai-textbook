@@ -29,7 +29,7 @@ from src.models import (
 )
 
 # Import services from src/services
-from src.services import EmbeddingService, VectorDBService, ChunkingService
+from src.services import EmbeddingService, VectorDBService, ChunkingService, LLMService
 
 # Configure logging
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "DEBUG"))
@@ -59,6 +59,7 @@ app.add_middleware(
 _embedding_service: EmbeddingService = None
 _vector_db_service: VectorDBService = None
 _chunking_service: ChunkingService = None
+_llm_service: LLMService = None
 _startup_time: float = None
 
 
@@ -94,6 +95,16 @@ def get_chunking_service() -> ChunkingService:
             overlap_size=int(os.getenv("CHUNK_OVERLAP", "100")),
         )
     return _chunking_service
+
+
+def get_llm_service() -> LLMService:
+    """Get or initialize LLM service (lazy loading)."""
+    global _llm_service
+    if _llm_service is None:
+        _llm_service = LLMService(
+            model_name=os.getenv("LLM_MODEL", "template")
+        )
+    return _llm_service
 
 # ============================================================================
 # Endpoints
@@ -206,9 +217,21 @@ async def chat(query: ChatbotQuery) -> ChatbotResponse:
                     relevance_score=relevance,
                 ))
 
-        # Step 5: Generate placeholder response (Phase 3: LLM integration)
-        top_chunk = search_results["documents"][0] if search_results["documents"] else ""
-        response_text = f"Based on the textbook content, {top_chunk[:100]}..." if top_chunk else "I found relevant information but need additional context to provide a complete answer."
+        # Step 5: Generate response using LLM service
+        gen_start = time.time()
+        llm_service = get_llm_service()
+
+        # Prepare chunks for LLM
+        chunks_for_llm = []
+        for doc, metadata in zip(search_results["documents"], search_results["metadatas"]):
+            chunks_for_llm.append({"content": doc, "metadata": metadata})
+
+        response_text = llm_service.generate_response(
+            query=query.question,
+            chunks=chunks_for_llm,
+            max_length=500
+        )
+        gen_time = int((time.time() - gen_start) * 1000)
 
         total_time = int((time.time() - overall_start) * 1000)
 
@@ -219,7 +242,7 @@ async def chat(query: ChatbotQuery) -> ChatbotResponse:
             source_chunk_ids=search_results["ids"][:int(os.getenv("RAG_TOP_K", "5"))],
             query_embedding_time_ms=embed_time,
             search_time_ms=search_time,
-            generation_time_ms=int((total_time - embed_time - search_time)),
+            generation_time_ms=gen_time,
             total_time_ms=total_time,
         )
 
