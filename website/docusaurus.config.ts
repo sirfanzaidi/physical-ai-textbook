@@ -22,7 +22,7 @@ const config: Config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'sirfanzaidi',
+  organizationName: 'sirfanzaidi', // Update with your GitHub username
   projectName: 'physical-ai-textbook',
 
   onBrokenLinks: 'throw',
@@ -133,7 +133,7 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/sirfanzaidi/physical-ai-textbook',
             },
           ],
         },
