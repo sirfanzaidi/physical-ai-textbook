@@ -1,0 +1,199 @@
+name: RAG Indexing & Validation
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'website/docs/**'
+      - '.github/workflows/rag-indexing.yml'
+
+permissions:
+  contents: write
+  checks: write
+  pull-requests: write
+
+concurrency:
+  group: rag-indexing
+  cancel-in-progress: false  # CRITICAL: Queue jobs, don't cancel (prevents race conditions)
+
+jobs:
+  detect-changes:
+    name: Detect Modified Chapters
+    runs-on: ubuntu-latest
+
+    outputs:
+      modified-chapters: ${{ steps.changes.outputs.chapters }}
+      mode: ${{ steps.changes.outputs.mode }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect modified chapters
+        id: changes
+        run: |
+          echo "Detecting modified chapters..."
+          git diff HEAD^ HEAD --name-only -- website/docs/ > changed_files.txt
+          cat changed_files.txt
+
+          # Extract chapter numbers from changed files
+          CHAPTERS=$(grep -oP 'docs/\K\d+' changed_files.txt | sort -u | tr '\n' ',' | sed 's/,$//')
+          echo "chapters=$CHAPTERS" >> $GITHUB_OUTPUT
+
+          # Determine indexing mode
+          CHANGE_COUNT=$(wc -l < changed_files.txt)
+          if [ "$CHANGE_COUNT" -gt 3 ]; then
+            echo "mode=full" >> $GITHUB_OUTPUT
+          else
+            echo "mode=delta" >> $GITHUB_OUTPUT
+          fi
+
+          echo "Modified chapters: $CHAPTERS"
+          echo "Indexing mode: $(grep 'mode=' $GITHUB_OUTPUT | cut -d= -f2)"
+
+      - name: Upload changed files list
+        uses: actions/upload-artifact@v3
+        with:
+          name: changed-files
+          path: changed_files.txt
+          retention-days: 1
+
+  reindex:
+    name: Re-index RAG Database (ChromaDB)
+    needs: detect-changes
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'backend/requirements.txt'
+
+      - name: Download changed files list
+        uses: actions/download-artifact@v3
+        with:
+          name: changed-files
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run delta re-indexing (if applicable)
+        working-directory: backend
+        env:
+          CHROMADB_PATH: ./data/embeddings
+          EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+          RAG_MODE: ${{ needs.detect-changes.outputs.mode }}
+          CHAPTERS: ${{ needs.detect-changes.outputs.modified-chapters }}
+        run: |
+          echo "Starting RAG re-indexing..."
+          echo "Mode: $RAG_MODE"
+          echo "Chapters: $CHAPTERS"
+
+          if [ "$RAG_MODE" == "full" ]; then
+            python -m src.scripts.ingest --all --mode full
+          else
+            IFS=',' read -ra CHAPTER_ARRAY <<< "$CHAPTERS"
+            python -m src.scripts.ingest --chapters "${CHAPTER_ARRAY[@]}" --mode delta
+          fi
+
+          echo "✅ Re-indexing complete"
+
+  validate:
+    name: Validate RAG Accuracy
+    needs: reindex
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'backend/requirements.txt'
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run RAG validation suite
+        working-directory: backend
+        env:
+          CHROMADB_PATH: ./data/embeddings
+          EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+          RAG_ACCURACY_THRESHOLD: 0.90
+          VALIDATION_QUERIES_MIN: 3
+        run: |
+          echo "Running RAG validation suite..."
+          echo "Target accuracy: >=90%"
+          echo "Test queries: >=3 per chapter (18+ total for 6 chapters)"
+
+          python -m src.scripts.validate --verbose --threshold 0.90
+
+          echo "✅ Validation complete"
+
+      - name: Fail if accuracy below threshold
+        if: failure()
+        run: |
+          echo "❌ RAG validation failed (accuracy < 90%)"
+          echo "Action: Rollback to previous collection"
+          exit 1
+
+  notify:
+    name: Notify Completion
+    runs-on: ubuntu-latest
+    needs: [reindex, validate]
+    if: always()
+
+    steps:
+      - name: Comment on PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            if (context.payload.pull_request) {
+              const status = '${{ needs.validate.result }}' === 'success' ? '✅' : '❌';
+              const message = `${status} RAG validation ${${{ needs.validate.result }} === 'success' ? 'passed' : 'failed'}
+
+              - Mode: ${{ needs.detect-changes.outputs.mode }}
+              - Chapters: ${{ needs.detect-changes.outputs.modified-chapters }}
+              - Status: ${{ needs.validate.result }}
+
+              ${${{ needs.validate.result }} === 'success' ? '✅ Chapter will be indexed and live within 5 minutes of merge.' : '❌ Please fix RAG accuracy issues before merge.'}`;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: message
+              });
+            }
+
+      - name: Deployment summary
+        run: |
+          echo "🎯 RAG Indexing & Validation Complete"
+          echo "⏱️  Timestamp: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo ""
+          echo "Next steps:"
+          if [ "${{ needs.validate.result }}" == "success" ]; then
+            echo "✅ Chapter is ready for production"
+            echo "📱 Chatbot will serve new content immediately"
+          else
+            echo "❌ Chapter indexing failed; please review logs"
+            echo "🔄 Previous collection remains active"
+          fi

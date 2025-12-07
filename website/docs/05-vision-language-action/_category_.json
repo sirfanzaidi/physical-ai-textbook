@@ -1,0 +1,8 @@
+{
+  "label": "Chapter 5: Vision-Language-Action Systems",
+  "position": 5,
+  "link": {
+    "type": "generated-index",
+    "description": "Integrate vision models, language understanding, and action planning for intelligent robots."
+  }
+}

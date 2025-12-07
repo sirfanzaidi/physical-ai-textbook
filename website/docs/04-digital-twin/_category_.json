@@ -1,0 +1,8 @@
+{
+  "label": "Chapter 4: Digital Twin Simulation",
+  "position": 4,
+  "link": {
+    "type": "generated-index",
+    "description": "Build and test robots in simulation using Gazebo, Unity, and physics engines."
+  }
+}
