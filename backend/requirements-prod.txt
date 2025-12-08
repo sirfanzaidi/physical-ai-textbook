@@ -1,20 +1,19 @@
 # FastAPI & Web Framework
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
+fastapi>=0.100.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.0.0
+python-multipart>=0.0.6
 
 # Vector Database & Embeddings (Qdrant + Cohere)
-qdrant-client==2.7.0
-cohere==5.5.8
+qdrant-client>=2.7.0
+cohere>=4.0.0
 
 # HTTP Client
-httpx==0.25.2
+httpx>=0.24.0
 
 # Utilities
-python-dotenv==1.0.0
-requests==2.31.0
-python-multipart==0.0.6
+python-dotenv>=1.0.0
+requests>=2.31.0
 
 # Logging
-structlog==23.2.0
+structlog>=23.0.0
