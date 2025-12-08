@@ -494,8 +494,8 @@ class TestObjectDetection(unittest.TestCase):
 
 **Metrics**:
 - **Task success rate**: % of successful coffee deliveries
-- **Navigation time**: Time from start to goal (target: <120 seconds)
-- **Grasp success rate**: % of successful grasps (target: >90%)
+- **Navigation time**: Time from start to goal (target: &lt;120 seconds)
+- **Grasp success rate**: % of successful grasps (target: &gt;90%)
 - **Safety incidents**: Collisions with people/objects (target: 0)
 
 ### 6.3 Sim-to-Real Validation

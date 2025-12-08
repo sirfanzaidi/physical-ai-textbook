@@ -60,6 +60,7 @@ const config: Config = {
           onInlineTags: 'warn',
           onInlineAuthors: 'warn',
           onUntruncatedBlogPosts: 'warn',
+          authorsMapPath: '../blog/authors.yml',
         },
         theme: {
           customCss: './src/css/custom.css',
