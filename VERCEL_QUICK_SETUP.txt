@@ -1,0 +1,55 @@
+═══════════════════════════════════════════════════════════════════════════════
+    VERCEL DEPLOYMENT - QUICK SETUP (5 MINUTES)
+═══════════════════════════════════════════════════════════════════════════════
+
+STEP 1: Visit Vercel
+├─ Go to: https://vercel.com/new
+├─ Sign in with GitHub
+└─ Select: "physical-ai-textbook" repository
+
+STEP 2: Configure Project
+├─ Project Name: physical-ai-textbook
+├─ Framework: Docusaurus (auto-detected)
+├─ Root Directory: . (repository root - NOT website/)
+└─ Click "Continue"
+
+STEP 3: Build Settings (Auto-detected by Vercel)
+✓ Build Command: cd website && npm run build
+✓ Output Directory: website/build
+✓ Install Command: npm ci
+
+STEP 4: Environment Variables
+Add in Vercel Dashboard → Settings → Environment Variables:
+
+  Key: DOCUSAURUS_BASEURL
+  Value: /
+
+  Key: NODE_ENV
+  Value: production
+
+STEP 5: Deploy
+├─ Click the "Deploy" button
+├─ Wait 2-3 minutes for build to complete
+└─ Visit your live site: https://physical-ai-textbook.vercel.app
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ WHAT HAPPENS NEXT:
+
+  ➜ Every push to 'master' → auto-deploys to production
+  ➜ Every pull request → creates preview deployment
+  ➜ Automatic HTTPS certificate
+  ➜ Free unlimited bandwidth (50GB/month hobby tier)
+  ➜ Zero-downtime deployments
+  ➜ Free custom domain support
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📚 DETAILED GUIDE:
+  Read: VERCEL_SETUP.md (in repository root)
+
+🔗 DOCUMENTATION:
+  - Vercel Docs: https://vercel.com/docs
+  - Docusaurus on Vercel: https://docusaurus.io/docs/deployment#deploying-to-vercel
+
+═══════════════════════════════════════════════════════════════════════════════
