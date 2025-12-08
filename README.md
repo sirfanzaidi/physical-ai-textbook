@@ -155,7 +155,38 @@ Target: **≥90% accuracy** on 18+ test queries per chapter
 
 ## Deployment
 
-### GitHub Pages (Static Textbook)
+### Vercel (Recommended - Frontend + Backend)
+
+Deploy both frontend and backend seamlessly on Vercel:
+
+**Setup (One-time):**
+1. Connect GitHub repo to Vercel (https://vercel.com/new)
+2. Set project root to repository root (not `website/`)
+3. Configure build settings:
+   - **Build Command**: `cd website && npm run build`
+   - **Output Directory**: `website/build`
+   - **Install Command**: `npm ci`
+4. Set environment variables in Vercel dashboard:
+   - `DOCUSAURUS_BASEURL=/` (or your custom domain)
+   - `NODE_ENV=production`
+
+**Auto-deploy:**
+- Every push to `master` → production deployment
+- Every PR → preview deployment
+- CI/CD workflow: `.github/workflows/vercel-deploy.yml`
+
+**Manual deploy (CLI):**
+```bash
+npm install -g vercel
+vercel --prod  # Production deployment
+vercel         # Preview deployment
+```
+
+**Live URL**: https://physical-ai-textbook.vercel.app (after setup)
+
+---
+
+### GitHub Pages (Static Textbook - Alternative)
 
 ```bash
 cd website
@@ -165,9 +196,11 @@ npm run build
 
 **Live URL**: https://your-github-username.github.io/physical-ai-textbook/
 
+---
+
 ### RAG API Backend
 
-Deploy FastAPI to Vercel, Railway, or self-hosted:
+Deploy FastAPI to Railway, Render, or self-hosted:
 
 ```bash
 cd backend
