@@ -23,7 +23,7 @@ const ChaptersList: ChapterCard[] = [
     topics: ['Embodied AI', 'Perception-Action Loops', 'Physical vs Traditional AI', 'Applications & Case Studies'],
     icon: '🤖',
     color: '#FF6B6B',
-    docLink: '/physical-ai-textbook/docs/introduction',
+    docLink: '/docs/introduction',
   },
   {
     id: 2,
@@ -33,7 +33,7 @@ const ChaptersList: ChapterCard[] = [
     topics: ['Hardware Design', 'DOF Allocation', 'Bipedal Locomotion', 'Whole-Body Motion Planning'],
     icon: '🦾',
     color: '#4ECDC4',
-    docLink: '/physical-ai-textbook/docs/humanoid-robotics',
+    docLink: '/docs/humanoid-robotics',
   },
   {
     id: 3,
@@ -43,7 +43,7 @@ const ChaptersList: ChapterCard[] = [
     topics: ['ROS1 vs ROS2', 'DDS Middleware', 'QoS Policies', 'Launch Files & CLI'],
     icon: '🔧',
     color: '#95E1D3',
-    docLink: '/physical-ai-textbook/docs/ros2-fundamentals',
+    docLink: '/docs/ros2-fundamentals',
   },
   {
     id: 4,
@@ -53,7 +53,7 @@ const ChaptersList: ChapterCard[] = [
     topics: ['Physics Engines', 'URDF & Simulation', 'Sensor Simulation', 'Sim-to-Real Transfer'],
     icon: '🌐',
     color: '#F38181',
-    docLink: '/physical-ai-textbook/docs/digital-twin',
+    docLink: '/docs/digital-twin',
   },
   {
     id: 5,
@@ -63,7 +63,7 @@ const ChaptersList: ChapterCard[] = [
     topics: ['VLA Architecture', 'Multimodal Perception', 'RT-1/RT-2/PaLM-E', 'Training Strategies'],
     icon: '🧠',
     color: '#AA96DA',
-    docLink: '/physical-ai-textbook/docs/vision-language-action',
+    docLink: '/docs/vision-language-action',
   },
   {
     id: 6,
@@ -73,7 +73,7 @@ const ChaptersList: ChapterCard[] = [
     topics: ['Mobile Manipulation', 'Navigation & Manipulation', 'End-to-End Integration', 'Deployment'],
     icon: '☕',
     color: '#FCBAD3',
-    docLink: '/physical-ai-textbook/docs/capstone',
+    docLink: '/docs/capstone',
   },
 ];
 
