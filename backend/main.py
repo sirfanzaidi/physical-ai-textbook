@@ -16,12 +16,16 @@ import httpx
 import xml.etree.ElementTree as ET
 from typing import List, Optional
 import os
+from dotenv import load_dotenv
 import cohere
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, VectorParams, PointStruct
 import logging
 from datetime import datetime
 import uuid
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Configure logging
 logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
@@ -201,7 +205,10 @@ def ingest_content():
                         texts=[chunk]
                     )
 
-                    embedding = response.embeddings[0]
+                    # Handle Cohere embedding response - response.embeddings is iterable with (type, vectors) tuples
+                    embedding_tuple = list(response.embeddings)[0]
+                    # embedding_tuple is ('float_', [[vector_values]])
+                    embedding = embedding_tuple[1][0] if isinstance(embedding_tuple, tuple) else embedding_tuple
                     point_id = str(uuid.uuid4())
 
                     point = PointStruct(
@@ -221,7 +228,8 @@ def ingest_content():
                     if len(points) >= 100:
                         qdrant_client.upsert(
                             collection_name=QDRANT_COLLECTION,
-                            points=points
+                            points=points,
+                            wait=True
                         )
                         logger.info(f"Uploaded {len(points)} chunks to Qdrant")
                         points = []
@@ -234,7 +242,8 @@ def ingest_content():
         if points:
             qdrant_client.upsert(
                 collection_name=QDRANT_COLLECTION,
-                points=points
+                points=points,
+                wait=True
             )
             logger.info(f"Uploaded final {len(points)} chunks to Qdrant")
 
@@ -276,14 +285,17 @@ async def chat(request: ChatRequest) -> ChatResponse:
             input_type="search_query",
             texts=[request.question]
         )
-        query_embedding = query_response.embeddings[0]
+        # Handle Cohere embedding response - response.embeddings is iterable with (type, vectors) tuples
+        embedding_tuple = list(query_response.embeddings)[0]
+        # embedding_tuple is ('float_', [[vector_values]])
+        query_embedding = embedding_tuple[1][0] if isinstance(embedding_tuple, tuple) else embedding_tuple
 
         # 2. Search Qdrant for similar chunks
-        search_results = qdrant_client.search(
+        search_results = qdrant_client.query_points(
             collection_name=QDRANT_COLLECTION,
-            query_vector=query_embedding,
+            query=query_embedding,
             limit=5
-        )
+        ).points
 
         # 3. Prepare context from search results
         context_chunks = []
