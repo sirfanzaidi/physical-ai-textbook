@@ -1,4 +1,5 @@
 # Multi-stage Dockerfile to reduce image size
+# Force rebuild: 2025-12-08 - Updated Qdrant + Cohere backend
 FROM python:3.11-slim as builder
 
 WORKDIR /app
