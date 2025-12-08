@@ -1,194 +1,288 @@
-# RAG Backend Deployment Guide
+# RAG Chatbot Deployment Guide
 
-Deploy the RAG chatbot backend to Railway (free tier with generous limits).
+## Overview
 
-## Option 1: Deploy to Railway (Recommended - 5 Minutes)
+This document covers deployment of the Physical AI & Humanoid Robotics Textbook RAG (Retrieval-Augmented Generation) chatbot backend using:
+- **Qdrant** - Vector database for semantic search
+- **Cohere** - LLM for embeddings and response generation
+- **FastAPI** - REST API framework
+- **Sitemap XML** - Automated content discovery
 
-Railway is the easiest option. Free tier includes 500 hours/month (always-on).
-
-### Step 1: Create Railway Account
-1. Go to https://railway.app
-2. Sign up with GitHub (recommended)
-3. Authorize Railway to access your GitHub account
-
-### Step 2: Deploy from GitHub
-
-1. In Railway Dashboard, click **"New Project"**
-2. Select **"Deploy from GitHub repo"**
-3. Find your repository: `physical-ai-textbook`
-4. Select the repository
-5. Railway will auto-detect:
-   - **Dockerfile**: `backend/Dockerfile` ✓
-   - **Port**: 8000 ✓
-
-### Step 3: Configure Environment Variables
-
-In Railway Project Settings → Variables, add:
+## Architecture
 
 ```
-PYTHONUNBUFFERED=1
-CORS_ORIGINS=https://physical-ai-textbook.vercel.app,http://localhost:3000
-CHROMADB_PATH=/tmp/embeddings
-EMBEDDING_MODEL=sentence-transformers/all-MiniLM-L6-v2
-LLM_MODEL=template
+Docusaurus Frontend (Vercel)
+    ↓
+FastAPI Backend (Railway)
+    ├── Cohere Client (for embeddings & generation)
+    ├── Qdrant Client (for vector search)
+    └── Sitemap Parser (discovers pages from frontend)
+```
+
+## Prerequisites
+
+### Required API Keys
+
+1. **Cohere API Key** - Get from https://dashboard.cohere.ai
+   - Model: `embed-english-v3.0` (for embeddings)
+   - Model: `command-r-plus` (for response generation)
+
+2. **Qdrant Cloud** - Get from https://cloud.qdrant.io
+   - API Key: Your cluster API key
+   - URL: Your cluster URL (e.g., `https://xxxx-xxxxx.qdrant.io`)
+
+3. **Frontend URL** - Deployed Docusaurus site
+   - Default: `https://physical-ai-textbook-two.vercel.app`
+
+## Environment Variables
+
+Create a `.env` file in the `backend/` directory with:
+
+```env
+# Cohere API
+COHERE_API_KEY=your_cohere_api_key_here
+
+# Qdrant Vector Database
+QDRANT_URL=https://your-cluster.qdrant.io
+QDRANT_API_KEY=your_qdrant_api_key_here
+
+# Sitemap Configuration
+SITEMAP_URL=https://physical-ai-textbook-two.vercel.app/sitemap.xml
+
+# CORS Configuration (comma-separated origins)
+CORS_ORIGINS=http://localhost:3000,https://physical-ai-textbook-two.vercel.app
+
+# Logging
 LOG_LEVEL=INFO
 ```
 
-### Step 4: Deploy
+## Local Testing
 
-1. Click **"Deploy"**
-2. Wait 3-5 minutes for build to complete
-3. You'll get a public URL like: `https://physical-ai-chatbot-production-xyz.up.railway.app`
-
-### Step 5: Test API
-
-```bash
-curl https://your-railway-url/health
-# Response: {"status": "ok", "version": "1.0.0", ...}
-
-curl -X POST https://your-railway-url/chat \
-  -H "Content-Type: application/json" \
-  -d '{"query": "What is Physical AI?", "include_sources": true}'
-```
-
-## Option 2: Deploy to Render.com
-
-Alternative to Railway with similar free tier.
-
-### Steps:
-1. Go to https://render.com
-2. Click **"New +"** → **"Web Service"**
-3. Connect GitHub repo
-4. Set:
-   - **Name**: `physical-ai-chatbot`
-   - **Build Command**: (leave default)
-   - **Start Command**: `python -m uvicorn main:app --host 0.0.0.0 --port 8000`
-   - **Root Directory**: `backend`
-5. Add environment variables (same as Railway)
-6. Deploy
-
-Free tier: 750 hours/month (spins down after 15 min inactivity)
-
-## Option 3: Deploy Locally with Docker
-
-For testing before cloud deployment.
+### 1. Install Dependencies
 
 ```bash
 cd backend
+pip install -r requirements-prod.txt
+```
 
-# Build image
-docker build -t rag-chatbot:latest .
+### 2. Set Environment Variables
 
-# Run container
-docker run -p 8000:8000 \
-  -e CORS_ORIGINS="http://localhost:3000" \
-  -v $(pwd)/data:/app/data \
-  rag-chatbot:latest
+Create `backend/.env` with values from above. On Windows PowerShell:
 
-# Test
+```powershell
+$env:COHERE_API_KEY = "your_key"
+$env:QDRANT_URL = "your_url"
+$env:QDRANT_API_KEY = "your_key"
+$env:SITEMAP_URL = "https://physical-ai-textbook-two.vercel.app/sitemap.xml"
+$env:CORS_ORIGINS = "http://localhost:3000,https://physical-ai-textbook-two.vercel.app"
+```
+
+### 3. Run Backend
+
+```bash
+python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+### 4. Test Health Endpoint
+
+```bash
 curl http://localhost:8000/health
 ```
 
-## Integration with Frontend
-
-Update your frontend to point to the deployed RAG API:
-
-```javascript
-// In your React component
-const RAG_API_URL = process.env.REACT_APP_RAG_API_URL || 'http://localhost:8000';
-
-async function askChatbot(question) {
-  const response = await fetch(`${RAG_API_URL}/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      query: question,
-      include_sources: true
-    })
-  });
-  return response.json();
+Expected response:
+```json
+{
+  "status": "ok",
+  "version": "2.0.0",
+  "timestamp": "2024-12-08T15:30:00.000000",
+  "qdrant_collection": "physical_ai_textbook",
+  "total_documents": 250
 }
 ```
 
-Add to your `.env.local`:
+### 5. Test Chat Endpoint
 
-```
-REACT_APP_RAG_API_URL=https://your-railway-url
+```bash
+curl -X POST http://localhost:8000/chat \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "What is a humanoid robot?",
+    "include_sources": true
+  }'
 ```
 
-## Monitoring
+Expected response:
+```json
+{
+  "answer": "A humanoid robot is...",
+  "citations": [
+    {
+      "text": "Relevant excerpt from textbook...",
+      "source": "docs/01-introduction/",
+      "url": "https://physical-ai-textbook-two.vercel.app/docs/01-introduction/"
+    }
+  ],
+  "model": "cohere",
+  "timestamp": "2024-12-08T15:30:00.000000"
+}
+```
+
+## Deployment to Railway
+
+### 1. Prepare Railway Configuration
+
+The repository includes:
+- `Dockerfile` - Multi-stage build for minimal image size (~2-3GB)
+- `railway.toml` - Railway deployment configuration
+- `requirements-prod.txt` - Production dependencies
+
+### 2. Push to GitHub
+
+```bash
+git add .
+git commit -m "Deploy RAG backend with Qdrant + Cohere"
+git push origin main
+```
+
+### 3. Deploy on Railway
+
+1. Go to https://railway.app
+2. Create a new project
+3. Select "Deploy from GitHub"
+4. Choose your repository
+5. Click "Deploy"
+
+### 4. Set Environment Variables on Railway
+
+In Railway dashboard:
+1. Go to Variables
+2. Add all environment variables:
+   - `COHERE_API_KEY`
+   - `QDRANT_URL`
+   - `QDRANT_API_KEY`
+   - `SITEMAP_URL`
+   - `CORS_ORIGINS`
+
+### 5. Monitor Deployment
+
+Railway will automatically:
+1. Build the Docker image
+2. Start the container
+3. Make available at a public URL
+
+Check logs in Railway dashboard to verify:
+```
+INFO:     Application startup complete
+```
+
+## API Endpoints
 
 ### Health Check
-```bash
-curl https://your-deployment-url/health
+**GET** `/health`
+
+Returns system status and collection statistics.
+
+### Chat Query
+**POST** `/chat`
+
+```json
+{
+  "question": "Your question here",
+  "include_sources": true
+}
 ```
 
-Response includes:
-- API version and status
-- Uptime
-- Total chunks indexed
-- Database size
+Returns answer with citations from textbook.
 
-### Logs
-- **Railway**: Dashboard → Deployments → Logs
-- **Render**: Dashboard → Logs
+### Reindex Content
+**POST** `/reindex`
+
+Triggers background job to re-ingest content from sitemap. Useful when textbook is updated.
+
+## Content Ingestion Flow
+
+1. **Startup** - On app startup, checks if Qdrant collection exists
+2. **Discovery** - Fetches sitemap.xml from frontend URL
+3. **Parsing** - Extracts all URLs from sitemap
+4. **Fetching** - Downloads HTML content from each URL
+5. **Extraction** - Extracts plain text from HTML
+6. **Chunking** - Splits text into 500-word chunks with 100-word overlap
+7. **Embedding** - Creates Cohere embeddings (4096 dimensions) for each chunk
+8. **Storage** - Stores chunks with metadata in Qdrant
+9. **Indexing** - Qdrant automatically indexes for semantic search
 
 ## Troubleshooting
 
-### Build Fails: "Module not found"
-- Check `requirements.txt` has all dependencies
-- Ensure `backend/` directory is in correct place
+### Error: COHERE_API_KEY not found
+- Check environment variables are set correctly
+- Verify API key is valid at https://dashboard.cohere.ai
 
-### API Returns 503 Service Unavailable
-- Service might be starting up (takes 30s)
-- Check logs for embedding model download status
+### Error: QDRANT_URL connection failed
+- Verify Qdrant cluster is running and accessible
+- Check firewall allows HTTPS connections to your Qdrant URL
+- Verify API key is correct
 
-### CORS Errors
-- Update `CORS_ORIGINS` to include your frontend domain
-- Must be HTTPS in production
+### Error: Sitemap parsing failed
+- Verify sitemap URL is accessible (test in browser)
+- Check sitemap.xml is valid XML
+- Ensure frontend is deployed and sitemap is generated
 
-### Out of Memory (OOM)
-- Embedding models are large (~600MB)
-- Use smaller model: `all-MiniLM-L6-v2` (384D, faster)
-- Alternative: `all-distilroberta-v1` (768D, slower)
+### Chat endpoint returns empty results
+- Check collection has documents: `/health` endpoint shows `total_documents > 0`
+- Run `/reindex` to manually trigger content ingestion
+- Check Cohere API key has sufficient quota
 
-## Indexing Content
+### Docker image too large
+- This is normal. Image size is ~2-3GB due to Cohere embeddings
+- Railway plan must support at least 4GB image builds
 
-After deployment, index the textbook:
+## Performance Notes
+
+- **Embedding Speed**: ~100-500 chunks per minute depending on Cohere quota
+- **Search Latency**: ~500-1000ms per query (embedding + vector search)
+- **Collection Size**: ~250+ document chunks from 15 chapters
+- **Memory**: Qdrant uses ~500MB-1GB for this dataset
+
+## Monitoring
+
+### Check Qdrant Collection
 
 ```bash
-# Via HTTP (if you added /reindex endpoint)
-curl -X POST https://your-deployment-url/reindex \
-  -H "Content-Type: application/json" \
-  -d '{"chapters": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15"]}'
+curl -H "Authorization: Bearer YOUR_QDRANT_API_KEY" \
+  https://your-cluster.qdrant.io/collections/physical_ai_textbook
 ```
 
-Or run indexing locally:
+### Monitor API Usage
 
-```bash
-cd backend
-python scripts/ingest.py
+Check Railway dashboard:
+- CPU usage
+- Memory consumption
+- API response times
+- Error rates
+
+## Integration with Frontend
+
+The Docusaurus frontend can call the RAG backend:
+
+```javascript
+// In your React component
+const response = await fetch('https://your-railway-url/chat', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    question: userQuestion,
+    include_sources: true
+  })
+});
+
+const data = await response.json();
+console.log(data.answer);
+console.log(data.citations);
 ```
 
-## Cost Estimates
+## Further Reading
 
-| Service | Free Tier | Cost Beyond |
-|---------|-----------|-------------|
-| **Railway** | 500 hrs/mo | $5/month |
-| **Render** | 750 hrs/mo | $7/month |
-| **AWS Lambda** | 1M requests/mo | Pay per invocation |
-
-## Next Steps
-
-1. ✅ Deploy backend to Railway/Render
-2. 📱 Update frontend with RAG API URL
-3. 🧪 Test chatbot integration
-4. 📊 Monitor performance and latency
-5. 🔄 Set up auto-reindexing for new chapters
-
----
-
-**Need help?**
-- Railway Docs: https://docs.railway.app/
-- Render Docs: https://render.com/docs
-- FastAPI Docs: https://fastapi.tiangolo.com/
+- [Qdrant Docs](https://qdrant.tech/documentation/)
+- [Cohere Docs](https://docs.cohere.com/)
+- [FastAPI Docs](https://fastapi.tiangolo.com/)
+- [Railway Docs](https://docs.railway.app/)
