@@ -1,32 +1,42 @@
-# RAG Chatbot Backend Dockerfile
-FROM python:3.11-slim
+# Multi-stage Dockerfile to reduce image size
+FROM python:3.11-slim as builder
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
+# Install build dependencies only in builder stage
+RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements
-COPY backend/requirements.txt .
+# Copy requirements (production only, no dev deps)
+COPY backend/requirements-prod.txt requirements.txt
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies with wheel caching
+RUN pip install --no-cache-dir --user \
+    -r requirements.txt
 
-# Copy application code
-COPY backend/ .
+# Final stage - minimal runtime image
+FROM python:3.11-slim
 
-# Create data directory for ChromaDB
-RUN mkdir -p /app/data
+WORKDIR /app
 
-# Set environment variables
+# Copy Python packages from builder
+COPY --from=builder /root/.local /root/.local
+
+# Set PATH to use local Python packages
+ENV PATH=/root/.local/bin:$PATH
 ENV PYTHONUNBUFFERED=1
 ENV HOST=0.0.0.0
 ENV PORT=8000
 ENV CHROMADB_PATH=/tmp/embeddings
 ENV CORS_ORIGINS=*
+
+# Copy application code only (models will be downloaded at runtime)
+COPY backend/ .
+
+# Create data directory
+RUN mkdir -p /tmp/embeddings
 
 # Expose port
 EXPOSE 8000
