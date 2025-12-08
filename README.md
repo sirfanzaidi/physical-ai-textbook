@@ -337,3 +337,5 @@ This textbook is free and open-source. You're welcome to:
 ---
 
 *Last updated: 2025-12-08 | Status: MVP Complete - 6 Chapters, Chatbot UI, 5 Blog Posts, Homepage Redesign*
+#   p h y s i c a l - a i - t e x t b o o k  
+ 

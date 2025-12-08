@@ -3,7 +3,7 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
-// Build timestamp: 2025-12-08T04:50:00Z - Trigger Vercel deployment
+// Build timestamp: 2025-12-08T05:00:00Z - Force Vercel cache clear and rebuild
 
 const config: Config = {
   title: 'Physical AI & Humanoid Robotics',
