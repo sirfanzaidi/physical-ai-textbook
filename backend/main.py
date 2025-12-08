@@ -1,48 +1,40 @@
 """
 Physical AI & Humanoid Robotics Textbook - RAG Chatbot Backend
+Using: Qdrant (vector DB) + Cohere (embeddings) + Sitemap ingestion
 
-FastAPI application providing:
-- /chat endpoint for RAG queries
-- /health endpoint for health checks
-- /reindex endpoint for admin re-indexing
-- /validate endpoint for RAG accuracy validation
+Features:
+- Auto-ingest from sitemap.xml
+- Cohere embeddings (English)
+- Qdrant vector database
+- REST API for RAG queries
 """
 
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
-import logging
+from pydantic import BaseModel
+import httpx
+import xml.etree.ElementTree as ET
+from typing import List, Optional
 import os
+import cohere
+from qdrant_client import QdrantClient
+from qdrant_client.models import Distance, VectorParams, PointStruct
+import logging
 from datetime import datetime
-import time
-
-# Import data models from src/models
-from src.models import (
-    ChatbotQuery,
-    ChatbotResponse,
-    Citation,
-    ReindexRequest,
-    ReindexResponse,
-    ValidationRequest,
-    ValidationResponse,
-    ValidationResult,
-    HealthResponse,
-)
-
-# Import services from src/services
-from src.services import EmbeddingService, VectorDBService, ChunkingService, LLMService
+import uuid
 
 # Configure logging
-logging.basicConfig(level=os.getenv("LOG_LEVEL", "DEBUG"))
+logging.basicConfig(level=os.getenv("LOG_LEVEL", "INFO"))
 logger = logging.getLogger(__name__)
 
-# Initialize FastAPI app
+# Initialize FastAPI
 app = FastAPI(
-    title=os.getenv("API_TITLE", "Physical AI RAG Chatbot"),
-    version=os.getenv("API_VERSION", "1.0.0"),
-    description=os.getenv("API_DESCRIPTION", "RAG-powered chatbot for Physical AI textbook"),
+    title="Physical AI RAG Chatbot",
+    version="2.0.0",
+    description="RAG-powered chatbot using Qdrant + Cohere"
 )
 
-# Configure CORS for local development
+# CORS Configuration
 cors_origins = os.getenv("CORS_ORIGINS", "http://localhost:3000").split(",")
 app.add_middleware(
     CORSMiddleware,
@@ -53,58 +45,205 @@ app.add_middleware(
 )
 
 # ============================================================================
-# Global Service Instances
+# Configuration
 # ============================================================================
 
-_embedding_service: EmbeddingService = None
-_vector_db_service: VectorDBService = None
-_chunking_service: ChunkingService = None
-_llm_service: LLMService = None
-_startup_time: float = None
+SITEMAP_URL = os.getenv("SITEMAP_URL", "https://physical-ai-textbook-two.vercel.app/sitemap.xml")
+COHERE_API_KEY = os.getenv("COHERE_API_KEY")
+QDRANT_URL = os.getenv("QDRANT_URL")
+QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
+QDRANT_COLLECTION = "physical_ai_textbook"
 
+if not COHERE_API_KEY:
+    raise ValueError("COHERE_API_KEY environment variable is required")
+if not QDRANT_URL:
+    raise ValueError("QDRANT_URL environment variable is required")
+if not QDRANT_API_KEY:
+    raise ValueError("QDRANT_API_KEY environment variable is required")
 
-def get_embedding_service() -> EmbeddingService:
-    """Get or initialize embedding service (lazy loading)."""
-    global _embedding_service
-    if _embedding_service is None:
-        _embedding_service = EmbeddingService(
-            model_name=os.getenv("EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2"),
-            batch_size=int(os.getenv("EMBEDDING_BATCH_SIZE", "32")),
+# Initialize clients
+cohere_client = cohere.ClientV2(api_key=COHERE_API_KEY)
+qdrant_client = QdrantClient(
+    url=QDRANT_URL,
+    api_key=QDRANT_API_KEY
+)
+
+# ============================================================================
+# Data Models
+# ============================================================================
+
+class ChatRequest(BaseModel):
+    question: str
+    include_sources: bool = True
+
+class Citation(BaseModel):
+    text: str
+    source: str
+    url: Optional[str] = None
+
+class ChatResponse(BaseModel):
+    answer: str
+    citations: List[Citation]
+    model: str = "cohere"
+    timestamp: str
+
+class HealthResponse(BaseModel):
+    status: str
+    version: str
+    timestamp: str
+    qdrant_collection: Optional[str] = None
+    total_documents: int = 0
+
+# ============================================================================
+# Helper Functions
+# ============================================================================
+
+def fetch_urls_from_sitemap(sitemap_url: str) -> List[str]:
+    """Fetch all URLs from sitemap.xml"""
+    try:
+        response = httpx.get(sitemap_url, timeout=10.0)
+        response.raise_for_status()
+
+        root = ET.fromstring(response.content)
+        namespace = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
+
+        urls = []
+        for url_elem in root.findall('.//ns:loc', namespace):
+            url = url_elem.text
+            if url and url.endswith(('.html', '/')):
+                urls.append(url)
+
+        logger.info(f"Found {len(urls)} URLs in sitemap")
+        return urls
+    except Exception as e:
+        logger.error(f"Error fetching sitemap: {e}")
+        raise
+
+def fetch_and_parse_page(url: str) -> Optional[str]:
+    """Fetch page content from URL"""
+    try:
+        response = httpx.get(url, timeout=10.0)
+        response.raise_for_status()
+
+        # Extract text from HTML (simple approach)
+        from html.parser import HTMLParser
+
+        class TextExtractor(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.text = []
+
+            def handle_data(self, data):
+                if data.strip():
+                    self.text.append(data.strip())
+
+        extractor = TextExtractor()
+        extractor.feed(response.text)
+        return ' '.join(extractor.text)
+    except Exception as e:
+        logger.error(f"Error fetching page {url}: {e}")
+        return None
+
+def chunk_text(text: str, chunk_size: int = 500, overlap: int = 100) -> List[str]:
+    """Split text into overlapping chunks"""
+    chunks = []
+    words = text.split()
+
+    for i in range(0, len(words), chunk_size - overlap):
+        chunk = ' '.join(words[i:i + chunk_size])
+        if chunk.strip():
+            chunks.append(chunk)
+
+    return chunks
+
+def initialize_qdrant_collection():
+    """Create Qdrant collection if it doesn't exist"""
+    try:
+        qdrant_client.recreate_collection(
+            collection_name=QDRANT_COLLECTION,
+            vectors_config=VectorParams(size=4096, distance=Distance.COSINE),
         )
-    return _embedding_service
+        logger.info(f"Created Qdrant collection: {QDRANT_COLLECTION}")
+    except Exception as e:
+        logger.info(f"Collection may already exist: {e}")
 
+def ingest_content():
+    """Ingest content from sitemap into Qdrant"""
+    try:
+        logger.info("Starting content ingestion...")
 
-def get_vector_db_service() -> VectorDBService:
-    """Get or initialize vector database service (lazy loading)."""
-    global _vector_db_service
-    if _vector_db_service is None:
-        _vector_db_service = VectorDBService(
-            db_path=os.getenv("CHROMADB_PATH", "./data/embeddings"),
-            collection_name="physical_ai_textbook",
-            embedding_dimension=384,
-        )
-    return _vector_db_service
+        # Initialize collection
+        initialize_qdrant_collection()
 
+        # Fetch URLs from sitemap
+        urls = fetch_urls_from_sitemap(SITEMAP_URL)
 
-def get_chunking_service() -> ChunkingService:
-    """Get or initialize chunking service (lazy loading)."""
-    global _chunking_service
-    if _chunking_service is None:
-        _chunking_service = ChunkingService(
-            chunk_size=int(os.getenv("CHUNK_SIZE", "400")),
-            overlap_size=int(os.getenv("CHUNK_OVERLAP", "100")),
-        )
-    return _chunking_service
+        total_chunks = 0
+        points = []
 
+        for url in urls:
+            logger.info(f"Processing: {url}")
+            content = fetch_and_parse_page(url)
 
-def get_llm_service() -> LLMService:
-    """Get or initialize LLM service (lazy loading)."""
-    global _llm_service
-    if _llm_service is None:
-        _llm_service = LLMService(
-            model_name=os.getenv("LLM_MODEL", "template")
-        )
-    return _llm_service
+            if not content:
+                continue
+
+            # Chunk content
+            chunks = chunk_text(content)
+
+            # Embed with Cohere
+            for chunk in chunks:
+                try:
+                    # Embed using Cohere
+                    response = cohere_client.embed(
+                        model="embed-english-v3.0",
+                        input_type="search_document",
+                        texts=[chunk]
+                    )
+
+                    embedding = response.embeddings[0]
+                    point_id = str(uuid.uuid4())
+
+                    point = PointStruct(
+                        id=point_id,
+                        vector=embedding,
+                        payload={
+                            "text": chunk,
+                            "source_url": url,
+                            "chunk_index": len(points),
+                            "timestamp": datetime.utcnow().isoformat()
+                        }
+                    )
+                    points.append(point)
+                    total_chunks += 1
+
+                    # Batch upload every 100 chunks
+                    if len(points) >= 100:
+                        qdrant_client.upsert(
+                            collection_name=QDRANT_COLLECTION,
+                            points=points
+                        )
+                        logger.info(f"Uploaded {len(points)} chunks to Qdrant")
+                        points = []
+
+                except Exception as e:
+                    logger.error(f"Error embedding chunk: {e}")
+                    continue
+
+        # Upload remaining points
+        if points:
+            qdrant_client.upsert(
+                collection_name=QDRANT_COLLECTION,
+                points=points
+            )
+            logger.info(f"Uploaded final {len(points)} chunks to Qdrant")
+
+        logger.info(f"Ingestion complete! Total chunks: {total_chunks}")
+        return total_chunks
+
+    except Exception as e:
+        logger.error(f"Ingestion error: {e}")
+        raise
 
 # ============================================================================
 # Endpoints
@@ -112,295 +251,115 @@ def get_llm_service() -> LLMService:
 
 @app.get("/health", response_model=HealthResponse)
 async def health_check():
-    """Health check endpoint with dependency status."""
+    """Health check endpoint"""
     try:
-        embedding_service = get_embedding_service()
-        vector_db_service = get_vector_db_service()
+        collection_info = qdrant_client.get_collection(QDRANT_COLLECTION)
+        total_docs = collection_info.points_count
+    except:
+        total_docs = 0
 
-        dependencies = {
-            "embedding_model": "ok" if embedding_service else "error",
-            "vector_db": "ok",
-        }
+    return HealthResponse(
+        status="ok",
+        version="2.0.0",
+        timestamp=datetime.utcnow().isoformat(),
+        qdrant_collection=QDRANT_COLLECTION,
+        total_documents=total_docs
+    )
 
-        # Try to get stats from vector DB
-        db_stats = vector_db_service.get_db_stats()
-        total_chunks = sum(c.get("chunk_count", 0) for c in db_stats.get("collections", {}).values())
-
-        return HealthResponse(
-            status="ok",
-            version=os.getenv("API_VERSION", "1.0.0"),
-            timestamp=datetime.utcnow(),
-            dependencies=dependencies,
-            uptime_seconds=time.time() - _startup_time if _startup_time else None,
-            total_chunks_indexed=total_chunks,
-            vector_db_size_mb=sum(c.get("db_size_bytes", 0) for c in db_stats.get("collections", {}).values()) / (1024 * 1024),
-        )
-    except Exception as e:
-        logger.error(f"Health check failed: {e}")
-        return HealthResponse(
-            status="degraded",
-            version=os.getenv("API_VERSION", "1.0.0"),
-            timestamp=datetime.utcnow(),
-            dependencies={"error": str(e)},
-        )
-
-@app.post("/chat", response_model=ChatbotResponse)
-async def chat(query: ChatbotQuery) -> ChatbotResponse:
-    """
-    RAG Chatbot Query Endpoint
-
-    Accepts a user query with optional selected text context.
-    Returns a response sourced from book content with citations.
-
-    Query Process:
-    1. Embed user query using sentence-transformers/all-MiniLM-L6-v2
-    2. Search ChromaDB for top-5 relevant chunks (200-500 tokens each)
-    3. Generate response from retrieved chunks
-    4. Return response with citations
-
-    Constraints:
-    - Response MUST be sourced from book text only (no hallucinations)
-    - If no relevant chunks found, respond: "I don't have information about this in the textbook"
-    - Response latency target: <2 seconds p95
-    """
-
-    logger.info(f"Query received: {query.question[:50]}...")
-    overall_start = time.time()
-
+@app.post("/chat", response_model=ChatResponse)
+async def chat(request: ChatRequest) -> ChatResponse:
+    """RAG chatbot endpoint using Qdrant + Cohere"""
     try:
-        embedding_service = get_embedding_service()
-        vector_db_service = get_vector_db_service()
-
-        # Step 1: Embed query
-        embed_start = time.time()
-        query_embedding = embedding_service.embed_single(query.question)
-        embed_time = int((time.time() - embed_start) * 1000)
-        logger.debug(f"Query embedded in {embed_time}ms")
-
-        # Step 2: Search ChromaDB
-        search_start = time.time()
-        search_results = vector_db_service.search(
-            query_embedding=query_embedding,
-            n_results=int(os.getenv("RAG_TOP_K", "5")),
+        # 1. Embed query with Cohere
+        query_response = cohere_client.embed(
+            model="embed-english-v3.0",
+            input_type="search_query",
+            texts=[request.question]
         )
-        search_time = search_results["search_time_ms"]
-        logger.debug(f"Search completed in {search_time}ms, found {len(search_results['ids'])} results")
+        query_embedding = query_response.embeddings[0]
 
-        # Step 3: Build response from retrieved chunks
-        if not search_results["ids"]:
-            return ChatbotResponse(
-                response_text="I don't have information about this in the textbook. Please try a more specific question.",
-                citations=[],
-                confidence_score=0.0,
-                source_chunk_ids=[],
-                query_embedding_time_ms=embed_time,
-                search_time_ms=search_time,
-                generation_time_ms=0,
-                total_time_ms=int((time.time() - overall_start) * 1000),
-            )
+        # 2. Search Qdrant for similar chunks
+        search_results = qdrant_client.search(
+            collection_name=QDRANT_COLLECTION,
+            query_vector=query_embedding,
+            limit=5
+        )
 
-        # Step 4: Create citations from search results
+        # 3. Prepare context from search results
+        context_chunks = []
+        sources = []
+
+        for result in search_results:
+            chunk_text = result.payload.get("text", "")
+            source_url = result.payload.get("source_url", "")
+
+            context_chunks.append(chunk_text)
+            if source_url not in [s["source"] for s in sources]:
+                sources.append({
+                    "text": chunk_text[:200],
+                    "source": source_url.replace("https://physical-ai-textbook-two.vercel.app/", ""),
+                    "url": source_url
+                })
+
+        # 4. Generate response with Cohere
+        context = "\n\n".join(context_chunks)
+
+        prompt = f"""Based on this textbook content, answer the question:
+
+Content:
+{context}
+
+Question: {request.question}
+
+Answer clearly and cite the source where information comes from."""
+
+        response = cohere_client.generate(
+            model="command-r-plus",
+            prompt=prompt,
+            max_tokens=1000,
+            temperature=0.7
+        )
+
+        answer = response.generations[0].text.strip()
+
+        # Create citations
         citations = []
-        for idx, (chunk_id, document, metadata, relevance) in enumerate(zip(
-            search_results["ids"],
-            search_results["documents"],
-            search_results["metadatas"],
-            search_results["relevance_scores"]
-        )):
-            if relevance >= float(os.getenv("RAG_RELEVANCE_THRESHOLD", "0.3")):
-                citations.append(Citation(
-                    chunk_id=chunk_id,
-                    chapter_number=metadata.get("chapter_number", 0),
-                    chapter_title=metadata.get("chapter_title", "Unknown"),
-                    section_title=metadata.get("section_title"),
-                    excerpt=document[:150] + "..." if len(document) > 150 else document,
-                    relevance_score=relevance,
-                ))
+        if request.include_sources:
+            for source in sources[:3]:  # Top 3 sources
+                citations.append(Citation(**source))
 
-        # Step 5: Generate response using LLM service
-        gen_start = time.time()
-        llm_service = get_llm_service()
-
-        # Prepare chunks for LLM
-        chunks_for_llm = []
-        for doc, metadata in zip(search_results["documents"], search_results["metadatas"]):
-            chunks_for_llm.append({"content": doc, "metadata": metadata})
-
-        response_text = llm_service.generate_response(
-            query=query.question,
-            chunks=chunks_for_llm,
-            max_length=500
-        )
-        gen_time = int((time.time() - gen_start) * 1000)
-
-        total_time = int((time.time() - overall_start) * 1000)
-
-        return ChatbotResponse(
-            response_text=response_text,
-            citations=citations[:int(os.getenv("MAX_CITATIONS", "3"))],
-            confidence_score=search_results["relevance_scores"][0] if search_results["relevance_scores"] else 0.0,
-            source_chunk_ids=search_results["ids"][:int(os.getenv("RAG_TOP_K", "5"))],
-            query_embedding_time_ms=embed_time,
-            search_time_ms=search_time,
-            generation_time_ms=gen_time,
-            total_time_ms=total_time,
+        return ChatResponse(
+            answer=answer,
+            citations=citations,
+            timestamp=datetime.utcnow().isoformat()
         )
 
     except Exception as e:
-        logger.error(f"Error processing query: {str(e)}")
+        logger.error(f"Chat error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post("/reindex", response_model=ReindexResponse)
-async def reindex(request: ReindexRequest, background_tasks: BackgroundTasks) -> ReindexResponse:
-    """
-    Admin Endpoint: Re-index RAG Database
-
-    Triggers re-indexing of chapters into ChromaDB.
-
-    Modes:
-    - 'delta': Only re-index modified chapters (fast, 7-13 sec)
-    - 'full': Re-index all chapters (30-60 sec)
-
-    Implementation:
-    1. Detect modified chapters (git diff)
-    2. Create new collection (green)
-    3. Index chapters
-    4. Validate with test queries (18+ per chapter)
-    5. Atomic alias swap: prod → green
-    6. Delete old collection (blue)
-
-    During re-indexing, chatbot is available (serving old collection until swap).
-    """
-
-    logger.info(f"Re-index request received: mode={request.mode}")
-
-    try:
-        # TODO: Implement re-indexing logic with blue-green swap
-        # 1. Detect changes
-        # 2. Create new collection
-        # 3. Index chapters
-        # 4. Validate
-        # 5. Atomic swap
-        # 6. Clean up
-
-        # Placeholder response (Phase 2 implementation)
-        return ReindexResponse(
-            status="pending",
-            message="Re-indexing not yet implemented. This is a placeholder.",
-            chapters_processed=0,
-            timestamp=datetime.utcnow(),
-        )
-
-    except Exception as e:
-        logger.error(f"Error during re-indexing: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@app.post("/validate", response_model=ValidationResponse)
-async def validate(request: ValidationRequest) -> ValidationResponse:
-    """
-    Admin Endpoint: Run RAG Accuracy Validation Suite
-
-    Tests RAG chatbot accuracy by running 18+ predefined queries
-    (minimum 3 per chapter, 6 chapters = 18 queries minimum).
-
-    Target: ≥90% accuracy (all responses sourced from book, no hallucinations)
-
-    Validation Process:
-    1. Load test query set from fixtures/rag_test_queries.json
-    2. For each query:
-       - Execute chatbot query
-       - Check if response sources are from book
-       - Compare against expected ground truth
-       - Record pass/fail
-    3. Report pass rate and detailed results
-    4. Block deployment if accuracy <90%
-
-    Returns:
-    - Total queries tested
-    - Passed queries count
-    - Overall accuracy percentage
-    - Individual results (verbose mode)
-    """
-
-    logger.info(f"Validation request received (min {request.min_queries_per_chapter} per chapter)")
-
-    try:
-        # TODO: Implement validation suite
-        # 1. Load test queries
-        # 2. Execute queries
-        # 3. Check accuracy
-        # 4. Return results
-
-        # Placeholder response (Phase 2 implementation)
-        return ValidationResponse(
-            status="pending",
-            total_queries=0,
-            passed_queries=0,
-            accuracy_pct=0.0,
-            results=[],
-            timestamp=datetime.utcnow(),
-        )
-
-    except Exception as e:
-        logger.error(f"Error during validation: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# ============================================================================
-# Error Handlers
-# ============================================================================
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request, exc):
-    """Global exception handler for unhandled errors"""
-    logger.error(f"Unhandled exception: {str(exc)}")
-    return {
-        "error": "Internal server error",
-        "detail": str(exc),
-        "timestamp": datetime.utcnow(),
-    }
-
-# ============================================================================
-# Startup & Shutdown Events
-# ============================================================================
+@app.post("/reindex")
+async def reindex(background_tasks: BackgroundTasks):
+    """Re-ingest content from sitemap (background task)"""
+    background_tasks.add_task(ingest_content)
+    return {"status": "reindexing", "message": "Content ingestion started in background"}
 
 @app.on_event("startup")
 async def startup_event():
-    """Initialize services on startup"""
-    global _startup_time
-    _startup_time = time.time()
-
-    logger.info("FastAPI server starting...")
-    logger.info(f"Environment: {os.getenv('ENVIRONMENT', 'development')}")
-    logger.info(f"Debug: {os.getenv('DEBUG', 'false')}")
-
+    """Initialize on startup"""
     try:
-        # Initialize services (lazy loading will happen on first use)
-        logger.info("Services will be initialized on first request (lazy loading)")
-        logger.info(f"ChromaDB path: {os.getenv('CHROMADB_PATH', './data/embeddings')}")
-        logger.info(f"Embedding model: {os.getenv('EMBEDDING_MODEL', 'sentence-transformers/all-MiniLM-L6-v2')}")
-        logger.info(f"API running on port 8000")
-        logger.info("Visit http://localhost:8000/docs for API documentation")
+        # Check if collection exists, if not ingest
+        collections = qdrant_client.get_collections()
+        collection_names = [c.name for c in collections.collections]
+
+        if QDRANT_COLLECTION not in collection_names:
+            logger.info("Collection not found, starting ingestion...")
+            await ingest_content()
+        else:
+            logger.info(f"Collection {QDRANT_COLLECTION} found")
     except Exception as e:
         logger.error(f"Startup error: {e}")
-        raise
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """Clean up on shutdown"""
-    logger.info("FastAPI server shutting down...")
-    # Services are kept in memory; they clean up their own resources
-    logger.info("Shutdown complete")
-
-# ============================================================================
-# Entry Point
-# ============================================================================
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(
-        "main:app",
-        host="0.0.0.0",
-        port=8000,
-        reload=os.getenv("ENVIRONMENT") == "development",
-        log_level=os.getenv("LOG_LEVEL", "debug").lower(),
-    )
+    uvicorn.run(app, host="0.0.0.0", port=8000)
