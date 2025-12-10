@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuthContext } from '@site/src/context/AuthContext';
 import NavbarDefault from '@theme-original/Navbar';
 import Link from '@docusaurus/Link';
+import LanguageSwitcher from '@site/src/components/LanguageSwitcher';
 import styles from './navbar.module.css';
 
 /**
@@ -57,6 +58,7 @@ export default function Navbar(props: any): JSX.Element {
             </button>
           </>
         )}
+        <LanguageSwitcher className="navbar__item" />
       </div>
     </NavbarDefault>
   );

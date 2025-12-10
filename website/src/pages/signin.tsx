@@ -3,6 +3,7 @@ import Layout from '@theme/Layout';
 import { useForm, Controller } from 'react-hook-form';
 import { useHistory } from '@docusaurus/router';
 import styles from './auth.module.css';
+import { API_BASE_URL } from '../lib/apiConfig';
 
 interface SigninFormData {
   email: string;
@@ -26,7 +27,8 @@ export default function SigninPage(): JSX.Element {
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/signin', {
+      const apiUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8001' : '/api';
+      const response = await fetch(`${apiUrl}/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -36,8 +38,12 @@ export default function SigninPage(): JSX.Element {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.detail || 'Signin failed');
+        try {
+          const errorData = await response.json();
+          setError(errorData.detail || 'Signin failed');
+        } catch {
+          setError('Signin failed. Please try again.');
+        }
         return;
       }
 

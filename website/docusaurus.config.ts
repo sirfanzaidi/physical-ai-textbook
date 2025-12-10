@@ -33,7 +33,14 @@ const config: Config = {
   // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
-    locales: ['en'],
+    locales: ['en'], // Urdu translations to be added via npm run write-translations
+    localeConfigs: {
+      en: {
+        label: 'English',
+        direction: 'ltr',
+        htmlLang: 'en-US',
+      },
+    },
   },
 
   presets: [
@@ -64,7 +71,10 @@ const config: Config = {
           authorsMapPath: '../blog/authors.yml',
         },
         theme: {
-          customCss: './src/css/custom.css',
+          customCss: [
+            './src/css/custom.css',
+            './src/css/rtl-overrides.css',
+          ],
         },
       } satisfies Preset.Options,
     ],

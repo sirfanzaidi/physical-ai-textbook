@@ -1,0 +1,904 @@
+/**
+ * RTL (Right-to-Left) Overrides for Urdu Language Support
+ *
+ * This file provides CSS overrides for proper RTL display of the
+ * Physical AI Textbook website when viewed in Urdu (اردو).
+ *
+ * Strategy:
+ * 1. Use CSS Logical Properties (preferred for new code)
+ * 2. RTL-specific selectors for existing components
+ * 3. Minimal overrides - let Docusaurus handle most RTL automatically
+ *
+ * Browser Support: Chrome 89+, Firefox 88+, Safari 14.1+, Edge 89+
+ */
+
+/* ============================================
+   GLOBAL RTL UTILITIES
+   ============================================ */
+
+/**
+ * Ensure RTL direction is applied
+ * Docusaurus sets this automatically, but included for clarity
+ */
+html[dir="rtl"] {
+  direction: rtl;
+}
+
+html[dir="rtl"] body {
+  text-align: start; /* Aligns to right in RTL */
+}
+
+/* ============================================
+   NAVBAR OVERRIDES
+   ============================================ */
+
+/**
+ * Navbar: Ensure logo and title flow correctly
+ */
+html[dir="rtl"] .navbar__brand {
+  margin-inline-end: auto;
+  margin-inline-start: 0;
+}
+
+/**
+ * Navbar items: Proper spacing in RTL
+ */
+html[dir="rtl"] .navbar__item {
+  margin-inline-start: 0;
+  margin-inline-end: var(--ifm-navbar-item-padding-horizontal);
+}
+
+html[dir="rtl"] .navbar__link {
+  padding-inline-start: var(--ifm-navbar-item-padding-horizontal);
+  padding-inline-end: var(--ifm-navbar-item-padding-horizontal);
+}
+
+/**
+ * Mobile navbar: Hamburger menu and sidebar
+ */
+html[dir="rtl"] .navbar-sidebar {
+  left: auto;
+  right: 0;
+  transform: translate3d(-100%, 0, 0);
+}
+
+html[dir="rtl"] .navbar-sidebar--show .navbar-sidebar {
+  transform: translate3d(0, 0, 0);
+}
+
+html[dir="rtl"] .navbar__toggle {
+  margin-inline-end: 0;
+  margin-inline-start: 0.5rem;
+}
+
+/**
+ * Dropdown menus
+ */
+html[dir="rtl"] .dropdown > .navbar__link::after {
+  margin-inline-start: 0;
+  margin-inline-end: 0.3rem;
+  transform: rotate(180deg); /* Flip chevron for RTL */
+}
+
+html[dir="rtl"] .dropdown__menu {
+  left: auto;
+  right: 0;
+  text-align: right;
+}
+
+/* ============================================
+   FOOTER OVERRIDES
+   ============================================ */
+
+/**
+ * Footer: Column layout and spacing
+ */
+html[dir="rtl"] .footer__links {
+  text-align: right;
+}
+
+html[dir="rtl"] .footer__col {
+  text-align: right;
+}
+
+html[dir="rtl"] .footer__title {
+  text-align: right;
+}
+
+html[dir="rtl"] .footer__item {
+  text-align: right;
+}
+
+/**
+ * Footer: Copyright and logo
+ */
+html[dir="rtl"] .footer__copyright {
+  text-align: center;
+}
+
+html[dir="rtl"] .footer__logo {
+  margin-inline-end: 0;
+  margin-inline-start: 0.5rem;
+}
+
+/* ============================================
+   SIDEBAR (DOCUMENTATION) OVERRIDES
+   ============================================ */
+
+/**
+ * Sidebar: Position on left in RTL
+ */
+html[dir="rtl"] .theme-doc-sidebar-container {
+  border-right: none;
+  border-left: 1px solid var(--ifm-toc-border-color);
+}
+
+html[dir="rtl"] aside[class*="docSidebarContainer"] {
+  border-right: none;
+  border-left: 1px solid var(--ifm-toc-border-color);
+}
+
+/**
+ * Sidebar: Menu items and icons
+ */
+html[dir="rtl"] .menu__link {
+  padding-inline-start: var(--ifm-menu-link-padding-horizontal);
+  padding-inline-end: var(--ifm-menu-link-padding-horizontal);
+}
+
+html[dir="rtl"] .menu__list-item-collapsible {
+  padding-inline-start: 0;
+}
+
+html[dir="rtl"] .menu__caret::before {
+  transform: rotate(180deg); /* Flip collapse arrow */
+}
+
+html[dir="rtl"] .menu__link--sublist::after {
+  transform: rotate(180deg);
+}
+
+/**
+ * Sidebar: Indentation for nested items
+ */
+html[dir="rtl"] .menu__list .menu__list {
+  padding-inline-start: 0;
+  padding-inline-end: var(--ifm-menu-link-padding-horizontal);
+}
+
+/* ============================================
+   CONTENT AREA OVERRIDES
+   ============================================ */
+
+/**
+ * Markdown content: Headings and paragraphs
+ */
+html[dir="rtl"] .markdown {
+  text-align: right;
+}
+
+html[dir="rtl"] .markdown h1,
+html[dir="rtl"] .markdown h2,
+html[dir="rtl"] .markdown h3,
+html[dir="rtl"] .markdown h4,
+html[dir="rtl"] .markdown h5,
+html[dir="rtl"] .markdown h6 {
+  text-align: right;
+}
+
+html[dir="rtl"] .markdown p {
+  text-align: right;
+}
+
+/**
+ * Lists: Bullets and numbering on right
+ */
+html[dir="rtl"] .markdown ul,
+html[dir="rtl"] .markdown ol {
+  padding-inline-start: 0;
+  padding-inline-end: 2rem;
+}
+
+html[dir="rtl"] .markdown li {
+  text-align: right;
+}
+
+/**
+ * Blockquotes: Border on right side
+ */
+html[dir="rtl"] .markdown blockquote {
+  border-left: none;
+  border-right: 3px solid var(--ifm-color-emphasis-300);
+  padding-inline-start: 0;
+  padding-inline-end: 1rem;
+}
+
+/**
+ * Code blocks: Keep LTR (code is usually LTR)
+ */
+html[dir="rtl"] .markdown pre,
+html[dir="rtl"] .markdown code {
+  direction: ltr;
+  text-align: left;
+}
+
+html[dir="rtl"] .markdown pre code {
+  direction: ltr;
+}
+
+/**
+ * Inline code: Keep LTR but embed in RTL text
+ */
+html[dir="rtl"] .markdown code:not(pre code) {
+  direction: ltr;
+  unicode-bidi: embed;
+}
+
+/**
+ * Tables: Mirror layout
+ */
+html[dir="rtl"] .markdown table {
+  direction: rtl;
+}
+
+html[dir="rtl"] .markdown th,
+html[dir="rtl"] .markdown td {
+  text-align: right;
+}
+
+/* ============================================
+   PAGINATION & NAVIGATION
+   ============================================ */
+
+/**
+ * Pagination: Previous/Next buttons
+ */
+html[dir="rtl"] .pagination-nav__link {
+  text-align: right;
+}
+
+html[dir="rtl"] .pagination-nav__label::before,
+html[dir="rtl"] .pagination-nav__label::after {
+  transform: rotate(180deg);
+}
+
+html[dir="rtl"] .pagination-nav__sublabel {
+  text-align: right;
+}
+
+/**
+ * Breadcrumbs
+ */
+html[dir="rtl"] .breadcrumbs__item:not(:last-child)::after {
+  transform: rotate(180deg);
+  margin-inline-start: 0.3rem;
+  margin-inline-end: 0.3rem;
+}
+
+html[dir="rtl"] .breadcrumbs__link {
+  padding-inline-start: 0;
+}
+
+/* ============================================
+   BUTTONS & FORMS
+   ============================================ */
+
+/**
+ * Buttons: Icon positioning
+ */
+html[dir="rtl"] .button--icon-start {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .button--icon-end {
+  flex-direction: row;
+}
+
+/**
+ * Form inputs: Text alignment
+ */
+html[dir="rtl"] input[type="text"],
+html[dir="rtl"] input[type="email"],
+html[dir="rtl"] input[type="password"],
+html[dir="rtl"] input[type="search"],
+html[dir="rtl"] textarea,
+html[dir="rtl"] select {
+  text-align: right;
+  direction: rtl;
+}
+
+html[dir="rtl"] input::placeholder,
+html[dir="rtl"] textarea::placeholder {
+  text-align: right;
+  direction: rtl;
+}
+
+/**
+ * Form labels: Position on right
+ */
+html[dir="rtl"] label {
+  text-align: right;
+}
+
+/**
+ * Checkboxes and radio buttons: Position on right
+ */
+html[dir="rtl"] input[type="checkbox"],
+html[dir="rtl"] input[type="radio"] {
+  margin-inline-start: 0.5rem;
+  margin-inline-end: 0;
+}
+
+/**
+ * Search bar
+ */
+html[dir="rtl"] .navbar__search-input {
+  text-align: right;
+  direction: rtl;
+}
+
+html[dir="rtl"] .DocSearch-Button {
+  text-align: right;
+}
+
+html[dir="rtl"] .DocSearch-Search-Icon {
+  margin-inline-start: 0;
+  margin-inline-end: 0.5rem;
+}
+
+/* ============================================
+   CHATBOT COMPONENT OVERRIDES
+   ============================================ */
+
+/**
+ * ChatBot: Floating button position (bottom-left in RTL)
+ */
+html[dir="rtl"] .chatButton {
+  left: 20px;
+  right: auto;
+}
+
+/**
+ * ChatBot: Window positioning
+ */
+html[dir="rtl"] .chatWindow {
+  left: 20px;
+  right: auto;
+}
+
+/**
+ * ChatBot: Header layout
+ */
+html[dir="rtl"] .chatHeader {
+  text-align: right;
+}
+
+html[dir="rtl"] .chatHeader h3 {
+  margin-inline-end: auto;
+  margin-inline-start: 0;
+}
+
+html[dir="rtl"] .clearButton {
+  margin-inline-start: 0;
+  margin-inline-end: auto;
+}
+
+/**
+ * ChatBot: Messages alignment
+ */
+html[dir="rtl"] .userMessage {
+  align-self: flex-start; /* Switch from flex-end */
+  text-align: right;
+}
+
+html[dir="rtl"] .assistantMessage {
+  align-self: flex-end; /* Switch from flex-start */
+  text-align: right;
+}
+
+html[dir="rtl"] .messageContent {
+  text-align: right;
+}
+
+/**
+ * ChatBot: Input area
+ */
+html[dir="rtl"] .inputContainer {
+  direction: rtl;
+}
+
+html[dir="rtl"] .input {
+  text-align: right;
+  direction: rtl;
+}
+
+html[dir="rtl"] .sendButton {
+  margin-inline-start: 0;
+  margin-inline-end: 0.5rem;
+}
+
+/**
+ * ChatBot: Citations
+ */
+html[dir="rtl"] .citations {
+  text-align: right;
+}
+
+html[dir="rtl"] .citation {
+  text-align: right;
+}
+
+html[dir="rtl"] .relevanceScore {
+  margin-inline-start: 0;
+  margin-inline-end: 0.5rem;
+}
+
+/* ============================================
+   AUTHENTICATION PAGES
+   ============================================ */
+
+/**
+ * Auth forms: Container and card
+ */
+html[dir="rtl"] .authContainer {
+  direction: rtl;
+}
+
+html[dir="rtl"] .authCard {
+  text-align: right;
+}
+
+html[dir="rtl"] .authCard h1 {
+  text-align: right;
+}
+
+html[dir="rtl"] .subtitle {
+  text-align: right;
+}
+
+/**
+ * Auth forms: Form groups
+ */
+html[dir="rtl"] .formGroup {
+  text-align: right;
+}
+
+html[dir="rtl"] .formGroup label {
+  text-align: right;
+  display: block;
+}
+
+html[dir="rtl"] .formGroup input {
+  text-align: right;
+  direction: rtl;
+}
+
+/**
+ * Auth forms: Error messages
+ */
+html[dir="rtl"] .error,
+html[dir="rtl"] .errorMessage {
+  text-align: right;
+}
+
+/**
+ * Auth forms: Submit button
+ */
+html[dir="rtl"] .submitButton {
+  width: 100%;
+  text-align: center;
+}
+
+/**
+ * Auth forms: Links
+ */
+html[dir="rtl"] .signupLink,
+html[dir="rtl"] .signinLink {
+  text-align: center;
+}
+
+/* ============================================
+   HOMEPAGE COMPONENTS
+   ============================================ */
+
+/**
+ * Hero banner
+ */
+html[dir="rtl"] .heroBanner {
+  text-align: right;
+}
+
+html[dir="rtl"] .hero__title {
+  text-align: right;
+}
+
+html[dir="rtl"] .hero__subtitle {
+  text-align: right;
+}
+
+html[dir="rtl"] .buttons {
+  justify-content: flex-end;
+}
+
+/**
+ * Chapters showcase: Card grid
+ */
+html[dir="rtl"] .chaptersShowcase {
+  direction: rtl;
+}
+
+html[dir="rtl"] .chapterCard {
+  text-align: right;
+}
+
+html[dir="rtl"] .chapterCard h3 {
+  text-align: right;
+}
+
+html[dir="rtl"] .chapterCard p {
+  text-align: right;
+}
+
+/* ============================================
+   TABLE OF CONTENTS (TOC)
+   ============================================ */
+
+/**
+ * TOC: Right sidebar in docs
+ */
+html[dir="rtl"] .table-of-contents {
+  text-align: right;
+}
+
+html[dir="rtl"] .table-of-contents__link {
+  text-align: right;
+  padding-inline-start: 0;
+  padding-inline-end: 0.5rem;
+}
+
+html[dir="rtl"] .table-of-contents__link--active {
+  border-left: none;
+  border-right: 2px solid var(--ifm-color-primary);
+}
+
+/* ============================================
+   ADMONITIONS (ALERTS/CALLOUTS)
+   ============================================ */
+
+/**
+ * Admonitions: Notes, warnings, tips, etc.
+ */
+html[dir="rtl"] .admonition {
+  text-align: right;
+}
+
+html[dir="rtl"] .admonition-heading {
+  text-align: right;
+}
+
+html[dir="rtl"] .admonition-icon {
+  margin-inline-end: 0;
+  margin-inline-start: 0.5rem;
+}
+
+html[dir="rtl"] .admonition-content {
+  text-align: right;
+}
+
+/* ============================================
+   TABS
+   ============================================ */
+
+/**
+ * Tabs component
+ */
+html[dir="rtl"] .tabs {
+  direction: rtl;
+}
+
+html[dir="rtl"] .tabs__item {
+  text-align: center;
+}
+
+/* ============================================
+   CARDS & CONTAINERS
+   ============================================ */
+
+/**
+ * Generic card components
+ */
+html[dir="rtl"] .card {
+  text-align: right;
+}
+
+html[dir="rtl"] .card__header {
+  text-align: right;
+}
+
+html[dir="rtl"] .card__body {
+  text-align: right;
+}
+
+html[dir="rtl"] .card__footer {
+  text-align: right;
+}
+
+/**
+ * Container padding
+ */
+html[dir="rtl"] .container {
+  padding-inline-start: var(--ifm-spacing-horizontal);
+  padding-inline-end: var(--ifm-spacing-horizontal);
+}
+
+/* ============================================
+   ICONS & IMAGES
+   ============================================ */
+
+/**
+ * Directional icons: Flip for RTL
+ */
+html[dir="rtl"] .icon-arrow-right,
+html[dir="rtl"] .icon-chevron-right,
+html[dir="rtl"] .icon-angle-right {
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] .icon-arrow-left,
+html[dir="rtl"] .icon-chevron-left,
+html[dir="rtl"] .icon-angle-left {
+  transform: scaleX(-1);
+}
+
+/**
+ * Images: Ensure proper alignment
+ */
+html[dir="rtl"] img {
+  /* Most images should not flip, but align right */
+}
+
+html[dir="rtl"] figure {
+  text-align: right;
+}
+
+html[dir="rtl"] figcaption {
+  text-align: right;
+}
+
+/* ============================================
+   ANIMATIONS & TRANSITIONS
+   ============================================ */
+
+/**
+ * Slide animations: Reverse for RTL
+ */
+html[dir="rtl"] .slide-in-left {
+  animation-name: slide-in-right;
+}
+
+html[dir="rtl"] .slide-in-right {
+  animation-name: slide-in-left;
+}
+
+/**
+ * Progress bars: Reverse fill direction
+ */
+html[dir="rtl"] .progress-bar {
+  transform: scaleX(-1);
+}
+
+html[dir="rtl"] .progress-bar__fill {
+  transform: scaleX(-1);
+}
+
+/* ============================================
+   SCROLLBARS (WEBKIT BROWSERS)
+   ============================================ */
+
+/**
+ * Scrollbars: Position on left in RTL
+ * Note: This is browser-specific and may not work in all browsers
+ */
+html[dir="rtl"] ::-webkit-scrollbar {
+  /* Webkit browsers handle this automatically */
+}
+
+/* ============================================
+   LANGUAGE SWITCHER
+   ============================================ */
+
+/**
+ * Language switcher dropdown
+ */
+html[dir="rtl"] .languageSwitcher {
+  text-align: right;
+}
+
+html[dir="rtl"] .languageSwitcher select {
+  text-align: right;
+  direction: rtl;
+  padding-inline-start: 2rem;
+  padding-inline-end: 0.5rem;
+}
+
+html[dir="rtl"] .languageSwitcher option {
+  direction: rtl;
+  text-align: right;
+}
+
+/* ============================================
+   MOBILE RESPONSIVE OVERRIDES
+   ============================================ */
+
+/**
+ * Mobile: Stack elements naturally in RTL
+ */
+@media (max-width: 996px) {
+  html[dir="rtl"] .navbar__items {
+    text-align: right;
+  }
+
+  html[dir="rtl"] .navbar-sidebar__brand {
+    text-align: right;
+  }
+
+  html[dir="rtl"] .navbar-sidebar__items {
+    text-align: right;
+  }
+
+  html[dir="rtl"] .menu {
+    text-align: right;
+  }
+
+  html[dir="rtl"] .footer__links {
+    text-align: right;
+  }
+}
+
+/**
+ * Tablet: Adjust layout
+ */
+@media (min-width: 768px) and (max-width: 996px) {
+  html[dir="rtl"] .row {
+    direction: rtl;
+  }
+
+  html[dir="rtl"] .col {
+    text-align: right;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+/**
+ * Print: Maintain RTL in print view
+ */
+@media print {
+  html[dir="rtl"] body {
+    direction: rtl;
+    text-align: right;
+  }
+
+  html[dir="rtl"] .markdown {
+    text-align: right;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================ */
+
+/**
+ * Focus indicators: Ensure visibility in RTL
+ */
+html[dir="rtl"] :focus {
+  outline-offset: 2px;
+}
+
+html[dir="rtl"] :focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/**
+ * Skip to content link
+ */
+html[dir="rtl"] .skipToContent {
+  left: auto;
+  right: -999px;
+}
+
+html[dir="rtl"] .skipToContent:focus {
+  right: 0;
+  left: auto;
+}
+
+/* ============================================
+   DARK MODE RTL ADJUSTMENTS
+   ============================================ */
+
+/**
+ * Dark mode: Maintain RTL styles
+ */
+[data-theme="dark"] html[dir="rtl"] {
+  /* Inherit RTL styles in dark mode */
+}
+
+[data-theme="dark"] html[dir="rtl"] .navbar {
+  border-bottom: 1px solid var(--ifm-toc-border-color);
+}
+
+[data-theme="dark"] html[dir="rtl"] .theme-doc-sidebar-container {
+  border-left: 1px solid var(--ifm-toc-border-color);
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+/**
+ * Text alignment utilities
+ */
+html[dir="rtl"] .text-left {
+  text-align: right !important;
+}
+
+html[dir="rtl"] .text-right {
+  text-align: left !important;
+}
+
+html[dir="rtl"] .text-start {
+  text-align: start !important; /* Right in RTL */
+}
+
+html[dir="rtl"] .text-end {
+  text-align: end !important; /* Left in RTL */
+}
+
+/**
+ * Float utilities
+ */
+html[dir="rtl"] .float-left {
+  float: right !important;
+}
+
+html[dir="rtl"] .float-right {
+  float: left !important;
+}
+
+/**
+ * Margin/Padding utilities
+ */
+html[dir="rtl"] .mr-1 { margin-inline-end: 0.25rem !important; }
+html[dir="rtl"] .mr-2 { margin-inline-end: 0.5rem !important; }
+html[dir="rtl"] .mr-3 { margin-inline-end: 1rem !important; }
+html[dir="rtl"] .ml-1 { margin-inline-start: 0.25rem !important; }
+html[dir="rtl"] .ml-2 { margin-inline-start: 0.5rem !important; }
+html[dir="rtl"] .ml-3 { margin-inline-start: 1rem !important; }
+
+html[dir="rtl"] .pr-1 { padding-inline-end: 0.25rem !important; }
+html[dir="rtl"] .pr-2 { padding-inline-end: 0.5rem !important; }
+html[dir="rtl"] .pr-3 { padding-inline-end: 1rem !important; }
+html[dir="rtl"] .pl-1 { padding-inline-start: 0.25rem !important; }
+html[dir="rtl"] .pl-2 { padding-inline-start: 0.5rem !important; }
+html[dir="rtl"] .pl-3 { padding-inline-start: 1rem !important; }
+
+/* ============================================
+   CUSTOM COMPONENT OVERRIDES
+   ============================================ */
+
+/**
+ * Add any project-specific RTL overrides below this line
+ */
+
+/* Example: Custom component */
+/* html[dir="rtl"] .myCustomComponent {
+  direction: rtl;
+  text-align: right;
+} */
+
+/* ============================================
+   END OF RTL OVERRIDES
+   ============================================ */

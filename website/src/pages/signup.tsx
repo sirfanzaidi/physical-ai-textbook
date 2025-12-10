@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import { useForm, Controller } from 'react-hook-form';
-import { useAuthContext } from '@site/src/context/AuthContext';
+import { useAuthContext } from '../context/AuthContext';
 import styles from './auth.module.css';
+import { API_BASE_URL } from '../lib/apiConfig';
 
 interface SignupFormData {
   email: string;
@@ -79,7 +80,8 @@ export default function SignupPage(): JSX.Element {
     setError(null);
 
     try {
-      const response = await fetch('/api/auth/signup', {
+      const apiUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8001' : '/api';
+      const response = await fetch(`${apiUrl}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -95,8 +97,12 @@ export default function SignupPage(): JSX.Element {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.detail || 'Signup failed');
+        try {
+          const errorData = await response.json();
+          setError(errorData.detail || 'Signup failed');
+        } catch {
+          setError('Signup failed. Please try again.');
+        }
         return;
       }
 

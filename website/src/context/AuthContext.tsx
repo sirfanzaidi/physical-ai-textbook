@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_BASE_URL } from '../lib/apiConfig';
 
 export interface UserProfile {
   id: string;
@@ -37,7 +38,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        const response = await axios.get('/api/auth/session', {
+        const apiUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8001' : '/api';
+        const response = await axios.get(`${apiUrl}/auth/session`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -60,7 +62,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateProfile = async (profile: Partial<UserProfile>) => {
     try {
       const token = localStorage.getItem('auth_token');
-      const response = await axios.put('/api/users/profile', profile, {
+      const apiUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8001' : '/api';
+      const response = await axios.put(`${apiUrl}/users/profile`, profile, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
