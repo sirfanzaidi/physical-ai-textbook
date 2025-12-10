@@ -11,20 +11,41 @@ import styles from './navbar.module.css';
 export default function Navbar(props: any): JSX.Element {
   const { isAuthenticated, user } = useAuthContext();
 
+  // Remove Sign In and Sign Up from navbar items if present
+  const filteredItems = (props.items || []).filter(
+    (item: any) => item.label !== 'Sign In' && item.label !== 'Sign Up'
+  );
+
   return (
-    <NavbarDefault
-      {...props}
-      endItems={[
-        ...(props.endItems || []),
-        {
-          type: 'custom-auth-buttons',
-          isAuthenticated,
-          user,
-        },
-      ]}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+    <div style={{ position: 'relative' }}>
+      <NavbarDefault
+        {...props}
+        items={filteredItems}
+      />
+      {/* Language Switcher - positioned absolutely in top right */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        right: '200px', // Make room for auth buttons
+        height: '60px',
+        display: 'flex',
+        alignItems: 'center',
+        paddingRight: '12px',
+        zIndex: 100,
+      }}>
         <LanguageSwitcher />
+      </div>
+      {/* Auth Buttons - positioned absolutely in top right */}
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        right: '12px',
+        height: '60px',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        zIndex: 100,
+      }}>
         <div className={styles.authButtons}>
           {!isAuthenticated ? (
             <>
@@ -62,6 +83,6 @@ export default function Navbar(props: any): JSX.Element {
           )}
         </div>
       </div>
-    </NavbarDefault>
+    </div>
   );
 }
