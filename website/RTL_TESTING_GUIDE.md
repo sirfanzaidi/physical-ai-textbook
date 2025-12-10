@@ -540,9 +540,9 @@ Urdu fonts can be large. Optimize with:
 - [RTL Tester Browser Extension](https://chrome.google.com/webstore/detail/rtl-tester)
 - [BiDi Checker](https://www.w3.org/International/questions/qa-bidi-unicode-controls)
 
-### My Social Media Handles
-- [YOutube](https://www.youtube.com/@RomaSportsLive)
-- [LiknkedIn](http://www.linkedin.com/in/irfan-hussain-12b66361)
+### Social Media Handles
+- [YouTube](https://www.youtube.com/@RomaSportsLive)
+- [LinkedIn](http://www.linkedin.com/in/irfan-hussain-12b66361)
 - [Facebook](https://www.facebook.com/irfan.zaidi.56)
 ---
 
