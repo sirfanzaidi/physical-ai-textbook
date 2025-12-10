@@ -9,7 +9,7 @@ Features:
 - REST API for RAG queries
 """
 
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import httpx
@@ -437,7 +437,7 @@ async def signin(request: SigninRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.get("/api/auth/session")
-async def get_session(authorization: Optional[str] = None):
+async def get_session(authorization: Optional[str] = Header(None)):
     """Get current session (for checking authentication)"""
     try:
         if not authorization or not authorization.startswith("Bearer "):
@@ -475,7 +475,7 @@ async def get_session(authorization: Optional[str] = None):
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.put("/api/users/profile")
-async def update_profile(request: UpdateProfileRequest, authorization: Optional[str] = None):
+async def update_profile(request: UpdateProfileRequest, authorization: Optional[str] = Header(None)):
     """Update user profile"""
     try:
         if not authorization or not authorization.startswith("Bearer "):
