@@ -16,10 +16,6 @@ export default function Navbar(props: any): JSX.Element {
       endItems={[
         ...(props.endItems || []),
         {
-          type: 'custom-language',
-          html: '<button style="background: #667eea; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500;">🌐 Language</button>',
-        },
-        {
           type: 'custom-auth-buttons',
           isAuthenticated,
           user,
