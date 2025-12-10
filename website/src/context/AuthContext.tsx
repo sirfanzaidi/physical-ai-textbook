@@ -30,12 +30,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Check if user is already authenticated
     const checkAuth = async () => {
       try {
-        const response = await axios.get('/api/auth/session');
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+          setUser(null);
+          setIsLoading(false);
+          return;
+        }
+
+        const response = await axios.get('/api/auth/session', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         if (response.data.user) {
           setUser(response.data.user);
         }
       } catch (error) {
         // User not authenticated
+        localStorage.removeItem('auth_token');
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -47,7 +59,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateProfile = async (profile: Partial<UserProfile>) => {
     try {
-      const response = await axios.put('/api/users/profile', profile);
+      const token = localStorage.getItem('auth_token');
+      const response = await axios.put('/api/users/profile', profile, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUser(response.data.user);
     } catch (error) {
       console.error('Failed to update profile:', error);

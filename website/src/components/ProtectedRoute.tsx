@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from '@docusaurus/router';
+import { useHistory } from '@docusaurus/router';
 import { useAuthContext } from '@site/src/context/AuthContext';
 
 interface ProtectedRouteProps {
@@ -16,7 +16,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   requiredExperienceLevel,
 }) => {
   const { isLoading, isAuthenticated, user } = useAuthContext();
-  const navigate = useNavigate();
+  const history = useHistory();
 
   if (isLoading) {
     return (
@@ -27,7 +27,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   if (!isAuthenticated) {
-    navigate('/signin');
+    history.push('/signin');
     return null;
   }
 

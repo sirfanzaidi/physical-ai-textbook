@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
 import { useForm, Controller } from 'react-hook-form';
-import { useNavigate } from '@docusaurus/router';
+import { useHistory } from '@docusaurus/router';
 import styles from './auth.module.css';
 
 interface SigninFormData {
@@ -19,7 +19,7 @@ export default function SigninPage(): JSX.Element {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const navigate = useNavigate();
+  const history = useHistory();
 
   const onSubmit = async (data: SigninFormData) => {
     setLoading(true);
@@ -42,7 +42,7 @@ export default function SigninPage(): JSX.Element {
       }
 
       // Redirect to home or dashboard on successful signin
-      navigate('/');
+      history.push('/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

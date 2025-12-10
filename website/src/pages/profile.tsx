@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Layout from '@theme/Layout';
-import { useNavigate } from '@docusaurus/router';
+import { useHistory } from '@docusaurus/router';
 import { useAuthContext } from '@site/src/context/AuthContext';
 import { ProtectedRoute } from '@site/src/components/ProtectedRoute';
 import styles from './profile.module.css';

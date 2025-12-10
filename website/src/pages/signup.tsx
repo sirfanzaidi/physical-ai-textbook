@@ -100,6 +100,12 @@ export default function SignupPage(): JSX.Element {
         return;
       }
 
+      const responseData = await response.json();
+      // Store the token
+      if (responseData.token) {
+        localStorage.setItem('auth_token', responseData.token);
+      }
+
       setSubmitted(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
