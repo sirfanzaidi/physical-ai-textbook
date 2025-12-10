@@ -1,12 +1,8 @@
 import React from 'react';
 import Layout from '@theme-original/Layout';
-import LanguageSwitcher from '@site/src/components/LanguageSwitcher';
-import type LayoutType from '@theme/Layout';
-import type { WrapperProps } from '@docusaurus/types';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
-type Props = WrapperProps<typeof LayoutType>;
-
-export default function LayoutWrapper(props: Props): JSX.Element {
+export default function LayoutWrapper(props: any): JSX.Element {
   return (
     <>
       <div style={{
