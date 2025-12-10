@@ -15,17 +15,17 @@
     "message": "Chapter 1: Introduction",
     "description": "The label of footer link with label=Chapter 1: Introduction linking to /docs/introduction"
   },
-  "link.item.label.Stack Overflow": {
-    "message": "Stack Overflow",
-    "description": "The label of footer link with label=Stack Overflow linking to https://stackoverflow.com/questions/tagged/docusaurus"
+  "link.item.label.YouTube": {
+    "message": "YouTube",
+    "description": "The label of footer link with label=YouTube linking to https://www.youtube.com/@RomaSportsLive"
   },
-  "link.item.label.Discord": {
-    "message": "Discord",
-    "description": "The label of footer link with label=Discord linking to https://discordapp.com/invite/docusaurus"
+  "link.item.label.LinkedIn": {
+    "message": "LinkedIn",
+    "description": "The label of footer link with label=LinkedIn linking to http://www.linkedin.com/in/irfan-hussain-12b66361"
   },
-  "link.item.label.X": {
-    "message": "X",
-    "description": "The label of footer link with label=X linking to https://x.com/docusaurus"
+  "link.item.label.Facebook": {
+    "message": "Facebook",
+    "description": "The label of footer link with label=Facebook linking to https://www.facebook.com/irfan.zaidi.56"
   },
   "link.item.label.Blog": {
     "message": "Blog",
