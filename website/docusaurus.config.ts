@@ -120,6 +120,10 @@ const config: Config = {
           label: 'Sign In',
           position: 'right',
         },
+        {
+          type: 'localeDropdown',
+          position: 'right',
+        },
       ],
     },
     footer: {
@@ -138,16 +142,16 @@ const config: Config = {
           title: 'Social Media',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'YouTube',
+              href: 'https://www.youtube.com/@RomaSportsLive',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: 'LinkedIn',
+              href: 'http://www.linkedin.com/in/irfan-hussain-12b66361',
             },
             {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'Facebook',
+              href: 'https://www.facebook.com/irfan.zaidi.56',
             },
           ],
         },
@@ -162,10 +166,18 @@ const config: Config = {
               label: 'GitHub',
               href: 'https://github.com/sirfanzaidi/physical-ai-textbook',
             },
+            {
+              label: 'Privacy Policy',
+              to: '/privacy-policy', // Assuming you'll create this page
+            },
+            {
+              label: 'Terms of Service',
+              to: '/terms-of-service', // Assuming you'll create this page
+            },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${2024} My Project, Inc. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
