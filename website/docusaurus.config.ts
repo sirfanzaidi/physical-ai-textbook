@@ -135,7 +135,7 @@ const config: Config = {
           ],
         },
         {
-          title: 'Community',
+          title: 'Social Media',
           items: [
             {
               label: 'Stack Overflow',
