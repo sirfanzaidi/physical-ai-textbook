@@ -1,0 +1,51 @@
+[project]
+name = "textbook-embedding-pipeline"
+version = "0.1.0"
+description = "RAG chatbot embedding pipeline for Physical AI & Humanoid Robotics textbook"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "httpx>=0.25.0",
+    "aiohttp>=3.8.0",
+    "cohere>=5.0.0",
+    "openai>=1.0.0",
+    "qdrant-client>=1.7.0,<2.0",
+    "pydantic>=2.5.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "python-multipart>=0.0.6",
+    "beautifulsoup4>=4.12.0",
+    "nltk>=3.8.0",
+    "tiktoken>=0.5.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.12.0",
+    "ruff>=0.1.0",
+]
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = []  # No packages to discover - this is a script-only project
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+select = ["E", "F", "W", "I"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-v --cov=. --cov-report=html --cov-report=term-missing"
