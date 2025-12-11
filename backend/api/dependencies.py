@@ -5,14 +5,12 @@ from functools import lru_cache
 from api.config import Settings
 from api.services.embedding import get_embedding_service
 from api.services.retrieval import get_retrieval_service
-import openai
 
 logger = logging.getLogger(__name__)
 
 # Global client instances (singletons)
 _embedding_client = None
 _qdrant_manager = None
-_openai_client = None
 
 
 @lru_cache()
@@ -56,16 +54,19 @@ async def get_qdrant_manager():
     return _qdrant_manager
 
 
-async def get_openai_client():
+def get_huggingface_api_key() -> str:
     """
-    Get OpenAI client for generation (singleton).
+    Get Hugging Face API key for LLM generation.
+
+    Optional - if not provided, uses free public Hugging Face endpoints.
 
     Returns:
-        OpenAI client for answer generation
+        Hugging Face API key (empty string if not configured)
     """
-    global _openai_client
-    if _openai_client is None:
-        settings = get_settings()
-        _openai_client = openai.OpenAI(api_key=settings.openai_api_key)
-        logger.info("OpenAI client initialized")
-    return _openai_client
+    settings = get_settings()
+    api_key = settings.huggingface_api_key or ""
+    if api_key:
+        logger.info("Using Hugging Face API key for increased rate limits")
+    else:
+        logger.info("Using free Hugging Face public endpoint (30k requests/month)")
+    return api_key

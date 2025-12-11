@@ -53,7 +53,7 @@ async def startup_event():
     logger.info("=" * 70)
     logger.info(f"Collection name: {settings.collection_name}")
     logger.info(f"Retrieval limit: {settings.retrieval_limit}")
-    logger.info(f"OpenAI model: {settings.openai_model}")
+    logger.info(f"LLM: Hugging Face Mistral-7B (FREE)")
     logger.info(f"Max tokens: {settings.max_tokens}")
     logger.info("API documentation available at /api/docs")
     logger.info("=" * 70)

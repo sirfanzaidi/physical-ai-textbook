@@ -10,8 +10,8 @@ class Settings(BaseSettings):
     # Cohere API (for embeddings)
     cohere_api_key: str
 
-    # OpenAI API (for answer generation)
-    openai_api_key: str
+    # Hugging Face API (for answer generation - FREE!)
+    huggingface_api_key: str = ""  # Optional, uses public endpoints if not provided
 
     # Qdrant Vector Database
     qdrant_url: str

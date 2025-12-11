@@ -7,7 +7,7 @@ from api.models import ChatQuery, ChatResponse, SourceCitation, RetrievedChunk
 from api.dependencies import (
     get_embedding_client,
     get_qdrant_manager,
-    get_openai_client,
+    get_huggingface_api_key,
     get_settings,
 )
 from api.services.generation import generate_answer
@@ -22,23 +22,24 @@ async def chat(
     query: ChatQuery,
     embedding_client=Depends(get_embedding_client),
     qdrant_manager=Depends(get_qdrant_manager),
-    openai_client=Depends(get_openai_client),
+    huggingface_api_key=Depends(get_huggingface_api_key),
     settings=Depends(get_settings),
 ):
     """
-    RAG Chatbot endpoint.
+    RAG Chatbot endpoint with LangChain + Hugging Face (100% FREE!).
 
     Process flow:
     1. Embed user question using Cohere
     2. Retrieve relevant chunks from Qdrant
-    3. Generate answer using OpenAI GPT-4o-mini
-    4. Return answer with source citations
+    3. Generate answer using LangChain + Hugging Face Mistral-7B
+    4. Maintain conversation memory with LangChain
+    5. Return answer with source citations
 
     Args:
         query: User's chat query with question
         embedding_client: Dependency for embedding
         qdrant_manager: Dependency for retrieval
-        openai_client: Dependency for generation
+        huggingface_api_key: Optional API key for higher rate limits
         settings: Dependency for configuration
 
     Returns:
@@ -96,13 +97,12 @@ async def chat(
                 f"  - {result.chapter_title} (score: {result.similarity_score:.3f})"
             )
 
-        # Step 3: Generate answer
-        logger.debug("Generating answer using OpenAI...")
+        # Step 3: Generate answer using LangChain + Hugging Face
+        logger.debug("Generating answer using LangChain + Hugging Face...")
         answer = await generate_answer(
             question=query.question,
             chunks=chunks,
-            openai_client=openai_client,
-            model=settings.openai_model,
+            huggingface_api_key=huggingface_api_key,
             max_tokens=settings.max_tokens,
             temperature=settings.temperature,
         )
