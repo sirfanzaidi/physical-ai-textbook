@@ -104,20 +104,14 @@ const config: Config = {
           position: 'left',
           label: 'Textbook',
         },
-        {to: '/blog', label: 'Blog', position: 'left'},
+        {
+          to: '/blog',
+          label: 'Blog',
+          position: 'left',
+        },
         {
           href: 'https://github.com/sirfanzaidi/physical-ai-textbook',
           label: 'GitHub',
-          position: 'right',
-        },
-        {
-          to: '/signup',
-          label: 'Sign Up',
-          position: 'right',
-        },
-        {
-          to: '/signin',
-          label: 'Sign In',
           position: 'right',
         },
         {
@@ -165,14 +159,6 @@ const config: Config = {
             {
               label: 'GitHub',
               href: 'https://github.com/sirfanzaidi/physical-ai-textbook',
-            },
-            {
-              label: 'Privacy Policy',
-              to: '/privacy-policy', // Assuming you'll create this page
-            },
-            {
-              label: 'Terms of Service',
-              to: '/terms-of-service', // Assuming you'll create this page
             },
           ],
         },

@@ -83,7 +83,7 @@ const ChaptersList: ChapterCard[] = [
     topics: ['Physics Engines', 'Sensor Simulation', 'Multi-Robot Worlds', 'Ignition Architecture'],
     icon: '⚙️',
     color: '#A8E6CF',
-    docLink: '/docs/gazebo-ignition-simulation',
+    docLink: '/docs/gazebo-ignition',
   },
   {
     id: 8,
