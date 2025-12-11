@@ -11,17 +11,8 @@ export default function Navbar(props: any): JSX.Element {
   const { isAuthenticated, user } = useAuthContext();
 
   return (
-    <NavbarDefault
-      {...props}
-      endItems={[
-        ...(props.endItems || []),
-        {
-          type: 'custom-auth-buttons',
-          isAuthenticated,
-          user,
-        },
-      ]}
-    >
+    <>
+      <NavbarDefault {...props} />
       <div className={styles.authButtons}>
         {!isAuthenticated ? (
           <>
@@ -58,6 +49,6 @@ export default function Navbar(props: any): JSX.Element {
           </>
         )}
       </div>
-    </NavbarDefault>
+    </>
   );
 }
