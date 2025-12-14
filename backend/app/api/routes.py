@@ -5,10 +5,11 @@ Defines endpoints for book ingestion, chat queries, and management.
 """
 
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 import structlog
-from typing import Optional
+from typing import Optional, AsyncGenerator
 import asyncio
+import json
 
 from app.config import Settings, get_settings
 from app.api.models import (
@@ -260,6 +261,138 @@ async def chat(
     except Exception as e:
         logger.error("chat_unexpected_error", book_id=request.book_id, error=str(e))
         raise HTTPException(status_code=500, detail="Internal server error during chat")
+
+
+@router.post(
+    "/chat-stream",
+    summary="Stream chat responses",
+    description="Stream RAG chat responses as JSON lines for real-time display",
+    status_code=200,
+)
+async def chat_stream(
+    request: ChatRequest,
+    settings: Settings = Depends(get_settings),
+) -> StreamingResponse:
+    """
+    Stream RAG chat response using Server-Sent Events (JSON lines).
+
+    Provides real-time response streaming for faster perceived latency.
+
+    Args:
+        request: ChatRequest with query, book_id, mode, and optional selected_text
+        settings: Application settings (injected)
+
+    Returns:
+        StreamingResponse with JSON lines format
+
+    Raises:
+        HTTPException: If query fails (400, 422, 500)
+    """
+
+    async def generate():
+        try:
+            # Validate request
+            if request.mode == "selected" and not request.selected_text:
+                yield json.dumps(
+                    {
+                        "error": "selected_text required for 'selected' mode",
+                        "status_code": 422,
+                    }
+                )
+                yield "\n"
+                return
+
+            # Initialize RAG pipeline components
+            embedder = CohereEmbedder(api_key=settings.cohere_api_key)
+
+            vector_store = get_qdrant_store(
+                url=settings.qdrant_url,
+                api_key=settings.qdrant_api_key,
+                collection_name=settings.qdrant_collection,
+            )
+
+            retriever = SemanticRetriever(vector_store)
+            reranker = CohereReranker(api_key=settings.cohere_api_key)
+            augmenter = DocumentAugmenter()
+
+            chatbot = RAGChatbot(
+                api_key=settings.cohere_api_key,
+                embedder=embedder,
+                retriever=retriever,
+                reranker=reranker,
+                augmenter=augmenter,
+            )
+
+            # Execute RAG query
+            result = chatbot.chat(
+                query=request.query,
+                book_id=request.book_id,
+                mode=request.mode,
+                selected_text=request.selected_text,
+                top_k_retrieve=settings.retrieval_top_k,
+                top_k_rerank=settings.rerank_top_k,
+            )
+
+            # Stream response in chunks
+            response_text = result["response"]
+            chunk_size = max(10, len(response_text) // 10)  # Stream in ~10 chunks
+
+            for i in range(0, len(response_text), chunk_size):
+                chunk = response_text[i : i + chunk_size]
+                yield json.dumps({"response": chunk})
+                yield "\n"
+                await asyncio.sleep(0.01)  # Small delay for streaming effect
+
+            # Send citations
+            if result.get("citations"):
+                yield json.dumps({"citations": result["citations"]})
+                yield "\n"
+
+            # Send metadata
+            yield json.dumps(
+                {
+                    "confidence": result["confidence"],
+                    "latency_ms": result["latency_ms"],
+                }
+            )
+            yield "\n"
+
+            logger.info(
+                "chat_stream_completed",
+                book_id=request.book_id,
+                mode=request.mode,
+                latency_ms=result["latency_ms"],
+            )
+
+        except ValidationError as e:
+            logger.warning("chat_stream_validation_failed", error=e.message)
+            yield json.dumps(
+                {
+                    "error": str(e.message),
+                    "status_code": 422,
+                }
+            )
+            yield "\n"
+        except GenerationError as e:
+            logger.error("chat_stream_generation_failed", error=e.message)
+            yield json.dumps(
+                {
+                    "error": str(e.message),
+                    "status_code": 400,
+                }
+            )
+            yield "\n"
+        except Exception as e:
+            logger.error("chat_stream_unexpected_error", error=str(e))
+            yield json.dumps(
+                {
+                    "error": "Internal server error",
+                    "status_code": 500,
+                }
+            )
+            yield "\n"
+
+    return StreamingResponse(generate(), media_type="application/x-ndjson")
 
 
 # ===== Book Management =====
