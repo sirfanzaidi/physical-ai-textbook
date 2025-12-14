@@ -12,7 +12,7 @@ import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
 from generation.prompts import get_system_prompt, get_user_prompt, PromptTemplates
-from utils.errors import GenerationError
+from backend.utils.errors import GenerationError
 
 
 class TestPromptTemplates:

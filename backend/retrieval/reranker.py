@@ -8,7 +8,7 @@ from typing import List, Dict, Any
 import cohere
 import structlog
 
-from utils.errors import RerankError
+from backend.utils.errors import RerankError
 
 logger = structlog.get_logger(__name__)
 

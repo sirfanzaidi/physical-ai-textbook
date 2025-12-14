@@ -10,7 +10,7 @@ import structlog
 import hashlib
 
 from database.qdrant_client import QdrantVectorStore
-from utils.errors import RetrievalError
+from backend.utils.errors import RetrievalError
 
 logger = structlog.get_logger(__name__)
 

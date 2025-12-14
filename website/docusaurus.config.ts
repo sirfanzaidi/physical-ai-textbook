@@ -93,6 +93,11 @@ const config: Config = {
           label: 'Textbook',
         },
         {
+          to: '/chat',
+          label: '💬 Ask RAG Bot',
+          position: 'left',
+        },
+        {
           to: '/blog',
           label: 'Blog',
           position: 'left',

@@ -1,0 +1,174 @@
+/**
+ * Chat Page Styles
+ * Full-screen layout for the RAG chatbot
+ */
+
+.chatPageContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.chatHeader {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.chatHeader h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.chatHeader p {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.chatContent {
+  margin-bottom: 4rem;
+}
+
+.chatInfo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.infoSection {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border-left: 4px solid #667eea;
+}
+
+.infoSection h2 {
+  font-size: 1.3rem;
+  color: #333;
+  margin-bottom: 1rem;
+  margin-top: 0;
+}
+
+.infoSection p {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.infoSection ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.infoSection li {
+  color: #666;
+  padding: 0.5rem 0;
+  line-height: 1.6;
+}
+
+.infoSection li strong {
+  color: #333;
+}
+
+.examples {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.example {
+  background: white;
+  border-radius: 6px;
+  padding: 1rem;
+  border-left: 3px solid #667eea;
+}
+
+.example strong {
+  color: #667eea;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.example p {
+  color: #666;
+  margin: 0;
+  font-style: italic;
+  font-size: 0.95rem;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .chatHeader h1 {
+    color: #667eea;
+    -webkit-text-fill-color: unset;
+    background: none;
+    -webkit-background-clip: unset;
+    background-clip: unset;
+  }
+
+  .chatHeader p {
+    color: #ccc;
+  }
+
+  .infoSection {
+    background: #2a2a2a;
+    border-left-color: #667eea;
+  }
+
+  .infoSection h2 {
+    color: #e0e0e0;
+  }
+
+  .infoSection p,
+  .infoSection li {
+    color: #aaa;
+  }
+
+  .infoSection li strong {
+    color: #e0e0e0;
+  }
+
+  .example {
+    background: #1f1f1f;
+    border-left-color: #667eea;
+  }
+
+  .example strong {
+    color: #667eea;
+  }
+
+  .example p {
+    color: #aaa;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .chatPageContainer {
+    padding: 1rem;
+  }
+
+  .chatHeader h1 {
+    font-size: 2rem;
+  }
+
+  .chatHeader p {
+    font-size: 1rem;
+  }
+
+  .chatInfo {
+    grid-template-columns: 1fr;
+  }
+
+  .infoSection {
+    padding: 1.25rem;
+  }
+}

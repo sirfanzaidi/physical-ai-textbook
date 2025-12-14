@@ -8,7 +8,7 @@ from typing import List, Dict, Any, Optional
 import re
 import structlog
 
-from utils.errors import ChunkingError
+from backend.utils.errors import ChunkingError
 
 logger = structlog.get_logger(__name__)
 

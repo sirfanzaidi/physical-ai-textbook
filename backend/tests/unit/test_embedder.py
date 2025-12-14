@@ -11,8 +11,8 @@ import os
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
-from ingestion.embedder import CohereEmbedder
-from utils.errors import EmbeddingError
+from backend.ingestion.embedder import CohereEmbedder
+from backend.utils.errors import EmbeddingError
 
 
 class TestCohereEmbedder:

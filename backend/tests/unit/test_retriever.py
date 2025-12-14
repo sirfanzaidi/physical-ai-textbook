@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
 from retrieval.retriever import SemanticRetriever
 from database.qdrant_client import QdrantVectorStore
-from utils.errors import RetrievalError
+from backend.utils.errors import RetrievalError
 
 
 class TestSemanticRetriever:

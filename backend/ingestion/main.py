@@ -10,13 +10,13 @@ import io
 import structlog
 from pathlib import Path
 
-from ingestion.chunker import SemanticChunker
-from ingestion.embedder import CohereEmbedder
-from database.qdrant_client import QdrantVectorStore
-from database.postgres_client import PostgresMetadataStore
-from utils.errors import IngestError, ValidationError
-from utils.logging import log_ingestion_metrics
-from utils.metrics import LatencyTracker, QueryMetrics
+from backend.ingestion.chunker import SemanticChunker
+from backend.ingestion.embedder import CohereEmbedder
+from backend.database.qdrant_client import QdrantVectorStore
+from backend.database.postgres_client import PostgresMetadataStore
+from backend.utils.errors import IngestError, ValidationError
+from backend.utils.logging import log_ingestion_metrics
+from backend.utils.metrics import LatencyTracker, QueryMetrics
 
 logger = structlog.get_logger(__name__)
 

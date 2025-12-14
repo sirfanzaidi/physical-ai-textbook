@@ -13,12 +13,12 @@ import io
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
-from ingestion.chunker import SemanticChunker
-from ingestion.embedder import CohereEmbedder
-from ingestion.main import BookIngestionPipeline
+from backend.ingestion.chunker import SemanticChunker
+from backend.ingestion.embedder import CohereEmbedder
+from backend.ingestion.main import BookIngestionPipeline
 from database.qdrant_client import QdrantVectorStore
 from generation.prompts import get_system_prompt, get_user_prompt
-from utils.errors import IngestError, ValidationError
+from backend.utils.errors import IngestError, ValidationError
 
 
 class TestIngestionPipeline:

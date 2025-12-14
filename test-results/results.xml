@@ -1,0 +1,452 @@
+<testsuites id="" name="" tests="110" failures="0" skipped="110" errors="0" time="0.05271299999999997">
+<testsuite name="test_select_text_widget.spec.ts" timestamp="2025-12-14T11:48:52.232Z" hostname="chromium" tests="22" failures="0" skipped="22" time="0" errors="0">
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should detect valid text selection (&gt;= 10 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should show warning for short selection (1-9 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should not show button for empty selection" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should update button visibility when selection changes" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should accept selection &gt;= 10 characters and enable submit" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should warn user for selection 1-9 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should reject empty selection silently" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should open chat widget with selected text mode (FR-007a)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should submit query with selected text context to backend" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should display response with selected text attribution" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text &lt; 10 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text is empty/null" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should retry after handling validation error" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should not include content outside selected passage in response" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should query backend with selected-text mode filter" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should display selected text context in chat header" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should maintain selected text context across multiple queries" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should store message history in localStorage" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Cross-Browser Compatibility › should work in multiple browsers" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API timeout gracefully" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API error responses" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle rapid successive selections" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="test_select_text_widget.spec.ts" timestamp="2025-12-14T11:48:52.232Z" hostname="firefox" tests="22" failures="0" skipped="22" time="0" errors="0">
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should detect valid text selection (&gt;= 10 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should show warning for short selection (1-9 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should not show button for empty selection" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should update button visibility when selection changes" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should accept selection &gt;= 10 characters and enable submit" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should warn user for selection 1-9 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should reject empty selection silently" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should open chat widget with selected text mode (FR-007a)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should submit query with selected text context to backend" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should display response with selected text attribution" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text &lt; 10 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text is empty/null" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should retry after handling validation error" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should not include content outside selected passage in response" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should query backend with selected-text mode filter" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should display selected text context in chat header" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should maintain selected text context across multiple queries" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should store message history in localStorage" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Cross-Browser Compatibility › should work in multiple browsers" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API timeout gracefully" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API error responses" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle rapid successive selections" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="test_select_text_widget.spec.ts" timestamp="2025-12-14T11:48:52.232Z" hostname="webkit" tests="22" failures="0" skipped="22" time="0" errors="0">
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should detect valid text selection (&gt;= 10 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should show warning for short selection (1-9 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should not show button for empty selection" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should update button visibility when selection changes" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should accept selection &gt;= 10 characters and enable submit" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should warn user for selection 1-9 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should reject empty selection silently" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should open chat widget with selected text mode (FR-007a)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should submit query with selected text context to backend" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should display response with selected text attribution" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text &lt; 10 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text is empty/null" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should retry after handling validation error" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should not include content outside selected passage in response" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should query backend with selected-text mode filter" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should display selected text context in chat header" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should maintain selected text context across multiple queries" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should store message history in localStorage" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Cross-Browser Compatibility › should work in multiple browsers" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API timeout gracefully" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API error responses" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle rapid successive selections" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="test_select_text_widget.spec.ts" timestamp="2025-12-14T11:48:52.232Z" hostname="Mobile Chrome" tests="22" failures="0" skipped="22" time="0" errors="0">
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should detect valid text selection (&gt;= 10 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should show warning for short selection (1-9 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should not show button for empty selection" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should update button visibility when selection changes" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should accept selection &gt;= 10 characters and enable submit" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should warn user for selection 1-9 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should reject empty selection silently" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should open chat widget with selected text mode (FR-007a)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should submit query with selected text context to backend" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should display response with selected text attribution" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text &lt; 10 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text is empty/null" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should retry after handling validation error" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should not include content outside selected passage in response" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should query backend with selected-text mode filter" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should display selected text context in chat header" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should maintain selected text context across multiple queries" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should store message history in localStorage" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Cross-Browser Compatibility › should work in multiple browsers" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API timeout gracefully" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API error responses" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle rapid successive selections" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+<testsuite name="test_select_text_widget.spec.ts" timestamp="2025-12-14T11:48:52.232Z" hostname="Mobile Safari" tests="22" failures="0" skipped="22" time="0" errors="0">
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should detect valid text selection (&gt;= 10 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should show warning for short selection (1-9 characters)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should not show button for empty selection" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Text Selection Detection › should update button visibility when selection changes" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should accept selection &gt;= 10 characters and enable submit" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should warn user for selection 1-9 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › UI Validation Rules (FR-007a) › should reject empty selection silently" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should open chat widget with selected text mode (FR-007a)" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should submit query with selected text context to backend" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Chat Widget Integration with Selected Text › should display response with selected text attribution" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text &lt; 10 characters" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should handle HTTP 400 error when selected_text is empty/null" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Backend Validation (FR-007a HTTP 400) › should retry after handling validation error" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should not include content outside selected passage in response" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Zero-Leakage Validation › should query backend with selected-text mode filter" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should display selected text context in chat header" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should maintain selected text context across multiple queries" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Message History and Context › should store message history in localStorage" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Cross-Browser Compatibility › should work in multiple browsers" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API timeout gracefully" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle API error responses" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+<testcase name="Select-Text Feature - End-to-End Tests › Error Handling &amp; Edge Cases › should handle rapid successive selections" classname="test_select_text_widget.spec.ts" time="0">
+<skipped>
+</skipped>
+</testcase>
+</testsuite>
+</testsuites>

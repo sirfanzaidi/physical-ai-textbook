@@ -10,7 +10,7 @@
  */
 
 // Check if already defined to prevent duplicate declarations
-if (typeof window.RAGChatWidget === 'undefined') {
+if (typeof RAGChatWidget === 'undefined') {
   class RAGChatWidget {
   /**
    * Initialize chat widget.
@@ -464,5 +464,4 @@ document.addEventListener('DOMContentLoaded', () => {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = RAGChatWidget;
 }
-  window.RAGChatWidget = RAGChatWidget;
-} // Close the if (typeof window.RAGChatWidget === 'undefined') block
+} // Close the if (typeof RAGChatWidget === 'undefined') block

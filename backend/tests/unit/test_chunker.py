@@ -11,8 +11,8 @@ import os
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "../.."))
 
-from ingestion.chunker import SemanticChunker
-from utils.errors import ChunkingError
+from backend.ingestion.chunker import SemanticChunker
+from backend.utils.errors import ChunkingError
 
 
 class TestSemanticChunker:

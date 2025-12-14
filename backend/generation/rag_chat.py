@@ -11,12 +11,12 @@ import time
 import structlog
 
 from generation.prompts import get_system_prompt, get_user_prompt
-from ingestion.embedder import CohereEmbedder
+from backend.ingestion.embedder import CohereEmbedder
 from retrieval.retriever import SemanticRetriever
 from retrieval.reranker import CohereReranker
 from retrieval.augmenter import DocumentAugmenter
-from utils.errors import GenerationError, PromptError
-from utils.logging import get_logger
+from backend.utils.errors import GenerationError, PromptError
+from backend.utils.logging import get_logger
 
 logger = structlog.get_logger(__name__)
 

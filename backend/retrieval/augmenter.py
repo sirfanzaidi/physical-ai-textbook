@@ -7,7 +7,7 @@ Assembles retrieved chunks with citations for generation stage.
 from typing import List, Dict, Any
 import structlog
 
-from utils.errors import RetrievalError
+from backend.utils.errors import RetrievalError
 
 logger = structlog.get_logger(__name__)
 

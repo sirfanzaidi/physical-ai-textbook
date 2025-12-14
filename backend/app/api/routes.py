@@ -11,8 +11,8 @@ from typing import Optional, AsyncGenerator
 import asyncio
 import json
 
-from app.config import Settings, get_settings
-from app.api.models import (
+from ..config import Settings, get_settings
+from .models import (
     IngestRequest,
     IngestResponse,
     ChatRequest,
@@ -21,16 +21,16 @@ from app.api.models import (
     HealthResponse,
     ErrorResponse,
 )
-from ingestion.main import BookIngestionPipeline
-from ingestion.chunker import SemanticChunker
-from ingestion.embedder import CohereEmbedder
-from database.qdrant_client import get_qdrant_store
-from database.postgres_client import get_postgres_store
-from generation.rag_chat import RAGChatbot
-from retrieval.retriever import SemanticRetriever
-from retrieval.reranker import CohereReranker
-from retrieval.augmenter import DocumentAugmenter
-from utils.errors import IngestError, GenerationError, ValidationError
+from backend.ingestion.main import BookIngestionPipeline
+from backend.ingestion.chunker import SemanticChunker
+from backend.ingestion.embedder import CohereEmbedder
+from backend.database.qdrant_client import get_qdrant_store
+from backend.database.postgres_client import get_postgres_store
+from backend.generation.rag_chat import RAGChatbot
+from backend.retrieval.retriever import SemanticRetriever
+from backend.retrieval.reranker import CohereReranker
+from backend.retrieval.augmenter import DocumentAugmenter
+from backend.utils.errors import IngestError, GenerationError, ValidationError
 
 logger = structlog.get_logger(__name__)
 

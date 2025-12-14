@@ -11,7 +11,7 @@ from psycopg2.pool import SimpleConnectionPool
 import structlog
 from datetime import datetime
 
-from utils.errors import NeonError
+from backend.utils.errors import NeonError
 
 logger = structlog.get_logger(__name__)
 

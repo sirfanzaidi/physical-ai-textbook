@@ -9,7 +9,7 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import PointStruct, VectorParams, Distance
 import structlog
 
-from utils.errors import QdrantError
+from backend.utils.errors import QdrantError
 
 logger = structlog.get_logger(__name__)
 
@@ -117,7 +117,7 @@ class QdrantVectorStore:
         Search for similar vectors in Qdrant.
 
         Args:
-            query_vector: Query embedding vector (1024-dimensional)
+            query_vector: Query embedding vector (1536-dimensional for embed-v4.0)
             top_k: Number of top results to return (default: 20 for reranking)
             score_threshold: Minimum similarity score threshold
 
@@ -128,12 +128,13 @@ class QdrantVectorStore:
             QdrantError: If search fails
         """
         try:
-            search_results = self.client.search(
+            # Use query_points for qdrant-client >= 1.16
+            search_results = self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=query_vector,
+                query=query_vector,
                 limit=top_k,
                 score_threshold=score_threshold,
-            )
+            ).points
 
             results = [
                 {
