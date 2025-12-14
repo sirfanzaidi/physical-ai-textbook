@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './styles.module.css';
-import { getApiUrl } from '@/lib/apiConfig';
+import { getApiUrl } from '../../lib/apiConfig';
 
 interface Message {
   role: 'user' | 'assistant';
