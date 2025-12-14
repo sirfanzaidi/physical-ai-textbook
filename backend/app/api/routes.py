@@ -8,6 +8,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.responses import JSONResponse
 import structlog
 from typing import Optional
+import asyncio
 
 from app.config import Settings, get_settings
 from app.api.models import (
@@ -19,6 +20,16 @@ from app.api.models import (
     HealthResponse,
     ErrorResponse,
 )
+from ingestion.main import BookIngestionPipeline
+from ingestion.chunker import SemanticChunker
+from ingestion.embedder import CohereEmbedder
+from database.qdrant_client import get_qdrant_store
+from database.postgres_client import get_postgres_store
+from generation.rag_chat import RAGChatbot
+from retrieval.retriever import SemanticRetriever
+from retrieval.reranker import CohereReranker
+from retrieval.augmenter import DocumentAugmenter
+from utils.errors import IngestError, GenerationError, ValidationError
 
 logger = structlog.get_logger(__name__)
 
@@ -91,16 +102,65 @@ async def ingest_book(
     Raises:
         HTTPException: If ingestion fails (400, 422, 500)
     """
-    # Stub: Implementation in Phase 3
-    logger.info("ingest_endpoint_called", file=file.filename)
+    try:
+        # Generate book_id if not provided
+        if not book_id:
+            book_id = f"book_{file.filename.split('.')[0].replace(' ', '_').lower()}"
 
-    return IngestResponse(
-        success=True,
-        book_id=book_id or f"book_{file.filename.replace('.', '_')}",
-        chunk_count=0,  # Placeholder
-        total_tokens=0,  # Placeholder
-        message="Ingestion pipeline stub (not yet implemented)",
-    )
+        # Read file content
+        file_content = await file.read()
+
+        # Initialize pipeline components
+        chunker = SemanticChunker(
+            chunk_size=settings.chunk_size,
+            chunk_max_size=settings.chunk_max_size,
+            chunk_overlap=settings.chunk_overlap,
+        )
+
+        embedder = CohereEmbedder(api_key=settings.cohere_api_key)
+
+        vector_store = get_qdrant_store(
+            url=settings.qdrant_url,
+            api_key=settings.qdrant_api_key,
+            collection_name=settings.qdrant_collection,
+        )
+
+        metadata_store = None
+        if settings.database_url:
+            metadata_store = get_postgres_store(settings.database_url)
+
+        # Create and execute ingestion pipeline
+        pipeline = BookIngestionPipeline(
+            chunker=chunker,
+            embedder=embedder,
+            vector_store=vector_store,
+            metadata_store=metadata_store,
+            max_pages=settings.max_book_pages,
+        )
+
+        result = pipeline.ingest_file(
+            file_content=file_content,
+            file_name=file.filename,
+            book_id=book_id,
+        )
+
+        return IngestResponse(
+            success=True,
+            book_id=result["book_id"],
+            chunk_count=result["chunk_count"],
+            total_tokens=result["total_tokens"],
+            message=result["message"],
+        )
+
+    except ValidationError as e:
+        logger.warning("ingestion_validation_failed", file=file.filename, error=e.message)
+        raise HTTPException(status_code=422, detail=str(e.message))
+    except IngestError as e:
+        logger.error("ingestion_failed", file=file.filename, error=e.message)
+        raise HTTPException(status_code=400, detail=str(e.message))
+    except Exception as e:
+        logger.error("ingestion_unexpected_error", file=file.filename, error=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error during ingestion")
 
 
 # ===== Chat Queries =====
@@ -134,27 +194,72 @@ async def chat(
     Raises:
         HTTPException: If query fails (400, 422, 500)
     """
-    # Stub: Implementation in Phase 3
-    logger.info(
-        "chat_endpoint_called",
-        query_length=len(request.query),
-        book_id=request.book_id,
-        mode=request.mode,
-    )
-
-    return ChatResponse(
-        response="Chat pipeline stub (not yet implemented)",
-        citations=[
-            Citation(
-                page_num=None,
-                section_name="Not Implemented",
-                chapter_name=None,
-                text_snippet=None,
+    try:
+        # Validate request
+        if request.mode == "selected" and not request.selected_text:
+            raise ValidationError(
+                "selected_text required for 'selected' mode",
+                error_code="MISSING_SELECTED_TEXT",
             )
-        ],
-        confidence=0.0,
-        latency_ms=0.0,
-    )
+
+        # Initialize RAG pipeline components
+        embedder = CohereEmbedder(api_key=settings.cohere_api_key)
+
+        vector_store = get_qdrant_store(
+            url=settings.qdrant_url,
+            api_key=settings.qdrant_api_key,
+            collection_name=settings.qdrant_collection,
+        )
+
+        retriever = SemanticRetriever(vector_store)
+        reranker = CohereReranker(api_key=settings.cohere_api_key)
+        augmenter = DocumentAugmenter()
+
+        chatbot = RAGChatbot(
+            api_key=settings.cohere_api_key,
+            embedder=embedder,
+            retriever=retriever,
+            reranker=reranker,
+            augmenter=augmenter,
+        )
+
+        # Execute RAG query
+        result = chatbot.chat(
+            query=request.query,
+            book_id=request.book_id,
+            mode=request.mode,
+            selected_text=request.selected_text,
+            top_k_retrieve=settings.retrieval_top_k,
+            top_k_rerank=settings.rerank_top_k,
+        )
+
+        # Format response
+        citations = [
+            Citation(
+                page_num=citation.get("page_num"),
+                section_name=citation.get("section_name"),
+                chapter_name=citation.get("chapter_name"),
+                text_snippet=citation.get("text_snippet"),
+            )
+            for citation in result.get("citations", [])
+        ]
+
+        return ChatResponse(
+            response=result["response"],
+            citations=citations,
+            confidence=result["confidence"],
+            latency_ms=result["latency_ms"],
+        )
+
+    except ValidationError as e:
+        logger.warning("chat_validation_failed", query=request.query, error=e.message)
+        raise HTTPException(status_code=422, detail=str(e.message))
+    except GenerationError as e:
+        logger.error("chat_generation_failed", book_id=request.book_id, error=e.message)
+        raise HTTPException(status_code=400, detail=str(e.message))
+    except Exception as e:
+        logger.error("chat_unexpected_error", book_id=request.book_id, error=str(e))
+        raise HTTPException(status_code=500, detail="Internal server error during chat")
 
 
 # ===== Book Management =====
