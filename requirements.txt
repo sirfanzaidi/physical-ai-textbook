@@ -9,14 +9,13 @@ python-dotenv==1.0.0
 cohere==5.3.0
 
 # Vector database client
-qdrant-client==2.7.0
+qdrant-client==1.16.2
 
 # Database
 psycopg2-binary==2.9.9
 
 # PDF and document parsing
 PyPDF2==4.0.1
-python-magic==0.4.27
 
 # HTTP client
 httpx==0.25.2

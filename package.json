@@ -1,0 +1,26 @@
+{
+  "name": "physical-ai-textbook-rag-chatbot",
+  "version": "1.0.0",
+  "description": "RAG Chatbot for Physics AI Textbook",
+  "private": true,
+  "scripts": {
+    "dev": "cd website && npm run start",
+    "build": "cd website && npm run build",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
+    "test:backend": "cd backend && pytest tests/ -v --cov=backend",
+    "test:backend:unit": "cd backend && pytest tests/unit/ -v --cov=backend",
+    "test:backend:integration": "cd backend && pytest tests/integration/ -v --cov=backend"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=18.0"
+  }
+}
