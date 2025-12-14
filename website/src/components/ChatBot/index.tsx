@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './styles.module.css';
+import { getApiUrl } from '@/lib/apiConfig';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -59,7 +60,8 @@ export default function ChatBot(): JSX.Element {
 
     try {
       // Call backend RAG API
-      const response = await fetch('http://localhost:8000/chat', {
+      const apiUrl = getApiUrl();
+      const response = await fetch(`${apiUrl}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -86,9 +88,10 @@ export default function ChatBot(): JSX.Element {
       setSelectedText(''); // Clear selected text after use
     } catch (error) {
       console.error('Chat error:', error);
+      const apiUrl = getApiUrl();
       const errorMessage: Message = {
         role: 'assistant',
-        content: 'Sorry, I encountered an error. Please make sure the backend server is running at http://localhost:8000',
+        content: `Sorry, I encountered an error. Please make sure the backend server is running at ${apiUrl}`,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
