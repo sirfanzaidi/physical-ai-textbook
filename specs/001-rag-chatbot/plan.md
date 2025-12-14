@@ -1,7 +1,7 @@
 # Implementation Plan: Integrated RAG Chatbot for Published Books
 
 **Branch**: `001-rag-chatbot` | **Date**: 2025-12-14 | **Spec**: [spec.md](spec.md)
-**Input**: Feature specification with 4 user stories, 15 functional requirements, 8 success criteria
+**Input**: Feature specification with 4 user stories, 17 functional requirements (15 + 2 new: FR-001a atomic units, FR-007a select-text validation), 8 success criteria
 
 ## Summary
 
@@ -183,29 +183,34 @@ Selected **Option 2 (Web Application)** with clear backend/frontend separation. 
 
 **Deliverables**:
 - `ingestion/main.py`: Book upload & chunking
-- `ingestion/chunker.py`: Semantic chunking (300-500 tokens, 200-token overlap)
+- `ingestion/chunker.py`: Semantic chunking (300-500 tokens, 200-token overlap) with **atomic-unit preservation** (FR-001a)
 - `ingestion/embedder.py`: Cohere embed-v4.0 batching
 - `ingestion/storage.py`: Qdrant upsert + Neon metadata
 - Sample book indexed & verified in Qdrant dashboard
-- Unit tests for chunking, embedding, storage
+- Unit tests for chunking, embedding, storage (including atomic-unit validation)
 
 **Key Activities**:
 1. Implement PyPDF2/unstructured parsing for PDF/text extraction
-2. Implement semantic chunker: recursive character splitting, preserve boundaries
+2. **Implement semantic chunker with atomic-unit preservation (FR-001a)**:
+   - Recursive character splitting, preserve boundaries
+   - Treat code blocks, tables, equations, lists as **atomic units** (never split)
+   - Expand chunk boundary to include entire unit (may exceed 500 tokens) rather than breaking it
+   - Post-indexing validation: Verify no code blocks or tables truncated mid-unit
 3. Implement Cohere embed-v4.0 integration (input_type="search_document", batch processing)
 4. Implement Qdrant upsert: payload schema with text, page, section, chapter
 5. Implement Neon metadata logging: chunk_id, page_num, text_hash, created_at
 6. Implement re-indexing: delete old chunks, upsert new (idempotent)
-7. Test with 2-3 sample books (50-500 pages)
+7. Test with 2-3 sample books (50-500 pages), including books with code/tables
 8. Verify chunks discoverable in Qdrant Dashboard
 
 **Success Criteria**:
 - ✅ 2-3 sample books indexed successfully
-- ✅ Chunks correctly split (300-500 tokens)
+- ✅ Chunks correctly split (300-500 tokens, or larger if atomic units require)
+- ✅ **No code blocks or tables split mid-unit (FR-001a validation)**
 - ✅ Embeddings stored in Qdrant with metadata
 - ✅ Metadata logged in Neon
 - ✅ Re-indexing works without duplication
-- ✅ Unit tests PASS (chunking, embedding, storage)
+- ✅ Unit tests PASS (chunking, embedding, storage, atomic-unit preservation)
 
 ---
 
@@ -265,6 +270,10 @@ Selected **Option 2 (Web Application)** with clear backend/frontend separation. 
    - Return status + chunk count
 3. Implement POST /chat:
    - Accept query, mode ("full" | "selected"), selected_text (if mode="selected")
+   - **Implement select-text validation (FR-007a)**:
+     - If mode="selected", selected_text MUST be ≥10 characters
+     - Return HTTP 400 with "Selected text must be at least 10 characters" if <10 chars
+     - Return HTTP 400 with "Selected text is required for select-text mode" if empty/null
    - Retrieve documents (retrieval pipeline)
    - Call Cohere Chat with 'documents' parameter
    - Return response + citations
@@ -277,9 +286,12 @@ Selected **Option 2 (Web Application)** with clear backend/frontend separation. 
     If the answer is not in the documents, say 'I don't have that information in the book.'
     Always cite sources (chapter, page, or section) when available."
    ```
-7. Implement input validation: Query length <5000 chars, selected_text >10 chars
+7. Implement input validation:
+   - Query length <5000 chars
+   - **Selected text minimum 10 characters (FR-007a)**
+   - File size limits, content type validation
 8. Implement structured logging: Query, response, latency, accuracy flag
-9. Write integration tests: end-to-end query flows
+9. Write integration tests: end-to-end query flows (include select-text edge cases)
 
 **Success Criteria**:
 - ✅ All 4 endpoints functional + documented
@@ -309,10 +321,15 @@ Selected **Option 2 (Web Application)** with clear backend/frontend separation. 
    - Send query to backend /chat endpoint
    - Display response + citations
    - Support streaming responses
-2. Implement select-text feature:
+2. Implement select-text feature with validation (FR-007a):
    - Detect text selection in parent document
    - Show "Ask about this" button
+   - **Validate selection length**:
+     - Reject empty selections
+     - Warn users if selection 1–9 characters (optional "too short" indicator)
+     - Allow selections ≥10 characters
    - Pass selected_text to backend /chat with mode="selected"
+   - Handle backend error responses (HTTP 400 for <10 chars)
 3. Implement message history: Store in browser localStorage
 4. Implement responsive design: Mobile-friendly, customizable CSS
 5. Implement iframe embedding: No API keys in frontend, all calls via backend
@@ -446,9 +463,10 @@ Selected **Option 2 (Web Application)** with clear backend/frontend separation. 
 - **command-a-03-2025**: Top-performing for RAG; use Chat endpoint with 'documents' parameter for auto-grounding + citations
 - **Rationale**: Cohere-exclusive stack simplifies integration, reduces costs (single vendor), ensures grounded generation
 
-### 2. Chunking Strategy (300-500 tokens, semantic boundaries)
+### 2. Chunking Strategy (300-500 tokens, semantic boundaries, atomic-unit preservation - FR-001a)
 - **Why not fixed-size?** Semantic boundaries preserve meaning; fixed-size splits concepts, code, tables
 - **Why 300-500?** Balance between retrieval granularity (small = precise) and context (large = cover full idea). Cohere context limits: embed supports up to 2048 tokens; chat supports up to 4096
+- **Atomic Unit Preservation (FR-001a)**: Code blocks, tables, mathematical equations, and structured content MUST NEVER be split mid-unit. If a chunk would split these units, expand boundary to include entire unit (may exceed 500 tokens). Post-indexing validation ensures no code blocks or tables are truncated.
 - **Overlap (200 tokens)** Preserves context across chunk boundaries for reranking
 
 ### 3. Qdrant Cloud Free Tier
@@ -461,10 +479,11 @@ Selected **Option 2 (Web Application)** with clear backend/frontend separation. 
 - **Why not Qdrant metadata alone?** Qdrant payload is optimized for vectors, not relational queries; Neon provides full SQL for re-indexing, analytics
 - **Rationale**: Minimal cost (free tier sufficient), simple schema, allows future analytics
 
-### 5. Select-Text Isolation
+### 5. Select-Text Isolation & Validation (FR-007a)
+- **Validation (FR-007a)**: Backend MUST enforce minimum 10 characters for selected_text. Reject (HTTP 400) if <10 characters with clear error message.
 - **Implementation**: Accept selected_text parameter; filter Qdrant results by text_hash matching selected passage
 - **Alternative**: Temporary collection per session (complex), API-level filtering (simple but less precise)
-- **Rationale**: Zero-leakage guarantee critical for user trust; filtering ensures results come ONLY from selected passage
+- **Rationale**: Zero-leakage guarantee critical for user trust; filtering ensures results come ONLY from selected passage. 10-character minimum prevents noise from trivial selections and ensures meaningful context for retrieval.
 
 ### 6. FastAPI + Vanilla JS (No Framework)
 - **FastAPI**: Async, Pydantic validation, auto-docs (Swagger UI), lightweight

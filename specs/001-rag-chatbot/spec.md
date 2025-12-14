@@ -94,23 +94,46 @@ A developer or product owner wants to validate that the chatbot answers queries 
 
 ### Edge Cases
 
-- What happens when a user query contains no keywords from the book? System should gracefully handle and respond "No relevant information found"
-- How does the system handle books with tables, code blocks, or complex formatting? Chunking must preserve semantic integrity and avoid splitting code/tables
-- What happens when Cohere API or Qdrant becomes unavailable? System should return a user-friendly error message (e.g., "Chatbot service unavailable; please try again later")
-- How does select-text feature handle edge cases like empty selections, single words, or overlapping highlights? UI should validate selection size; backend should require minimum 10 characters
-- What happens when a book is updated mid-session? Users' ongoing chats should continue with the previously indexed version until they refresh
+- **No Relevant Content Query**: What happens when a user query contains no keywords from the book? System should gracefully handle and respond "No relevant information found"
+
+- **Complex Formatting (Tables, Code Blocks)**: How does the system handle books with tables, code blocks, or complex formatting?
+  - **Requirement**: Chunking MUST preserve semantic integrity and avoid splitting within code blocks, tables, or structured content
+  - **Implementation Rule**: Treat the following as **atomic units** (never split):
+    - Code blocks (markdown `` ` ``, `` ``` ``, or HTML `<code>`, `<pre>`)
+    - HTML tables (`<table>...</table>`)
+    - Mathematical equations (LaTeX, MathML, or inline formulas)
+    - Multi-line lists or structured data
+    - Data structures or flowcharts that span multiple lines
+  - **Strategy**: If a semantic chunk would split these units, expand chunk boundary to include the entire unit (may exceed 500-token target) rather than breaking it
+  - **Validation**: Post-indexing spot-checks must verify no code blocks or tables were truncated mid-unit
+
+- **API Unavailability**: What happens when Cohere API or Qdrant becomes unavailable? System should return a user-friendly error message (e.g., "Chatbot service unavailable; please try again later")
+
+- **Select-Text Feature Edge Cases**: How does the select-text feature handle edge cases like empty selections, single words, or overlapping highlights?
+  - **UI Validation**: Frontend MUST validate selection before sending to backend:
+    - Reject empty selections (0 characters)
+    - Warn but allow selections with 1–9 characters (optional "too short" UX indicator)
+    - Allow selections ≥10 characters
+  - **Backend Validation (ENFORCED)**: Backend MUST require selected text to be **minimum 10 characters**:
+    - If selected_text parameter <10 characters, return HTTP 400 Bad Request with message: "Selected text must be at least 10 characters"
+    - If selected_text empty or null, return HTTP 400 Bad Request with message: "Selected text is required for select-text mode"
+  - **Retrieval Constraint**: Once validated, retrieval MUST constrain results to ONLY chunks matching the selected passage (zero leakage from rest of book)
+
+- **Mid-Session Book Updates**: What happens when a book is updated mid-session? Users' ongoing chats should continue with the previously indexed version until they refresh
 
 ## Requirements
 
 ### Functional Requirements
 
 - **FR-001**: System MUST ingest published books (PDF, plain text, or markdown) and chunk them into semantic segments (300–500 tokens) with clear boundaries
+- **FR-001a** (Atomic Units): System MUST treat code blocks, tables, mathematical equations, and other structured content as **atomic units** in chunking—never split these elements mid-unit, even if it exceeds 500-token target. Validation must verify no code blocks or tables are truncated post-indexing.
 - **FR-002**: System MUST embed chunks using Cohere Embed API (exclusive; no other embedding models)
 - **FR-003**: System MUST store embeddings and metadata in Qdrant Cloud Free Tier with proper indexing for semantic search
 - **FR-004**: System MUST provide `/query` endpoint accepting user query and returning chatbot response with source attribution (chapter/section/page if available)
 - **FR-005**: System MUST generate responses using Cohere Generate API (exclusive for RAG generation)
 - **FR-006**: System MUST answer queries ONLY from indexed book content; no external knowledge synthesis or hallucinations
 - **FR-007**: System MUST support select-text feature: accept highlighted text as context and constrain retrieval to that passage only (zero leakage)
+- **FR-007a** (Select-Text Validation): System MUST enforce minimum **10 characters** for selected text input. Backend MUST reject (HTTP 400) selected_text parameters <10 characters with error message "Selected text must be at least 10 characters". Frontend SHOULD validate before submission and optionally warn users if selection is <10 characters.
 - **FR-008**: System MUST provide `/index` endpoint (admin) to upload books, chunk content, and populate vector database
 - **FR-009**: System MUST support books up to 500 pages; system should warn or provide guidance for larger books
 - **FR-010**: System MUST respond to queries within 5 seconds (p95 latency)
@@ -146,7 +169,8 @@ A developer or product owner wants to validate that the chatbot answers queries 
 - **Cohere API Availability**: Cohere Embed and Generate APIs are stable and available during development and production
 - **Qdrant Cloud Stability**: Qdrant Cloud Free Tier is sufficiently stable for MVP; no need for self-hosted Qdrant initially
 - **User Context**: End users have basic familiarity with chatbots and can form coherent queries
-- **Chunking Strategy**: Semantic chunks of 300–500 tokens provide a good balance between retrieval precision and coverage
+- **Chunking Strategy**: Semantic chunks of 300–500 tokens provide a good balance between retrieval precision and coverage. Chunks with code blocks, tables, or structured content may exceed 500 tokens if splitting would break atomic units. This ensures retrieval quality and user trust.
+- **Select-Text Minimum Length**: Selected text must be ≥10 characters to provide sufficient context for meaningful retrieval and avoid noise from single-word or trivial selections.
 - **No Multi-User Concurrency**: MVP focuses on single-user queries; multi-user scenarios are deferred
 - **Select-Text Implementation**: Web-based book viewer already supports text selection; backend only needs to accept and constrain retrieval
 

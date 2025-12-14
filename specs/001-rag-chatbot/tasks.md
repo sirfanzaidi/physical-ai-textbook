@@ -5,7 +5,8 @@ description: "Task list for RAG Chatbot implementation (7 phases, 4 user stories
 # Tasks: Integrated RAG Chatbot for Published Books
 
 **Input**: Design documents from `/specs/001-rag-chatbot/`
-**Prerequisites**: plan.md (COMPLETE), spec.md (COMPLETE), .env.example (COMPLETE)
+**Prerequisites**: plan.md (UPDATED with FR-001a & FR-007a), spec.md (UPDATED with FR-001a & FR-007a), .env.example (COMPLETE), data-model.md (COMPLETE)
+**New Requirements**: FR-001a (Atomic Units in Chunking), FR-007a (Select-Text Validation - Minimum 10 Characters)
 
 **Tests**: NOT included (not explicitly requested in spec)
 
@@ -60,7 +61,7 @@ description: "Task list for RAG Chatbot implementation (7 phases, 4 user stories
 - [ ] T016 [P] Create `backend/utils/metrics.py` with latency and accuracy tracking utilities
 - [ ] T017 Create `backend/database/qdrant_client.py` with Qdrant connection, upsert, search, delete operations
 - [ ] T018 Create `backend/database/postgres_client.py` with Neon connection, insert, query, delete operations for chunks_metadata
-- [ ] T019 [P] Create `backend/ingestion/chunker.py` with semantic chunking logic (300-500 tokens, 200 overlap, recursive splitting)
+- [ ] T019 [P] Create `backend/ingestion/chunker.py` with semantic chunking logic (300-500 tokens, 200 overlap, recursive splitting) **with atomic-unit preservation (FR-001a)**
 - [ ] T020 Create `backend/ingestion/embedder.py` with Cohere embed-v4.0 integration (input_type="search_document" for storage, batch processing)
 - [ ] T021 Create `backend/retrieval/retriever.py` with Qdrant search logic (top_k=20-30, similarity threshold)
 - [ ] T022 Create `backend/retrieval/reranker.py` with Cohere rerank-v4.0-pro integration (final top_k=8-10)
@@ -83,7 +84,7 @@ description: "Task list for RAG Chatbot implementation (7 phases, 4 user stories
 
 - [ ] T027 [P] [US1] Create `backend/ingestion/main.py` with book file upload and processing pipeline
 - [ ] T028 [US1] Implement PDF/text extraction in `backend/ingestion/main.py` using PyPDF2/unstructured
-- [ ] T029 [P] [US1] Write unit test `backend/tests/unit/test_chunker.py` for semantic chunking (token counts, boundary preservation)
+- [ ] T029 [P] [US1] Write unit test `backend/tests/unit/test_chunker.py` for semantic chunking (token counts, boundary preservation) **including atomic-unit validation (FR-001a)**: verify code blocks, tables, equations are never split mid-unit
 - [ ] T030 [P] [US1] Write unit test `backend/tests/unit/test_embedder.py` for Cohere embed-v4.0 integration
 - [ ] T031 [US1] Implement POST /ingest endpoint in `backend/app/api/routes.py` to accept book files, validate (max 500 pages), trigger ingestion
 - [ ] T032 [US1] Implement query embedding in `backend/retrieval/retriever.py` using Cohere embed-v4.0 (input_type="search_query")
@@ -113,11 +114,11 @@ description: "Task list for RAG Chatbot implementation (7 phases, 4 user stories
 
 - [ ] T044 [P] [US2] Implement select-text mode in `backend/retrieval/retriever.py` with text_hash filtering (constrain results to selected passage)
 - [ ] T045 [US2] Modify POST /chat endpoint to accept `mode` ("full" | "selected") and `selected_text` parameters
-- [ ] T046 [US2] Implement selected text validation in `backend/app/api/routes.py` (minimum 10 characters, maximum reasonable length)
-- [ ] T047 [P] [US2] Write unit test `backend/tests/unit/test_select_text_filtering.py` to verify text_hash matching and zero-leakage constraint
-- [ ] T048 [P] [US2] Write integration test `backend/tests/integration/test_select_text_mode.py` (10+ select-text queries, verify zero leakage)
+- [ ] T046 [US2] Implement selected text validation in `backend/app/api/routes.py` **(FR-007a)**: minimum 10 characters, return HTTP 400 with message "Selected text must be at least 10 characters" if <10 chars, and "Selected text is required for select-text mode" if empty/null
+- [ ] T047 [P] [US2] Write unit test `backend/tests/unit/test_select_text_filtering.py` to verify text_hash matching, zero-leakage constraint, **and FR-007a validation**: test empty selection, 1-9 char rejection, 10+ char acceptance with specific HTTP 400 error messages
+- [ ] T048 [P] [US2] Write integration test `backend/tests/integration/test_select_text_mode.py` (10+ select-text queries, verify zero leakage, **FR-007a edge cases**: test empty selection, 5-char selection (expect HTTP 400), 10-char selection (expect success), etc.)
 - [ ] T049 [US2] Create `frontend/chat-widget.js` Vanilla JS chat component with message display and input field
-- [ ] T050 [US2] Implement text selection detection in `frontend/chat-widget.js` and "Ask about this" button
+- [ ] T050 [US2] Implement text selection detection in `frontend/chat-widget.js` and "Ask about this" button **(FR-007a frontend validation)**: reject empty selections, warn if 1-9 characters, allow ≥10 characters, handle HTTP 400 errors from backend
 - [ ] T051 [US2] Implement message history storage in `frontend/chat-widget.js` via browser localStorage
 - [ ] T052 [US2] Create `frontend/chat-widget.css` with responsive styling (mobile-friendly, customizable)
 - [ ] T053 [P] [US2] Create `frontend/utils.js` with message formatting, API call helpers, response parsing
