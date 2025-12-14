@@ -7,7 +7,9 @@
       "Bash(powershell:*)",
       "WebSearch",
       "Bash(git add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Use relative import path for apiConfig in ChatBot\n\n- Change from ''@/lib/apiConfig'' to ''../../lib/apiConfig''\n- Docusaurus doesn''t support path aliases like Next.js\n- Fixes build error: ''Can''t resolve @/lib/apiConfig''\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\nRemove all chat-related functionality\n\n- Delete ChatBot component and related files (website/src/components/ChatBot/)\n- Delete chat routes (backend/api/routes/chat.py)\n- Delete text generation service (backend/api/services/generation.py)\n- Delete embedding and retrieval services (no longer needed)\n- Remove chat-related models (ChatQuery, ChatResponse, etc.)\n- Simplify API configuration to remove chat-specific settings\n- Update API documentation and endpoints to reflect removal\n- Simplify health check endpoint\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
