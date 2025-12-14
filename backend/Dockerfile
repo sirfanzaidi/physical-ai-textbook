@@ -48,5 +48,9 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 # Set default port for local development
 ENV PORT=8000
 
-# Run the application using Python to handle environment variable properly
-CMD ["python", "-c", "import os; import subprocess; port = os.getenv('PORT', '8000'); subprocess.run(['python', '-m', 'uvicorn', 'api.app:app', '--host', '0.0.0.0', '--port', port])"]
+# Create a simple shell script to start the app
+RUN echo '#!/bin/bash\nexec python -m uvicorn api.app:app --host 0.0.0.0 --port ${PORT:-8000}' > /app/start.sh && \
+    chmod +x /app/start.sh
+
+# Run the application
+CMD ["/app/start.sh"]
