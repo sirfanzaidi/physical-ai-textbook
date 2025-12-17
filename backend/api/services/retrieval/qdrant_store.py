@@ -29,7 +29,10 @@ class QdrantStore:
             QdrantError: If connection fails
         """
         self.settings = settings
-        self.client = AsyncQdrantClient(url=settings.qdrant_url)
+        self.client = AsyncQdrantClient(
+            url=settings.qdrant_url,
+            api_key=settings.qdrant_api_key,
+        )
         self.collection_name = settings.qdrant_collection_name
         logger.info(f"Qdrant client initialized at {settings.qdrant_url}")
 
