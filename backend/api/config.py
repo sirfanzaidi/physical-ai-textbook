@@ -1,36 +1,10 @@
 """API Configuration settings using Pydantic."""
 
 from pydantic_settings import BaseSettings
-from typing import Optional
 
 
 class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
-
-    # Cohere API (for embeddings)
-    cohere_api_key: str
-
-    # Hugging Face API (for answer generation - FREE!)
-    huggingface_api_key: str = ""  # Optional, uses public endpoints if not provided
-
-    # Qdrant Vector Database
-    qdrant_url: str
-    qdrant_api_key: str
-
-    # Textbook
-    textbook_base_url: str
-
-    # Collection & Embedding
-    collection_name: str = "book_chunks"
-    embedding_dimension: int = 1024
-
-    # Retrieval Settings
-    retrieval_limit: int = 5
-
-    # Generation Settings (OpenAI)
-    openai_model: str = "gpt-4o-mini"  # Free tier model
-    max_tokens: int = 500
-    temperature: float = 0.0
 
     # API Settings
     cors_origins: list[str] = [

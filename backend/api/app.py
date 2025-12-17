@@ -1,11 +1,11 @@
-"""FastAPI application for RAG chatbot."""
+"""FastAPI application."""
 
 import logging
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.config import Settings
-from api.routes import chat, health
+from api.routes import health
 
 # Configure logging
 logging.basicConfig(
@@ -22,8 +22,8 @@ settings = Settings()
 
 # Create FastAPI app
 app = FastAPI(
-    title="Physical AI Textbook RAG Chatbot API",
-    description="Semantic search and Q&A for Physical AI & Humanoid Robotics textbook",
+    title="Physical AI Textbook API",
+    description="API for Physical AI & Humanoid Robotics textbook",
     version="1.0.0",
     docs_url="/api/docs",
     redoc_url="/api/redoc",
@@ -41,7 +41,6 @@ app.add_middleware(
 
 # Include routers
 logger.info("Registering routes...")
-app.include_router(chat.router)
 app.include_router(health.router)
 
 
@@ -49,12 +48,8 @@ app.include_router(health.router)
 async def startup_event():
     """Startup event handler."""
     logger.info("=" * 70)
-    logger.info("Starting Physical AI Textbook RAG Chatbot API")
+    logger.info("Starting Physical AI Textbook API")
     logger.info("=" * 70)
-    logger.info(f"Collection name: {settings.collection_name}")
-    logger.info(f"Retrieval limit: {settings.retrieval_limit}")
-    logger.info(f"LLM: Hugging Face Mistral-7B (FREE)")
-    logger.info(f"Max tokens: {settings.max_tokens}")
     logger.info("API documentation available at /api/docs")
     logger.info("=" * 70)
 
@@ -69,10 +64,9 @@ async def shutdown_event():
 async def root():
     """Root endpoint."""
     return {
-        "message": "Physical AI Textbook RAG Chatbot API",
+        "message": "Physical AI Textbook API",
         "docs": "/api/docs",
         "health": "/api/health",
-        "chat": "POST /api/chat",
     }
 
 

@@ -1,0 +1,270 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [main, develop, '001-rag-chatbot']
+    paths:
+      - 'frontend/**'
+      - 'backend/app/**'
+      - 'backend/tests/e2e/**'
+      - 'playwright.config.ts'
+      - '.github/workflows/e2e-tests.yml'
+      - 'package.json'
+
+  pull_request:
+    branches: [main, develop, '001-rag-chatbot']
+    paths:
+      - 'frontend/**'
+      - 'backend/app/**'
+      - 'backend/tests/e2e/**'
+      - 'playwright.config.ts'
+      - '.github/workflows/e2e-tests.yml'
+      - 'package.json'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e-tests:
+    name: E2E Tests (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: ['18.x']
+        browser: ['chromium', 'firefox', 'webkit']
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps ${{ matrix.browser }}
+
+      - name: Start backend server
+        run: |
+          pip install -r requirements.txt
+          python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 &
+          # Wait for backend to be ready
+          sleep 5
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/health > /dev/null; then
+              echo "Backend is ready"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 1
+          done
+          echo "Backend failed to start"
+          exit 1
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+
+      - name: Start frontend dev server
+        run: npm run dev &
+        timeout-minutes: 5
+
+      - name: Wait for frontend
+        run: |
+          for i in {1..60}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Frontend is ready"
+              exit 0
+            fi
+            echo "Waiting for frontend... ($i/60)"
+            sleep 1
+          done
+          echo "Frontend failed to start"
+          exit 1
+
+      - name: Run E2E tests (${{ matrix.browser }})
+        run: npx playwright test --project=${{ matrix.browser }}
+        env:
+          CI: true
+          BASE_URL: http://localhost:3000
+          API_URL: http://localhost:8000
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.browser }}
+          path: test-results/
+          retention-days: 30
+
+      - name: Publish test results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: test-results/results.xml
+          check_name: E2E Test Results (${{ matrix.browser }})
+          comment_mode: always
+
+  e2e-tests-mobile:
+    name: E2E Tests (Mobile)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: Start backend server
+        run: |
+          pip install -r requirements.txt
+          python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 &
+          sleep 5
+          for i in {1..30}; do
+            if curl -s http://localhost:8000/health > /dev/null; then
+              echo "Backend is ready"
+              exit 0
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 1
+          done
+          echo "Backend failed to start"
+          exit 1
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+
+      - name: Start frontend dev server
+        run: npm run dev &
+        timeout-minutes: 5
+
+      - name: Wait for frontend
+        run: |
+          for i in {1..60}; do
+            if curl -s http://localhost:3000 > /dev/null; then
+              echo "Frontend is ready"
+              exit 0
+            fi
+            echo "Waiting for frontend... ($i/60)"
+            sleep 1
+          done
+          echo "Frontend failed to start"
+          exit 1
+
+      - name: Run mobile E2E tests
+        run: npx playwright test --grep @mobile
+        env:
+          CI: true
+          BASE_URL: http://localhost:3000
+          API_URL: http://localhost:8000
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-mobile
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-mobile
+          path: test-results/
+          retention-days: 30
+
+  test-summary:
+    name: E2E Test Summary
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [e2e-tests]
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: all-reports/
+
+      - name: Create test summary
+        run: |
+          echo "# E2E Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Status" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.e2e-tests.result }}" == "success" ]; then
+            echo "✅ All tests passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some tests failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Reports" >> $GITHUB_STEP_SUMMARY
+          echo "- Playwright reports available in artifacts" >> $GITHUB_STEP_SUMMARY
+          echo "- Test results in JUnit XML format" >> $GITHUB_STEP_SUMMARY
+
+      - name: Comment PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const testResults = '${{ needs.e2e-tests.result }}';
+
+            let comment = '## E2E Test Results\n\n';
+
+            if (testResults === 'success') {
+              comment += '✅ All E2E tests passed\n\n';
+            } else {
+              comment += '❌ Some E2E tests failed\n\n';
+              comment += '### Failed Tests\n';
+              comment += 'Please check the artifacts for detailed logs and video recordings.\n\n';
+            }
+
+            comment += '### Test Coverage\n';
+            comment += '- Text Selection Detection\n';
+            comment += '- UI Validation Rules (FR-007a)\n';
+            comment += '- Chat Widget Integration\n';
+            comment += '- Backend Validation (HTTP 400)\n';
+            comment += '- Zero-Leakage Validation\n';
+            comment += '- Message History & Context\n';
+            comment += '- Cross-Browser Compatibility\n';
+            comment += '- Error Handling & Edge Cases\n\n';
+
+            comment += '[View Detailed Report](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

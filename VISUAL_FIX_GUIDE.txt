@@ -1,0 +1,128 @@
+================================================================================
+VISUAL GUIDE TO FIX embedder.py
+================================================================================
+
+FILE: backend/ingestion/embedder.py
+
+STEP 1: Find This Block (Lines 34-58)
+================================================================================
+
+    # ---------------------------
+    # INTERNAL HELPER (NEW)
+    # ---------------------------
+    def _extract_embeddings(self, response) -> List[List[float]]:
+        """
+        Safely extract embeddings from different Cohere response formats.
+        """
+        if not hasattr(response, "embeddings"):
+            return []
+
+        emb = response.embeddings
+
+        # Case 1: already a list
+        if isinstance(emb, list):
+            return emb
+
+        # Case 2: iterable object
+        if hasattr(emb, "__iter__"):
+            try:
+                return list(emb)
+            except Exception:
+                pass
+
+        # Case 3: object with `.data`
+        return getattr(emb, "data", [])
+
+================================================================================
+
+STEP 2: Replace It With This
+================================================================================
+
+    # ---------------------------
+    # INTERNAL HELPER (NEW)
+    # ---------------------------
+    def _extract_embeddings(self, response) -> List[List[float]]:
+        """
+        Safely extract embeddings from Cohere API responses.
+        Handles multiple response formats.
+        """
+        if not hasattr(response, "embeddings"):
+            return []
+
+        emb = response.embeddings
+
+        # Case 1: Direct list
+        if isinstance(emb, list):
+            return emb if emb else []
+
+        # Case 2: Object with .data attribute
+        if hasattr(emb, "data"):
+            try:
+                data = emb.data
+                if isinstance(data, list):
+                    return data
+                return list(data) if hasattr(data, "__iter__") else []
+            except Exception:
+                pass
+
+        # Case 3: Try converting to list
+        if hasattr(emb, "__iter__") and not isinstance(emb, str):
+            try:
+                return list(emb)
+            except Exception:
+                pass
+
+        return []
+
+================================================================================
+
+STEP 3: Verify
+================================================================================
+
+After replacing, the method should:
+  ✅ Start at line 37: "def _extract_embeddings(self, response)..."
+  ✅ End at line ~58: "return []"
+  ✅ Have 3 main cases: list, .data attribute, or iterable
+
+STEP 4: Save
+================================================================================
+
+Press: Ctrl+S (Windows/Linux) or Cmd+S (Mac)
+
+STEP 5: Restart Backend
+================================================================================
+
+Terminal:
+  cd D:\physical-ai-textbook
+  python -m uvicorn backend.app.main:app --reload --port 8000
+
+STEP 6: Test
+================================================================================
+
+In Terminal:
+  curl -X POST http://localhost:8000/api/ingest \
+    -F "file=@test_book.md" \
+    -F "book_id=physical-ai-textbook"
+
+Expected: {"success": true, "book_id": "physical-ai-textbook", ...}
+
+STEP 7: Test Chat
+================================================================================
+
+In Browser:
+  http://localhost:3000/chat
+
+Ask: "What is this about?"
+
+Expected: Response with text and citations (not empty!)
+
+================================================================================
+
+If you get an error, check:
+  1. Did you save the file? (Ctrl+S)
+  2. Did backend restart? (Check for "Application startup complete")
+  3. Is book index working? (Check ingest response)
+
+Questions? See NEXT_STEP_EMBEDDING_FIX.md
+
+================================================================================

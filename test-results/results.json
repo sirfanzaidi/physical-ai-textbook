@@ -1,0 +1,2422 @@
+{
+  "config": {
+    "configFile": "D:\\physical-ai-textbook\\playwright.config.ts",
+    "rootDir": "D:/physical-ai-textbook/backend/tests/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/results.xml"
+        }
+      ],
+      [
+        "list",
+        null
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "D:/physical-ai-textbook/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/physical-ai-textbook/backend/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/physical-ai-textbook/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "D:/physical-ai-textbook/backend/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/physical-ai-textbook/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "D:/physical-ai-textbook/backend/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/physical-ai-textbook/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "D:/physical-ai-textbook/backend/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/physical-ai-textbook/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "D:/physical-ai-textbook/backend/tests/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.spec.ts"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 2,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:3000",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [
+    {
+      "title": "test_select_text_widget.spec.ts",
+      "file": "test_select_text_widget.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Select-Text Feature - End-to-End Tests",
+          "file": "test_select_text_widget.spec.ts",
+          "line": 42,
+          "column": 6,
+          "specs": [],
+          "suites": [
+            {
+              "title": "Text Selection Detection",
+              "file": "test_select_text_widget.spec.ts",
+              "line": 52,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should detect valid text selection (>= 10 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-1d704c685b018c1c44dd",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "should show warning for short selection (1-9 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-fd5a81e888427496743e",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 67,
+                  "column": 9
+                },
+                {
+                  "title": "should not show button for empty selection",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-13109a4c96896a209807",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 82,
+                  "column": 9
+                },
+                {
+                  "title": "should update button visibility when selection changes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-401ac907c402ede820bc",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 90,
+                  "column": 9
+                },
+                {
+                  "title": "should detect valid text selection (>= 10 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-83718a4be28cd8293df4",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "should show warning for short selection (1-9 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-f0de37ef1144ea3fa2ac",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 67,
+                  "column": 9
+                },
+                {
+                  "title": "should not show button for empty selection",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-f3a91b71d4a68b15b869",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 82,
+                  "column": 9
+                },
+                {
+                  "title": "should update button visibility when selection changes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-5c1185fcb36f29daa252",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 90,
+                  "column": 9
+                },
+                {
+                  "title": "should detect valid text selection (>= 10 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-fd293a73540083f6a94c",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "should show warning for short selection (1-9 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-45ae1bf0070a2eb6a5f7",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 67,
+                  "column": 9
+                },
+                {
+                  "title": "should not show button for empty selection",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-82e8477293e12781f9a1",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 82,
+                  "column": 9
+                },
+                {
+                  "title": "should update button visibility when selection changes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-a0fa5f685c2aba3fad23",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 90,
+                  "column": 9
+                },
+                {
+                  "title": "should detect valid text selection (>= 10 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-a256e855e0f3185e5cc5",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "should show warning for short selection (1-9 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-fda488b9b41fa0c9e723",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 67,
+                  "column": 9
+                },
+                {
+                  "title": "should not show button for empty selection",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-d9b9ce30eca81184ea24",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 82,
+                  "column": 9
+                },
+                {
+                  "title": "should update button visibility when selection changes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-81455a6dfbd19fe99ae5",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 90,
+                  "column": 9
+                },
+                {
+                  "title": "should detect valid text selection (>= 10 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-543f195a907459c41238",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 54,
+                  "column": 9
+                },
+                {
+                  "title": "should show warning for short selection (1-9 characters)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-aa7dae0a33374566d402",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 67,
+                  "column": 9
+                },
+                {
+                  "title": "should not show button for empty selection",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-cea4ce04a5d0dafc03ce",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 82,
+                  "column": 9
+                },
+                {
+                  "title": "should update button visibility when selection changes",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-b5ddcf05db48f6923b77",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 90,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "UI Validation Rules (FR-007a)",
+              "file": "test_select_text_widget.spec.ts",
+              "line": 109,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should accept selection >= 10 characters and enable submit",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-cb63b22713f782c2af27",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 111,
+                  "column": 9
+                },
+                {
+                  "title": "should warn user for selection 1-9 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-5caca50d03932ee5c046",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 132,
+                  "column": 9
+                },
+                {
+                  "title": "should reject empty selection silently",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-6ff75f6aa828d56a6577",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 148,
+                  "column": 9
+                },
+                {
+                  "title": "should accept selection >= 10 characters and enable submit",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-afbcceefc1b6327c7276",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 111,
+                  "column": 9
+                },
+                {
+                  "title": "should warn user for selection 1-9 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-d78d6a7936fb7ffa026c",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 132,
+                  "column": 9
+                },
+                {
+                  "title": "should reject empty selection silently",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-7ba1880840d9928565d0",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 148,
+                  "column": 9
+                },
+                {
+                  "title": "should accept selection >= 10 characters and enable submit",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-985606c7d856e2f40e53",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 111,
+                  "column": 9
+                },
+                {
+                  "title": "should warn user for selection 1-9 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-bfd976afebfc35c9b695",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 132,
+                  "column": 9
+                },
+                {
+                  "title": "should reject empty selection silently",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-e24288507896e83889e6",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 148,
+                  "column": 9
+                },
+                {
+                  "title": "should accept selection >= 10 characters and enable submit",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-d3acc6d48b78d13e20af",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 111,
+                  "column": 9
+                },
+                {
+                  "title": "should warn user for selection 1-9 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-0d31e576be021633d6ea",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 132,
+                  "column": 9
+                },
+                {
+                  "title": "should reject empty selection silently",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-74d7eba25e9918115d31",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 148,
+                  "column": 9
+                },
+                {
+                  "title": "should accept selection >= 10 characters and enable submit",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-2f34439f5698454585fc",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 111,
+                  "column": 9
+                },
+                {
+                  "title": "should warn user for selection 1-9 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-fb66996d194cefd1ea1a",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 132,
+                  "column": 9
+                },
+                {
+                  "title": "should reject empty selection silently",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-67f3236d5145b8f1ec55",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 148,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Chat Widget Integration with Selected Text",
+              "file": "test_select_text_widget.spec.ts",
+              "line": 156,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should open chat widget with selected text mode (FR-007a)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-f902e86ff77422205de8",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 158,
+                  "column": 9
+                },
+                {
+                  "title": "should submit query with selected text context to backend",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-902d0b3efc045ab9f8c4",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 178,
+                  "column": 9
+                },
+                {
+                  "title": "should display response with selected text attribution",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-5eeec16a015d92e8f82d",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 209,
+                  "column": 9
+                },
+                {
+                  "title": "should open chat widget with selected text mode (FR-007a)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-6680df15bb0ad8d27cfc",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 158,
+                  "column": 9
+                },
+                {
+                  "title": "should submit query with selected text context to backend",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-b657a4c2d1b0358e09e2",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 178,
+                  "column": 9
+                },
+                {
+                  "title": "should display response with selected text attribution",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-745e3dea9d8ba1ee4053",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 209,
+                  "column": 9
+                },
+                {
+                  "title": "should open chat widget with selected text mode (FR-007a)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-cc9a2022cc5fa3b99825",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 158,
+                  "column": 9
+                },
+                {
+                  "title": "should submit query with selected text context to backend",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-922666d7bc1c259857f1",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 178,
+                  "column": 9
+                },
+                {
+                  "title": "should display response with selected text attribution",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-a6bb0a41f72b0405a799",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 209,
+                  "column": 9
+                },
+                {
+                  "title": "should open chat widget with selected text mode (FR-007a)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-743bd56ed72d4da4f73c",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 158,
+                  "column": 9
+                },
+                {
+                  "title": "should submit query with selected text context to backend",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-070380da976476f126a2",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 178,
+                  "column": 9
+                },
+                {
+                  "title": "should display response with selected text attribution",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-2e921062b71693fbe3c0",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 209,
+                  "column": 9
+                },
+                {
+                  "title": "should open chat widget with selected text mode (FR-007a)",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-12cb7a57f06fd66431e8",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 158,
+                  "column": 9
+                },
+                {
+                  "title": "should submit query with selected text context to backend",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-0d67102872aaac8cfec8",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 178,
+                  "column": 9
+                },
+                {
+                  "title": "should display response with selected text attribution",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-da29a422be53964cccde",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 209,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Backend Validation (FR-007a HTTP 400)",
+              "file": "test_select_text_widget.spec.ts",
+              "line": 233,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should handle HTTP 400 error when selected_text < 10 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-c4b62f72dc10fd556e9a",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 235,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTTP 400 error when selected_text is empty/null",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-466f75ac84b349ad4e2e",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 269,
+                  "column": 9
+                },
+                {
+                  "title": "should retry after handling validation error",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-aaac202bdaf71beae15c",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 293,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTTP 400 error when selected_text < 10 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-88c631d267952c9063eb",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 235,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTTP 400 error when selected_text is empty/null",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-8680f2699bfb33bed1e1",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 269,
+                  "column": 9
+                },
+                {
+                  "title": "should retry after handling validation error",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-cc931a599337e0c4a738",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 293,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTTP 400 error when selected_text < 10 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-986cd7ef3a0521d548d9",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 235,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTTP 400 error when selected_text is empty/null",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-eab2e1642de63b0ea18a",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 269,
+                  "column": 9
+                },
+                {
+                  "title": "should retry after handling validation error",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-a6c1072106dba3038f2f",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 293,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTTP 400 error when selected_text < 10 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-7be275bc13c1299b2791",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 235,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTTP 400 error when selected_text is empty/null",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-1c377587e8e9eb7f704a",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 269,
+                  "column": 9
+                },
+                {
+                  "title": "should retry after handling validation error",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-b42db926ca4055601c5c",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 293,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTTP 400 error when selected_text < 10 characters",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-2470929394744f9ebdbe",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 235,
+                  "column": 9
+                },
+                {
+                  "title": "should handle HTTP 400 error when selected_text is empty/null",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-0dd645bd4679d2f5f26f",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 269,
+                  "column": 9
+                },
+                {
+                  "title": "should retry after handling validation error",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-b7594b896903cf94595a",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 293,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Zero-Leakage Validation",
+              "file": "test_select_text_widget.spec.ts",
+              "line": 333,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should not include content outside selected passage in response",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-ee052716bc9e757b1ff8",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 335,
+                  "column": 9
+                },
+                {
+                  "title": "should query backend with selected-text mode filter",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-b8bffb4ccef2294c216c",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 365,
+                  "column": 9
+                },
+                {
+                  "title": "should not include content outside selected passage in response",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-7ed4b079bc09e7bf7a5a",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 335,
+                  "column": 9
+                },
+                {
+                  "title": "should query backend with selected-text mode filter",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-f7de342b9d54664f8a30",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 365,
+                  "column": 9
+                },
+                {
+                  "title": "should not include content outside selected passage in response",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-d01b2b00ece0ba9a465b",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 335,
+                  "column": 9
+                },
+                {
+                  "title": "should query backend with selected-text mode filter",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-621d242d1018d5faf430",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 365,
+                  "column": 9
+                },
+                {
+                  "title": "should not include content outside selected passage in response",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-502e548d1d4cafacb5cf",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 335,
+                  "column": 9
+                },
+                {
+                  "title": "should query backend with selected-text mode filter",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-a36ddeb2c99698769d11",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 365,
+                  "column": 9
+                },
+                {
+                  "title": "should not include content outside selected passage in response",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-840a1b866e38742af2e1",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 335,
+                  "column": 9
+                },
+                {
+                  "title": "should query backend with selected-text mode filter",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-feedb45520662fbf9ad5",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 365,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Message History and Context",
+              "file": "test_select_text_widget.spec.ts",
+              "line": 394,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should display selected text context in chat header",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-983f20c7cfa680e36a55",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 396,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain selected text context across multiple queries",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-1e1ec12ca2175878c2c9",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 410,
+                  "column": 9
+                },
+                {
+                  "title": "should store message history in localStorage",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-b39351de3bbcd546ad6f",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 442,
+                  "column": 9
+                },
+                {
+                  "title": "should display selected text context in chat header",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-601fda6b51d910b36dbc",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 396,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain selected text context across multiple queries",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-a31e9d57fc0355a2dc7c",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 410,
+                  "column": 9
+                },
+                {
+                  "title": "should store message history in localStorage",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-c9c3daa42526967d5d16",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 442,
+                  "column": 9
+                },
+                {
+                  "title": "should display selected text context in chat header",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-45397fc7077cf8727723",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 396,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain selected text context across multiple queries",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-b1c24fd940e9c06c9ec5",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 410,
+                  "column": 9
+                },
+                {
+                  "title": "should store message history in localStorage",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-97bce2149d4ea1d1254c",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 442,
+                  "column": 9
+                },
+                {
+                  "title": "should display selected text context in chat header",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-7b2e3599f103b4aed38a",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 396,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain selected text context across multiple queries",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-fe2438a90b9ea2d97501",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 410,
+                  "column": 9
+                },
+                {
+                  "title": "should store message history in localStorage",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-be81fac6dd3bee980cae",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 442,
+                  "column": 9
+                },
+                {
+                  "title": "should display selected text context in chat header",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-d3dcf1e272dddc2596f6",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 396,
+                  "column": 9
+                },
+                {
+                  "title": "should maintain selected text context across multiple queries",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-87795db3747e06a8e1bd",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 410,
+                  "column": 9
+                },
+                {
+                  "title": "should store message history in localStorage",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-24dc84ca18ae76016945",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 442,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Cross-Browser Compatibility",
+              "file": "test_select_text_widget.spec.ts",
+              "line": 475,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should work in multiple browsers",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-f6d4d07da15a6286e918",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 477,
+                  "column": 9
+                },
+                {
+                  "title": "should work in multiple browsers",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-5000123770377c167600",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 477,
+                  "column": 9
+                },
+                {
+                  "title": "should work in multiple browsers",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-2cb951b3a7e8b6bafa50",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 477,
+                  "column": 9
+                },
+                {
+                  "title": "should work in multiple browsers",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-635bdeac9b54b347be8d",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 477,
+                  "column": 9
+                },
+                {
+                  "title": "should work in multiple browsers",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-b4846790044b4abbb8d2",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 477,
+                  "column": 9
+                }
+              ]
+            },
+            {
+              "title": "Error Handling & Edge Cases",
+              "file": "test_select_text_widget.spec.ts",
+              "line": 490,
+              "column": 8,
+              "specs": [
+                {
+                  "title": "should handle API timeout gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-4664859a541376031f57",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 492,
+                  "column": 9
+                },
+                {
+                  "title": "should handle API error responses",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-8dc37b7ef53166d98a85",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 517,
+                  "column": 9
+                },
+                {
+                  "title": "should handle rapid successive selections",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "chromium",
+                      "projectName": "chromium",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-6523f037a95deb5e4757",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 538,
+                  "column": 9
+                },
+                {
+                  "title": "should handle API timeout gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-d302f1f65b5c58c7a774",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 492,
+                  "column": 9
+                },
+                {
+                  "title": "should handle API error responses",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-1ffd2a0a6b07d275ea4f",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 517,
+                  "column": 9
+                },
+                {
+                  "title": "should handle rapid successive selections",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "firefox",
+                      "projectName": "firefox",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-31332fa5990ade582386",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 538,
+                  "column": 9
+                },
+                {
+                  "title": "should handle API timeout gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-21b3b790b8a3595cfe04",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 492,
+                  "column": 9
+                },
+                {
+                  "title": "should handle API error responses",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-20edec521426d256199d",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 517,
+                  "column": 9
+                },
+                {
+                  "title": "should handle rapid successive selections",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "webkit",
+                      "projectName": "webkit",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-f3fd6d714cd61715ed3a",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 538,
+                  "column": 9
+                },
+                {
+                  "title": "should handle API timeout gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-4b51ca598acc488fbd7c",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 492,
+                  "column": 9
+                },
+                {
+                  "title": "should handle API error responses",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-42262ae589256066d1c0",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 517,
+                  "column": 9
+                },
+                {
+                  "title": "should handle rapid successive selections",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Chrome",
+                      "projectName": "Mobile Chrome",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-186297c68e165db75116",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 538,
+                  "column": 9
+                },
+                {
+                  "title": "should handle API timeout gracefully",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-8cbd12260c2455f63627",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 492,
+                  "column": 9
+                },
+                {
+                  "title": "should handle API error responses",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-5a483a65231f58f5a7a6",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 517,
+                  "column": 9
+                },
+                {
+                  "title": "should handle rapid successive selections",
+                  "ok": true,
+                  "tags": [],
+                  "tests": [
+                    {
+                      "timeout": 30000,
+                      "annotations": [],
+                      "expectedStatus": "passed",
+                      "projectId": "Mobile Safari",
+                      "projectName": "Mobile Safari",
+                      "results": [],
+                      "status": "skipped"
+                    }
+                  ],
+                  "id": "67cff14c40f462f20bf7-2c258b8200ab59aa16ca",
+                  "file": "test_select_text_widget.spec.ts",
+                  "line": 538,
+                  "column": 9
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-12-14T11:48:52.182Z",
+    "duration": 52.712999999999965,
+    "expected": 0,
+    "skipped": 110,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

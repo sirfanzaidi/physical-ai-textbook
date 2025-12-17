@@ -1,0 +1,38 @@
+/**
+ * RAG Chat Component Styles
+ * Wrapper styles for the Vanilla JS chat widget in Docusaurus
+ */
+
+.ragChatWrapper {
+  width: 100%;
+  margin: 2rem 0;
+  display: flex;
+  justify-content: center;
+}
+
+.ragChatContainer {
+  width: 100%;
+  max-width: 800px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .ragChatWrapper {
+    margin: 1.5rem 0;
+  }
+
+  .ragChatContainer {
+    max-width: 100%;
+    border-radius: 4px;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .ragChatContainer {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+}
