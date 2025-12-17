@@ -39,9 +39,29 @@ class Settings(BaseSettings):
     max_query_length: int = 5000
 
     # Security
-    allowed_origins: List[str] = ["http://localhost:3000"]
+    allowed_origins: List[str] = []
     cors_allow_credentials: bool = True
     https_only: bool = False
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        # Parse CORS_ORIGINS from environment if not set via allowed_origins
+        import os
+        from dotenv import load_dotenv
+
+        load_dotenv()
+
+        if not self.allowed_origins:
+            cors_origins = os.getenv("CORS_ORIGINS")
+            if cors_origins:
+                self.allowed_origins = [origin.strip() for origin in cors_origins.split(",")]
+            else:
+                # Fallback defaults
+                self.allowed_origins = [
+                    "http://localhost:3000",
+                    "http://localhost:3002",
+                    "https://physical-ai-textbook-two.vercel.app"
+                ]
 
     # Book Indexing
     max_book_pages: int = 500
