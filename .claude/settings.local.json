@@ -18,7 +18,8 @@
       "Bash(kill:*)",
       "Bash(find:*)",
       "Bash(grep:*)",
-      "Bash(timeout 10 python:*)"
+      "Bash(timeout 10 python:*)",
+      "Bash(killall:*)"
     ],
     "deny": [],
     "ask": []

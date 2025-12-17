@@ -4,10 +4,10 @@ import uuid
 from typing import Optional, Dict, Any, List
 from datetime import datetime, timezone
 
-from .config import Settings
-from .services.openrouter_client import OpenRouterClient
-from .services.retrieval.qdrant_store import QdrantStore
-from .utils import get_logger, GenerationError
+from ...config import Settings
+from ..openrouter_client import OpenRouterClient
+from ..retrieval.qdrant_store import QdrantStore
+from ...utils import get_logger, GenerationError
 from qdrant_client.models import PointStruct
 
 from .text_extractor import extract_text_from_html
