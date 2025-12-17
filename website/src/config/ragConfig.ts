@@ -35,17 +35,18 @@ export const getRagConfig = (): RAGChatConfig => {
     typeof window !== 'undefined' &&
     (window.location.hostname === 'localhost' ||
       window.location.hostname === '127.0.0.1' ||
-      window.location.hostname.startsWith('192.168'));
+      window.location.hostname.startsWith('192.168') ||
+      window.location.port === '3000' ||
+      window.location.port === '3002' ||
+      window.location.port === '3001');
 
   const isProduction =
     typeof window !== 'undefined' && window.location.hostname.includes('vercel.app');
 
   // Determine API base URL
-  let apiBaseURL = '/api'; // Default to relative path (vercel.json rewrites)
+  let apiBaseURL = 'http://localhost:8000'; // Default to local backend
 
-  if (isDevelopment) {
-    apiBaseURL = 'http://localhost:8000';
-  } else if (isProduction) {
+  if (isProduction) {
     // Use Vercel rewrites configured in vercel.json
     apiBaseURL = '/api';
   }
