@@ -70,3 +70,8 @@ export const defaultRagConfig: RAGChatConfig = {
   enableHistory: true,
   defaultHeight: '700px',
 };
+
+/**
+ * Instantiated configuration for use throughout the app
+ */
+export const ragConfig = getRagConfig();
