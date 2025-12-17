@@ -5,15 +5,12 @@
  * Allows readers to ask questions about the Physical AI textbook content.
  */
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import Layout from '@theme/Layout';
 import RAGChat from '@site/src/components/RAGChat';
-import { getRagConfig } from '@site/src/config/ragConfig';
 import styles from './chat.module.css';
 
 const ChatPage: React.FC = () => {
-  const config = useMemo(() => getRagConfig(), []);
-
   return (
     <Layout
       title="Ask the Textbook"
@@ -29,13 +26,7 @@ const ChatPage: React.FC = () => {
         </div>
 
         <div className={styles.chatContent}>
-          <RAGChat
-            bookId={config.bookId}
-            apiBaseURL={config.apiBaseURL}
-            enableStreaming={config.enableStreaming}
-            enableHistory={config.enableHistory}
-            height={config.defaultHeight}
-          />
+          <RAGChat bookId="physical-ai" autoOpen={true} />
         </div>
 
         <div className={styles.chatInfo}>
@@ -96,13 +87,13 @@ const ChatPage: React.FC = () => {
             </p>
             <ul>
               <li>
-                <strong>Semantic Search</strong>: Qdrant vector database with Cohere embeddings
+                <strong>Semantic Search</strong>: Qdrant vector database with OpenRouter embeddings (Qwen)
               </li>
               <li>
-                <strong>Relevance Ranking</strong>: Cohere rerank model for precision
+                <strong>Relevance Ranking</strong>: Semantic similarity scoring for precision
               </li>
               <li>
-                <strong>Grounded Generation</strong>: Cohere Chat API with document context
+                <strong>Grounded Generation</strong>: OpenRouter LLM with document context
               </li>
               <li>
                 <strong>Zero Hallucination</strong>: Constrained to textbook content only
