@@ -2,7 +2,7 @@
 
 import logging
 from fastapi import APIRouter
-from api.models import HealthResponse
+from ..models import HealthResponse
 
 logger = logging.getLogger(__name__)
 

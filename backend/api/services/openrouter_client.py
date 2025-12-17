@@ -3,8 +3,8 @@
 import asyncio
 from typing import List, Optional, AsyncGenerator
 from openai import AsyncOpenAI
-from api.config import Settings
-from api.utils import get_logger, OpenRouterError
+from ..config import Settings
+from ..utils import get_logger, OpenRouterError
 
 logger = get_logger(__name__)
 

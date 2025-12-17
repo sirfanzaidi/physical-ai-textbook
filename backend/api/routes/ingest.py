@@ -3,10 +3,10 @@
 import uuid
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
-from api.config import Settings
-from api.models import IngestRequest, IngestResponse, ErrorResponse
-from api.services.ingestion import IngestionService
-from api.utils import get_logger, RAGError
+from ..config import Settings
+from ..models import IngestRequest, IngestResponse, ErrorResponse
+from ..services.ingestion import IngestionService
+from ..utils import get_logger, RAGError
 
 logger = get_logger(__name__)
 

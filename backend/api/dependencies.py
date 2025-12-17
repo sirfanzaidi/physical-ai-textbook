@@ -2,7 +2,7 @@
 
 import logging
 from functools import lru_cache
-from api.config import Settings
+from .config import Settings
 
 logger = logging.getLogger(__name__)
 

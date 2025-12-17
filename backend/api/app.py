@@ -4,10 +4,10 @@ import logging
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.config import Settings
-from api.routes import health, chat, ingest
-from api.routes.chat import initialize_services
-from api.routes.ingest import initialize_ingestion_service
+from .config import Settings
+from .routes import health, chat, ingest
+from .routes.chat import initialize_services
+from .routes.ingest import initialize_ingestion_service
 
 # Configure logging
 logging.basicConfig(
@@ -63,7 +63,7 @@ async def startup_event():
         logger.info("RAG services initialized successfully")
 
         # Import here to get the initialized services
-        from api.routes.chat import _openrouter_client, _qdrant_store
+        from .routes.chat import _openrouter_client, _qdrant_store
 
         # Initialize ingestion service
         await initialize_ingestion_service(

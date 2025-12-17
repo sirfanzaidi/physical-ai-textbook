@@ -4,10 +4,10 @@ import uuid
 import json
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
-from api.config import Settings
-from api.models import ChatRequest, ChatResponse, ErrorResponse
-from api.services import OpenRouterClient, QdrantStore, RAGChatbot
-from api.utils import (
+from ..config import Settings
+from ..models import ChatRequest, ChatResponse, ErrorResponse
+from ..services import OpenRouterClient, QdrantStore, RAGChatbot
+from ..utils import (
     get_logger,
     validate_query_length,
     validate_selected_text,

@@ -10,8 +10,8 @@ from qdrant_client.models import (
     MatchValue,
     Filter,
 )
-from api.config import Settings
-from api.utils import get_logger, QdrantError
+from .config import Settings
+from .utils import get_logger, QdrantError
 
 logger = get_logger(__name__)
 

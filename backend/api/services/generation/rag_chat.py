@@ -2,10 +2,10 @@
 
 import time
 from typing import List, Dict, Any, Optional, AsyncGenerator
-from api.config import Settings
-from api.utils import get_logger, GenerationError
-from api.services.openrouter_client import OpenRouterClient
-from api.services.retrieval.qdrant_store import QdrantStore
+from .config import Settings
+from .utils import get_logger, GenerationError
+from .services.openrouter_client import OpenRouterClient
+from .services.retrieval.qdrant_store import QdrantStore
 
 logger = get_logger(__name__)
 
