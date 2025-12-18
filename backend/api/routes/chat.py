@@ -7,6 +7,7 @@ from fastapi.responses import StreamingResponse
 from ..config import Settings
 from ..models import ChatRequest, ChatResponse, ErrorResponse
 from ..services import OpenRouterClient, QdrantStore, RAGChatbot
+from ..middleware.auth import get_current_user_id
 from ..utils import (
     get_logger,
     validate_query_length,
@@ -67,12 +68,13 @@ async def initialize_services(settings: Settings) -> None:
 @router.post("/chat-stream", response_class=StreamingResponse)
 async def chat_stream(
     request: ChatRequest,
+    user_id: str = Depends(get_current_user_id),
     chatbot: RAGChatbot = Depends(get_rag_chatbot),
     settings: Settings = Depends(lambda: Settings()),
 ) -> StreamingResponse:
     """Stream chat responses with RAG augmentation.
 
-    Query format:
+    Requires authentication. Query format:
     ```json
     {
         "query": "What is reinforcement learning?",
@@ -95,7 +97,7 @@ async def chat_stream(
     request_id = str(uuid.uuid4())
 
     try:
-        logger.info(f"[{request_id}] Chat request: mode={request.mode}, top_k={request.top_k}")
+        logger.info(f"[{request_id}] Chat request from user {user_id}: mode={request.mode}, top_k={request.top_k}")
 
         # Validate input
         validate_query_length(request.query, max_length=5000)
@@ -145,6 +147,7 @@ async def chat_stream(
                             "model": chunk_dict["model"],
                             "mode": chunk_dict["mode"],
                             "request_id": request_id,
+                            "user_id": user_id,
                         })
                     else:
                         continue
@@ -198,14 +201,18 @@ async def chat_stream(
 @router.post("/chat")
 async def chat(
     request: ChatRequest,
+    user_id: str = Depends(get_current_user_id),
     chatbot: RAGChatbot = Depends(get_rag_chatbot),
     settings: Settings = Depends(lambda: Settings()),
 ) -> ChatResponse:
-    """Non-streaming chat endpoint for compatibility."""
+    """Non-streaming chat endpoint for compatibility.
+
+    Requires authentication.
+    """
     request_id = str(uuid.uuid4())
 
     try:
-        logger.info(f"[{request_id}] Chat request: mode={request.mode}")
+        logger.info(f"[{request_id}] Chat request from user {user_id}: mode={request.mode}")
 
         # Validate input
         validate_query_length(request.query)

@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRAGChat } from '../../hooks/useRAGChat';
+import { useAuthContext } from '../../context/AuthContext';
 import { ChatWindow } from './ChatWindow';
 import { InputBox } from './InputBox';
 import { FloatingButton } from './FloatingButton';
@@ -19,6 +20,7 @@ interface RAGChatProps {
 
 export const RAGChat: React.FC<RAGChatProps> = ({ bookId = 'physical-ai', autoOpen = false }) => {
   const [isOpen, setIsOpen] = useState(autoOpen);
+  const { isAuthenticated, isLoading: authLoading } = useAuthContext();
   const {
     messages,
     isLoading,
@@ -114,6 +116,16 @@ export const RAGChat: React.FC<RAGChatProps> = ({ bookId = 'physical-ai', autoOp
             </div>
           </div>
 
+          {/* Authentication required message */}
+          {!authLoading && !isAuthenticated && (
+            <div className={styles.errorBanner}>
+              <span>🔒 Please sign in to use the chat</span>
+              <a href="/signin" style={{ marginLeft: 'auto', color: '#667eea', textDecoration: 'underline' }}>
+                Sign In
+              </a>
+            </div>
+          )}
+
           {/* Error message */}
           {error && (
             <div className={styles.errorBanner}>
@@ -130,14 +142,20 @@ export const RAGChat: React.FC<RAGChatProps> = ({ bookId = 'physical-ai', autoOp
           )}
 
           {/* Chat window */}
-          <ChatWindow messages={messages} isLoading={isLoading} />
+          <ChatWindow messages={messages} isLoading={isLoading || authLoading} />
 
-          {/* Input box */}
-          <InputBox
-            onSubmit={sendQuery}
-            isLoading={isLoading}
-            selectedText={selectedText}
-          />
+          {/* Input box - disabled if not authenticated */}
+          {isAuthenticated ? (
+            <InputBox
+              onSubmit={sendQuery}
+              isLoading={isLoading}
+              selectedText={selectedText}
+            />
+          ) : (
+            <div style={{ padding: '16px', textAlign: 'center', color: '#999' }}>
+              {authLoading ? 'Loading...' : 'Sign in to start chatting'}
+            </div>
+          )}
 
           {/* Footer */}
           <div className={styles.footer}>

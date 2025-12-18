@@ -50,6 +50,15 @@ class APIClient {
       timeout: 60000, // 60s timeout for streaming responses
     });
 
+    // Add request interceptor to include auth token
+    this.client.interceptors.request.use((config) => {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    });
+
     // Add response interceptor for error handling
     this.client.interceptors.response.use(
       (response) => response,
@@ -58,6 +67,20 @@ class APIClient {
         throw error;
       }
     );
+  }
+
+  /**
+   * Get authorization headers with token from localStorage
+   */
+  private getAuthHeaders(): Record<string, string> {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
+    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+    return headers;
   }
 
   /**
@@ -75,13 +98,11 @@ class APIClient {
   ): Promise<void> {
     try {
       // Get the full URL for fetch
-      const url = new URL('/chat-stream', this.client.defaults.baseURL);
+      const url = new URL('/api/chat-stream', this.client.defaults.baseURL);
 
       const response = await fetch(url.toString(), {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: this.getAuthHeaders(),
         body: JSON.stringify(request),
       });
 
@@ -145,7 +166,7 @@ class APIClient {
    */
   async chat(request: ChatRequest): Promise<ChatResponse> {
     try {
-      const response = await this.client.post<ChatResponse>('/chat', request);
+      const response = await this.client.post<ChatResponse>('/api/chat', request);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
