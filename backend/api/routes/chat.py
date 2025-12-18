@@ -50,7 +50,7 @@ async def initialize_services(settings: Settings) -> None:
 
         # Initialize Qdrant store
         _qdrant_store = QdrantStore(settings)
-        await _qdrant_store.initialize_collection(vector_size=1024)
+        await _qdrant_store.initialize_collection()
         logger.info("✓ Qdrant store initialized")
 
         # Initialize RAG chatbot

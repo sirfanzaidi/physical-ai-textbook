@@ -38,7 +38,7 @@ class QdrantStore:
 
     async def initialize_collection(
         self,
-        vector_size: int = 1024,
+        vector_size: Optional[int] = None,
         distance_metric: Distance = Distance.COSINE,
     ) -> None:
         """Initialize or verify Qdrant collection exists.
@@ -51,6 +51,10 @@ class QdrantStore:
             QdrantError: If initialization fails
         """
         try:
+            # Use configured dimension if not specified
+            if vector_size is None:
+                vector_size = self.settings.embedding_dimension
+
             # Check if collection exists
             collections = await self.client.get_collections()
             collection_names = [col.name for col in collections.collections]
@@ -124,9 +128,9 @@ class QdrantStore:
             QdrantError: If search fails
         """
         try:
-            search_results = await self.client.search(
+            search_results = await self.client.query_points(
                 collection_name=self.collection_name,
-                query_vector=query_embedding,
+                query=query_embedding,
                 query_filter=filters,
                 limit=top_k,
                 with_payload=True,
@@ -138,7 +142,7 @@ class QdrantStore:
                     "score": result.score,
                     "payload": result.payload,
                 }
-                for result in search_results
+                for result in search_results.points
             ]
 
             logger.debug(f"Search returned {len(results)} results")
