@@ -27,8 +27,7 @@ export default function SigninPage(): JSX.Element {
     setError(null);
 
     try {
-      const apiUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8001' : '/api';
-      const response = await fetch(`${apiUrl}/auth/signin`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -40,15 +39,24 @@ export default function SigninPage(): JSX.Element {
       if (!response.ok) {
         try {
           const errorData = await response.json();
-          setError(errorData.detail || 'Signin failed');
+          const errorMsg = errorData.detail?.error || errorData.detail || 'Signin failed';
+          setError(errorMsg);
         } catch {
           setError('Signin failed. Please try again.');
         }
         return;
       }
 
-      // Redirect to home or dashboard on successful signin
-      history.push('/');
+      const responseData = await response.json();
+      // Store the token
+      if (responseData.token) {
+        localStorage.setItem('auth_token', responseData.token);
+      }
+
+      // Redirect to home on successful signin
+      setTimeout(() => {
+        history.push('/');
+      }, 300);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {

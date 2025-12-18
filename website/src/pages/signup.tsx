@@ -80,18 +80,17 @@ export default function SignupPage(): JSX.Element {
     setError(null);
 
     try {
-      const apiUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8001' : '/api';
-      const response = await fetch(`${apiUrl}/auth/signup`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           email: data.email,
           password: data.password,
           name: data.name,
-          programmingBackgrounds: data.programmingBackgrounds,
-          frameworksKnown: data.frameworksKnown,
-          hardwareExperience: data.hardwareExperience,
-          roboticsInterest: data.roboticsInterest,
+          programming_backgrounds: data.programmingBackgrounds,
+          frameworks_known: data.frameworksKnown,
+          hardware_experience: data.hardwareExperience,
+          robotics_interest: data.roboticsInterest,
           experience_level: data.experience_level,
         }),
       });
@@ -99,7 +98,8 @@ export default function SignupPage(): JSX.Element {
       if (!response.ok) {
         try {
           const errorData = await response.json();
-          setError(errorData.detail || 'Signup failed');
+          const errorMsg = errorData.detail?.error || errorData.detail || 'Signup failed';
+          setError(errorMsg);
         } catch {
           setError('Signup failed. Please try again.');
         }
@@ -110,6 +110,10 @@ export default function SignupPage(): JSX.Element {
       // Store the token
       if (responseData.token) {
         localStorage.setItem('auth_token', responseData.token);
+        // Reload the page to refresh auth context
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 500);
       }
 
       setSubmitted(true);

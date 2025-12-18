@@ -38,8 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return;
         }
 
-        const apiUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8001' : '/api';
-        const response = await axios.get(`${apiUrl}/auth/session`, {
+        const response = await axios.get(`${API_BASE_URL}/api/auth/session`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -62,13 +61,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const updateProfile = async (profile: Partial<UserProfile>) => {
     try {
       const token = localStorage.getItem('auth_token');
-      const apiUrl = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') ? 'http://localhost:8001' : '/api';
-      const response = await axios.put(`${apiUrl}/users/profile`, profile, {
+      const response = await axios.put(`${API_BASE_URL}/api/users/profile`, profile, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      setUser(response.data.user);
+      setUser(response.data);
     } catch (error) {
       console.error('Failed to update profile:', error);
       throw error;
