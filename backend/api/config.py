@@ -33,6 +33,16 @@ class Settings(BaseSettings):
     streaming_chunk_size: int = 50
     response_timeout_seconds: int = 30
 
+    # Authentication Configuration
+    auth_secret: str = "your-secret-key-change-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_expiration_hours: int = 24
+    password_hash_rounds: int = 12
+    enable_email_verification: bool = False
+
+    # Database Configuration
+    database_url: str = ""
+
     # Logging
     log_level: str = "INFO"
 

@@ -21,7 +21,15 @@
       "Bash(timeout 10 python:*)",
       "Bash(killall:*)",
       "Bash(taskkill:*)",
-      "Bash(cmd /C \"set OPENROUTER_API_KEY=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&set QDRANT_URL=https://50e62b6a-4834-4f71-a943-f2253f88b027.us-east4-0.gcp.cloud.qdrant.io&set QDRANT_API_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0._Ti7-HNEzuJSowdF7c9z6RSudCNnN_pceBLk9G6uc-U&python -m uvicorn backend.api.app:app --host localhost --port 8000\")"
+      "Bash(cmd /C \"set OPENROUTER_API_KEY=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&set QDRANT_URL=https://50e62b6a-4834-4f71-a943-f2253f88b027.us-east4-0.gcp.cloud.qdrant.io&set QDRANT_API_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3MiOiJtIn0._Ti7-HNEzuJSowdF7c9z6RSudCNnN_pceBLk9G6uc-U&python -m uvicorn backend.api.app:app --host localhost --port 8000\")",
+      "Bash(psql:*)",
+      "Bash(timeout:*)",
+      "Bash(for i in {1..10})",
+      "Bash(do if curl -s http://localhost:8000/)",
+      "Bash(then echo \"Server is ready\")",
+      "Bash(break)",
+      "Bash(fi)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []
