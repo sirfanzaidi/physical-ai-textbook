@@ -25,10 +25,24 @@ class OpenRouterClient:
             raise OpenRouterError("OPENROUTER_API_KEY not configured in environment")
 
         self.settings = settings
+
+        # Main client for generation
         self.client = AsyncOpenAI(
             api_key=settings.openrouter_api_key,
             base_url=settings.openrouter_base_url,
         )
+
+        # Separate embedding client if credentials provided
+        if settings.embedding_api_key:
+            self.embedding_client = AsyncOpenAI(
+                api_key=settings.embedding_api_key,
+                base_url=settings.embedding_base_url,
+            )
+            logger.info(f"Separate embedding client initialized with key: {settings.embedding_api_key[:20]}...")
+        else:
+            self.embedding_client = self.client
+            logger.info("Using main client for embeddings")
+
         logger.info(f"OpenRouter client initialized with model: {settings.generation_model}")
 
     async def embed_text(self, text: str) -> List[float]:
@@ -44,7 +58,7 @@ class OpenRouterClient:
             OpenRouterError: If embedding fails
         """
         try:
-            response = await self.client.embeddings.create(
+            response = await self.embedding_client.embeddings.create(
                 model=self.settings.embedding_model,
                 input=text,
             )
@@ -68,7 +82,7 @@ class OpenRouterClient:
             OpenRouterError: If embedding fails
         """
         try:
-            response = await self.client.embeddings.create(
+            response = await self.embedding_client.embeddings.create(
                 model=self.settings.embedding_model,
                 input=texts,
             )

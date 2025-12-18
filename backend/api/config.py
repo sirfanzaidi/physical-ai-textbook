@@ -14,6 +14,8 @@ class Settings(BaseSettings):
     openrouter_api_key: str = ""
     openrouter_base_url: str = "https://openrouter.ai/api/v1"
     embedding_model: str = "qwen/qwen3-embedding-4b"
+    embedding_api_key: str = ""
+    embedding_base_url: str = "https://openrouter.ai/api/v1"
     generation_model: str = "gpt-3.5-turbo"
 
     # Qdrant Configuration
