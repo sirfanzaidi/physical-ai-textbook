@@ -1,107 +1,146 @@
-# Deployment Guide - Physical AI Textbook RAG Chatbot API
+# Deployment Guide
 
-This guide covers deploying the FastAPI chatbot backend to production.
+This guide explains how to deploy the Physical AI Textbook RAG system to production using Vercel (frontend) and Railway/Render (backend).
 
-## Recommended: Railway Deployment
+## Architecture
 
-Railway is the recommended platform for this Python FastAPI application.
+- **Frontend**: Docusaurus + RAG Chat UI (deployed on Vercel)
+- **Backend**: FastAPI + OpenRouter + Qdrant (deployed on Railway or Render)
+- **Vector Database**: Qdrant Cloud
+- **LLM Provider**: OpenRouter (GPT-3.5-turbo for generation, Qwen for embeddings)
 
-**Sign up at: https://railway.app**
+## Frontend Deployment (Vercel)
 
-### Quick Start (5 minutes)
+### Prerequisites
+- GitHub account (repository connected to Vercel)
+- Backend API URL (from Railway/Render deployment)
 
-1. Connect your GitHub account to Railway
-2. Create new project and select this GitHub repo
-3. Add environment variables in Railway dashboard:
-   - COHERE_API_KEY
-   - OPENAI_API_KEY
-   - QDRANT_URL
-   - QDRANT_API_KEY
-   - TEXTBOOK_BASE_URL=https://physical-ai-textbook-two.vercel.app
-4. Railway automatically builds and deploys from GitHub
-5. Your API will be live at: https://your-project.up.railway.app
+### Setup Steps
 
-### Update Vercel
+1. **Connect Repository**
+   - Go to https://vercel.com
+   - Import your GitHub repository
+   - Select the root directory
 
-Update `vercel.json` with your Railway API URL:
+2. **Configure Environment Variables**
+   - In Vercel Project Settings > Environment Variables, add:
+   ```
+   BACKEND_URL=https://your-backend-url.railway.app
+   ```
+   - Replace with your actual backend URL
 
-```json
-{
-  "rewrites": [
-    {
-      "source": "/api/:path*",
-      "destination": "https://your-project.up.railway.app/api/:path*"
-    }
-  ]
-}
+3. **Build Settings**
+   - Build Command: `cd website && npm run build`
+   - Output Directory: `website/build`
+   - Framework Preset: Docusaurus
+
+4. **Deploy**
+   - Save settings and redeploy
+   - Frontend will be available at your Vercel project URL
+
+## Backend Deployment (Railway)
+
+### Prerequisites
+- Railway account (https://railway.app)
+- GitHub repository (for automatic deployments)
+- Environment variables configured
+
+### Setup Steps
+
+1. **Create New Project**
+   - Go to Railway dashboard
+   - Click "New Project" > "Deploy from GitHub"
+   - Select your repository
+
+2. **Configure Build**
+   - Railway will detect `railway.json` automatically
+   - Build: Dockerfile in `backend` folder
+   - No additional build config needed
+
+3. **Set Environment Variables**
+   - In Railway Project Settings > Variables, add:
+   ```
+   OPENROUTER_API_KEY=sk-or-v1-xxxx
+   QDRANT_URL=https://your-qdrant-cluster.us-east4-0.gcp.cloud.qdrant.io
+   QDRANT_API_KEY=your-qdrant-api-key
+   QDRANT_COLLECTION_NAME=physical_ai_textbook
+   LOG_LEVEL=INFO
+   ```
+
+4. **Deploy**
+   - Railway will auto-deploy on git push
+   - Get your backend URL from Railway dashboard
+   - Copy the public URL (e.g., https://physical-ai-textbook-backend.railway.app)
+
+5. **Update Frontend**
+   - Set Vercel `BACKEND_URL` environment variable to your Railway URL
+   - Redeploy frontend
+
+## Backend Deployment (Render - Alternative)
+
+### Setup Steps
+
+1. **Create New Web Service**
+   - Go to https://render.com
+   - Create > Web Service
+   - Connect your GitHub repository
+
+2. **Configure Service**
+   - Environment: Python 3.11
+   - Build Command: See `render.yaml` (auto-detected)
+   - Start Command: See `render.yaml` (auto-detected)
+   - Plan: Free (or paid for production)
+
+3. **Set Environment Variables**
+   Same as Railway setup above
+
+4. **Deploy**
+   - Render will build and deploy automatically
+   - Get your backend URL from Render dashboard
+   - Update Vercel `BACKEND_URL` environment variable
+
+## Environment Variables Reference
+
+### Backend (.env file)
+```
+OPENROUTER_API_KEY=sk-or-v1-xxxx
+OPENROUTER_BASE_URL=https://openrouter.ai/api/v1
+QDRANT_URL=https://your-qdrant-cluster.us-east4-0.gcp.cloud.qdrant.io
+QDRANT_API_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+QDRANT_COLLECTION_NAME=physical_ai_textbook
+CORS_ORIGINS=https://your-frontend-url.vercel.app
+LOG_LEVEL=INFO
 ```
 
-## Alternative: Render.com
+### Frontend (Vercel)
+```
+BACKEND_URL=https://your-backend-url.railway.app
+```
 
-Similar to Railway with straightforward GitHub integration.
+## Testing Deployment
 
-1. Sign up at https://render.com
-2. Create Web Service from GitHub
-3. Build: `cd backend && pip install -r requirements.txt`
-4. Start: `cd backend && python -m uvicorn api.app:app --host 0.0.0.0 --port $PORT`
-5. Add environment variables same as Railway
-
-## Docker + Any Cloud
-
+### Test Backend Health
 ```bash
-docker build -t physical-ai-api backend/
-docker run -p 8000:8000 \
-  -e COHERE_API_KEY=your_key \
-  -e OPENAI_API_KEY=sk_your_key \
-  -e QDRANT_URL=your_url \
-  -e QDRANT_API_KEY=your_key \
-  physical-ai-api:latest
+curl https://your-backend-url.railway.app/api/health
 ```
 
-## Testing
+Expected: `{"status":"healthy"}`
 
-After deployment:
+### Test Frontend API
+1. Open your Vercel frontend URL
+2. Open DevTools > Network tab
+3. Try a chat query
+4. Verify requests go to `/api/chat-stream` (not `/api/api/chat-stream`)
 
-```bash
-# Health check
-curl https://your-api.example.com/api/health
+## Troubleshooting
 
-# Test chat
-curl -X POST https://your-api.example.com/api/chat \
-  -H "Content-Type: application/json" \
-  -d '{"question": "What is physical AI?"}'
-```
+- **404 error on frontend**: Check Vercel `BACKEND_URL` environment variable
+- **401 error**: Verify `OPENROUTER_API_KEY` in backend
+- **Streaming not working**: Check browser console and BACKEND_URL configuration
+- **Vector dimension mismatch**: Collection auto-creates with correct 2560-dim vectors
 
-## Environment Variables
+## Monitoring
 
-| Variable | Required | Default | Notes |
-|----------|----------|---------|-------|
-| COHERE_API_KEY | Yes | - | Get from cohere.ai |
-| OPENAI_API_KEY | Yes | - | Get from openai.com |
-| QDRANT_URL | Yes | - | Cloud instance URL |
-| QDRANT_API_KEY | Yes | - | Qdrant API key |
-| TEXTBOOK_BASE_URL | Yes | - | Website base URL |
-| RETRIEVAL_LIMIT | No | 5 | Number of chunks |
-| MAX_TOKENS | No | 500 | Max response length |
-| TEMPERATURE | No | 0.0 | Generation randomness |
-| LOG_LEVEL | No | INFO | DEBUG/INFO/WARN/ERROR |
-
-## Cost Estimate (Free Tier)
-
-- Railway: $5/month credit (free tier)
-- Render: Free tier available
-- Cohere: 1,000 API calls/month (free)
-- OpenAI: Free trial $18 credit
-- Qdrant: Free cloud tier
-
-Total for production: ~$7-10/month
-
-## Next Steps
-
-1. Deploy using Railway or Render
-2. Update Vercel configuration
-3. Test the RAG pipeline end-to-end
-4. Monitor API logs and performance
-5. Set up caching and rate limiting if needed
-
-See `backend/README.md` for local development.
+- **Backend**: Railway/Render dashboard logs
+- **Frontend**: Vercel analytics tab
+- **Look for**: "RAG services initialized successfully" in backend logs
