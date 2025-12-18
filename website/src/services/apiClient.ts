@@ -74,45 +74,35 @@ class APIClient {
     onError: (error: Error) => void
   ): Promise<void> {
     try {
-      const response = await this.client.post('/api/chat-stream', request, {
-        responseType: 'stream',
+      // Get the full URL for fetch
+      const url = new URL('/chat-stream', this.client.defaults.baseURL);
+
+      const response = await fetch(url.toString(), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
       });
 
-      const reader = response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
 
-      // For browser environments, use ReadableStream
-      if (reader instanceof ReadableStream) {
-        const textDecoder = new TextDecoder();
-        const buffer = reader.getReader();
+      const reader = response.body?.getReader();
+      if (!reader) {
+        throw new Error('Response body is not readable');
+      }
 
-        try {
-          while (true) {
-            const { done, value } = await buffer.read();
-            if (done) break;
+      const textDecoder = new TextDecoder();
+      let buffer = '';
 
-            const text = textDecoder.decode(value, { stream: true });
-            const lines = text.split('\n').filter((line) => line.trim());
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
 
-            for (const line of lines) {
-              try {
-                const chunk = JSON.parse(line);
-                onChunk(chunk);
-              } catch (parseError) {
-                console.error('Failed to parse chunk:', line);
-              }
-            }
-          }
-        } finally {
-          buffer.releaseLock();
-        }
-      } else {
-        // Node.js environment (for testing)
-        // This shouldn't happen in browser, but handle it gracefully
-        const textDecoder = new TextDecoder();
-        let buffer = '';
-
-        reader.on('data', (chunk: Buffer) => {
-          buffer += textDecoder.decode(chunk, { stream: true });
+          buffer += textDecoder.decode(value, { stream: true });
           const lines = buffer.split('\n');
 
           // Keep the last incomplete line in the buffer
@@ -121,37 +111,29 @@ class APIClient {
           for (const line of lines) {
             if (line.trim()) {
               try {
-                const parsed = JSON.parse(line);
-                onChunk(parsed);
+                const chunk = JSON.parse(line);
+                onChunk(chunk);
               } catch (parseError) {
                 console.error('Failed to parse chunk:', line);
               }
             }
           }
-        });
+        }
 
-        reader.on('end', () => {
-          if (buffer.trim()) {
-            try {
-              const parsed = JSON.parse(buffer);
-              onChunk(parsed);
-            } catch (parseError) {
-              console.error('Failed to parse final chunk:', buffer);
-            }
+        // Process any remaining data in buffer
+        if (buffer.trim()) {
+          try {
+            const chunk = JSON.parse(buffer);
+            onChunk(chunk);
+          } catch (parseError) {
+            console.error('Failed to parse final chunk:', buffer);
           }
-        });
-
-        reader.on('error', (error: Error) => {
-          onError(error);
-        });
+        }
+      } finally {
+        reader.releaseLock();
       }
     } catch (error) {
-      if (error instanceof AxiosError) {
-        const errorMsg = (error.response?.data as ErrorResponse)?.message || error.message;
-        onError(new Error(errorMsg));
-      } else {
-        onError(error instanceof Error ? error : new Error(String(error)));
-      }
+      onError(error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -163,7 +145,7 @@ class APIClient {
    */
   async chat(request: ChatRequest): Promise<ChatResponse> {
     try {
-      const response = await this.client.post<ChatResponse>('/api/chat', request);
+      const response = await this.client.post<ChatResponse>('/chat', request);
       return response.data;
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -181,7 +163,7 @@ class APIClient {
    */
   async getIngestStatus(): Promise<any> {
     try {
-      const response = await this.client.get('/api/ingest/status');
+      const response = await this.client.get('/ingest/status');
       return response.data;
     } catch (error) {
       console.error('Failed to get ingest status:', error);
@@ -196,7 +178,7 @@ class APIClient {
    */
   async healthCheck(): Promise<any> {
     try {
-      const response = await this.client.get('/api/health');
+      const response = await this.client.get('/health');
       return response.data;
     } catch (error) {
       console.error('Health check failed:', error);
