@@ -26,7 +26,7 @@ const ChatPage: React.FC = () => {
         </div>
 
         <div className={styles.chatContent}>
-          <RAGChat bookId="physical-ai" autoOpen={true} />
+          <RAGChat />
         </div>
 
         <div className={styles.chatInfo}>

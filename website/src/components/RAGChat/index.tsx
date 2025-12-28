@@ -1,65 +1,55 @@
 /**
- * RAGChat Container Component
+ * Enhanced RAGChat Component with Selected Text Support
  *
- * Main component combining chat window, input, and floating button.
- * Manages chat state and handles all user interactions.
+ * A chat interface that supports both full-book and selected-text modes
  */
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRAGChat } from '../../hooks/useRAGChat';
-import { useAuthContext } from '../../context/AuthContext';
-import { ChatWindow } from './ChatWindow';
-import { InputBox } from './InputBox';
-import { FloatingButton } from './FloatingButton';
 import styles from './RAGChat.module.css';
 
-interface RAGChatProps {
-  bookId?: string;
-  autoOpen?: boolean;
+interface Message {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
 }
 
-export const RAGChat: React.FC<RAGChatProps> = ({ bookId = 'physical-ai', autoOpen = false }) => {
-  const [isOpen, setIsOpen] = useState(autoOpen);
-  const { isAuthenticated, isLoading: authLoading } = useAuthContext();
+export const RAGChat: React.FC = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
   const {
     messages,
     isLoading,
     error,
     selectedText,
+    mode,
     sendQuery,
-    setSelectedText,
-    clearHistory,
+    setSelectedText
   } = useRAGChat();
 
-  // Close on Escape key
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-      }
-    };
+    scrollToBottom();
+  }, [messages]);
 
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
-
-  // Handle text selection for US2 (Ask about selected text)
+  // Set up text selection handler
   useEffect(() => {
-    const handleSelection = () => {
-      const selection = window.getSelection();
-      if (selection && selection.toString().length > 0) {
-        const selectedText = selection.toString();
-        // Only set if selection is substantial (min 10 chars)
-        if (selectedText.length >= 10) {
-          setSelectedText(selectedText);
-        }
-      }
-    };
-
-    // Detect selection when modal is open
     if (isOpen) {
+      const handleSelection = () => {
+        const selection = window.getSelection();
+        if (selection && selection.toString().trim().length > 0) {
+          const selectedText = selection.toString().trim();
+          // Only set if selection is substantial (min 10 chars)
+          if (selectedText.length >= 10) {
+            setSelectedText(selectedText);
+          }
+        }
+      };
+
       document.addEventListener('mouseup', handleSelection);
       document.addEventListener('touchend', handleSelection);
+
       return () => {
         document.removeEventListener('mouseup', handleSelection);
         document.removeEventListener('touchend', handleSelection);
@@ -67,105 +57,160 @@ export const RAGChat: React.FC<RAGChatProps> = ({ bookId = 'physical-ai', autoOp
     }
   }, [isOpen, setSelectedText]);
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleSendMessage = (query: string) => {
+    sendQuery(query);
+  };
+
   return (
-    <>
-      {/* Floating button */}
-      <FloatingButton
-        isOpen={isOpen}
-        onClick={() => setIsOpen(!isOpen)}
-        unreadCount={0}
-      />
-
-      {/* Modal backdrop */}
-      {isOpen && (
-        <div
-          className={styles.backdrop}
-          onClick={() => setIsOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Chat modal */}
-      {isOpen && (
-        <div className={styles.chatModal} role="dialog" aria-label="Chat with AI">
-          {/* Header */}
-          <div className={styles.header}>
-            <div className={styles.headerContent}>
-              <h3 className={styles.headerTitle}>Physical AI Chat</h3>
-              <p className={styles.headerSubtitle}>Ask about the textbook</p>
-            </div>
-            <div className={styles.headerActions}>
-              {messages.length > 0 && (
-                <button
-                  className={styles.clearButton}
-                  onClick={clearHistory}
-                  title="Clear chat history"
-                  aria-label="Clear conversation"
-                >
-                  🔄
-                </button>
-              )}
-              <button
-                className={styles.closeButton}
-                onClick={() => setIsOpen(false)}
-                title="Close chat"
-                aria-label="Close chat"
-              >
-                ✕
-              </button>
-            </div>
+    <div className={styles.chatContainer}>
+      {!isOpen ? (
+        <button
+          className={styles.floatingButton}
+          onClick={() => setIsOpen(true)}
+          aria-label="Open chat"
+        >
+          💬
+        </button>
+      ) : (
+        <div className={styles.chatModal}>
+          <div className={styles.chatHeader}>
+            <h3 className={styles.chatTitle}>Physical AI Chat</h3>
+            <button
+              className={styles.closeButton}
+              onClick={() => setIsOpen(false)}
+              aria-label="Close chat"
+            >
+              ×
+            </button>
           </div>
 
-          {/* Authentication required message */}
-          {!authLoading && !isAuthenticated && (
-            <div className={styles.errorBanner}>
-              <span>🔒 Please sign in to use the chat</span>
-              <a href="/signin" style={{ marginLeft: 'auto', color: '#667eea', textDecoration: 'underline' }}>
-                Sign In
-              </a>
-            </div>
-          )}
-
-          {/* Error message */}
           {error && (
             <div className={styles.errorBanner}>
-              <span>⚠️ {error}</span>
-              <button
-                className={styles.closeBanner}
-                onClick={() => {
-                  /* Error is cleared on next message */
-                }}
-              >
-                ✕
-              </button>
+              Error: {error}
             </div>
           )}
 
-          {/* Chat window */}
-          <ChatWindow messages={messages} isLoading={isLoading || authLoading} />
-
-          {/* Input box - disabled if not authenticated */}
-          {isAuthenticated ? (
-            <InputBox
-              onSubmit={sendQuery}
-              isLoading={isLoading}
-              selectedText={selectedText}
-            />
-          ) : (
-            <div style={{ padding: '16px', textAlign: 'center', color: '#999' }}>
-              {authLoading ? 'Loading...' : 'Sign in to start chatting'}
+          {/* Selected text indicator */}
+          {selectedText && (
+            <div className={styles.selectedTextIndicator}>
+              <div className={styles.selectedTextHeader}>
+                <span className={styles.selectedTextLabel}>Selected Text Mode</span>
+                <button
+                  className={styles.clearSelectedText}
+                  onClick={() => setSelectedText(null)}
+                  title="Clear selection"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className={styles.selectedTextPreview}>
+                "{selectedText.substring(0, 100)}{selectedText.length > 100 ? '...' : ''}"
+              </div>
             </div>
           )}
 
-          {/* Footer */}
-          <div className={styles.footer}>
-            <p className={styles.footerText}>
-              Powered by <strong>Physical AI</strong> • Answers from the textbook
-            </p>
+          <div className={styles.chatMessages}>
+            {messages.length === 0 ? (
+              <div style={{ textAlign: 'center', color: '#6b7280', marginTop: '20px' }}>
+                Ask me anything about the Physical AI textbook!
+                {selectedText && <div style={{ marginTop: '8px', fontSize: '14px', color: '#4f46e5' }}>
+                  Currently in "selected text" mode
+                </div>}
+              </div>
+            ) : (
+              messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`${styles.message} ${msg.role === 'user' ? styles.userMessage : styles.assistantMessage}`}
+                >
+                  {msg.content}
+                </div>
+              ))
+            )}
+
+            {isLoading && (
+              <div className={styles.loadingIndicator}>
+                Thinking...
+              </div>
+            )}
+
+            <div ref={messagesEndRef} />
           </div>
+
+          <ChatInput
+            onSend={handleSendMessage}
+            disabled={isLoading}
+            selectedText={selectedText}
+            mode={mode}
+          />
         </div>
       )}
-    </>
+    </div>
+  );
+};
+
+// Input component
+interface ChatInputProps {
+  onSend: (message: string) => void;
+  disabled: boolean;
+  selectedText: string | null;
+  mode: 'full' | 'selected';
+}
+
+const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled, selectedText, mode }) => {
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputValue.trim() && !disabled) {
+      onSend(inputValue);
+      setInputValue('');
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit(e as any);
+    }
+  };
+
+  // Default placeholder based on mode
+  const placeholder = selectedText
+    ? "Ask about the selected text..."
+    : "Type your question...";
+
+  return (
+    <div className={styles.chatInput}>
+      <form onSubmit={handleSubmit} className={styles.inputForm}>
+        <textarea
+          className={styles.inputField}
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder={placeholder}
+          rows={2}
+          disabled={disabled}
+        />
+        <button
+          type="submit"
+          className={styles.sendButton}
+          disabled={disabled || !inputValue.trim()}
+        >
+          Send
+        </button>
+      </form>
+
+      {selectedText && (
+        <div className={styles.modeIndicator}>
+          <span className={styles.modeLabel}>Mode: Selected Text</span>
+        </div>
+      )}
+    </div>
   );
 };
 
