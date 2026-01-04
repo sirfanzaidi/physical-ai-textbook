@@ -1,39 +1,30 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { useAuthContext } from '../context/AuthContext';
-import { SigninForm } from '../components/auth/SigninForm';
-import { LanguageSelector } from '../components/LanguageSelector';
-import styles from './auth.module.css';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import Layout from '@theme/Layout';
 
 /**
- * Signin Page
- * Displays the signin form with language selector
+ * Signin Page (Client-Side Only)
  */
 export default function SigninPage() {
-  const { isAuthenticated } = useAuthContext();
-  const history = useHistory();
-
-  // Redirect if already authenticated
-  React.useEffect(() => {
-    if (isAuthenticated) {
-      history.push('/profile');
-    }
-  }, [isAuthenticated, history]);
-
   return (
-    <div className={styles.authContainer}>
-      {/* Language Selector */}
-      <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>
-        <LanguageSelector />
-      </div>
+    <Layout title="Sign In" description="Sign in to your account">
+      <BrowserOnly fallback={<div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>}>
+        {() => {
+          const { SigninForm } = require('../components/auth/SigninForm');
+          const styles = require('./auth.module.css');
 
-      {/* Signin Form Card */}
-      <div className={styles.authCard}>
-        <SigninForm
-          redirectUrl="/profile"
-          apiBaseUrl="http://localhost:8000"
-        />
-      </div>
-    </div>
+          return (
+            <div className={styles.authContainer}>
+              <div className={styles.authCard}>
+                <SigninForm
+                  redirectUrl="/profile"
+                  apiBaseUrl="http://localhost:8000"
+                />
+              </div>
+            </div>
+          );
+        }}
+      </BrowserOnly>
+    </Layout>
   );
 }

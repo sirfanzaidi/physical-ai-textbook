@@ -1,39 +1,30 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { useAuthContext } from '../context/AuthContext';
-import { MultiStepSignupForm } from '../components/auth/MultiStepSignupForm';
-import { LanguageSelector } from '../components/LanguageSelector';
-import styles from './auth.module.css';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import Layout from '@theme/Layout';
 
 /**
- * Signup Page
- * Displays the 4-step signup form with language selector
+ * Signup Page (Client-Side Only)
  */
 export default function SignupPage() {
-  const { isAuthenticated } = useAuthContext();
-  const history = useHistory();
-
-  // Redirect if already authenticated
-  React.useEffect(() => {
-    if (isAuthenticated) {
-      history.push('/profile');
-    }
-  }, [isAuthenticated, history]);
-
   return (
-    <div className={styles.authContainer}>
-      {/* Language Selector */}
-      <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>
-        <LanguageSelector />
-      </div>
+    <Layout title="Sign Up" description="Create your account">
+      <BrowserOnly fallback={<div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>}>
+        {() => {
+          const { MultiStepSignupForm } = require('../components/auth/MultiStepSignupForm');
+          const styles = require('./auth.module.css');
 
-      {/* Signup Form Card */}
-      <div className={styles.authCard}>
-        <MultiStepSignupForm
-          redirectUrl="/profile"
-          apiBaseUrl="http://localhost:8000"
-        />
-      </div>
-    </div>
+          return (
+            <div className={styles.authContainer}>
+              <div className={styles.authCard}>
+                <MultiStepSignupForm
+                  redirectUrl="/profile"
+                  apiBaseUrl="http://localhost:8000"
+                />
+              </div>
+            </div>
+          );
+        }}
+      </BrowserOnly>
+    </Layout>
   );
 }
