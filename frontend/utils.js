@@ -123,23 +123,35 @@ if (typeof window.APIClient === 'undefined') {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
+      let buffer = '';
 
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        const chunk = decoder.decode(value, { stream: true });
-        // Parse JSON lines
-        chunk.split('\n').forEach((line) => {
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop(); // Keep the last (potentially incomplete) line in the buffer
+
+        lines.forEach((line) => {
           if (line.trim()) {
             try {
               const data = JSON.parse(line);
               onChunk(data);
             } catch (e) {
-              console.warn('Failed to parse stream chunk:', line);
+              console.warn('Failed to parse stream chunk:', line, e);
             }
           }
         });
+      }
+      // Process any remaining data in the buffer after stream ends
+      if (buffer.trim()) {
+        try {
+          const data = JSON.parse(buffer);
+          onChunk(data);
+        } catch (e) {
+          console.warn('Failed to parse final stream buffer:', buffer, e);
+        }
       }
     } catch (error) {
       console.error(`Stream failed: ${error.message}`);

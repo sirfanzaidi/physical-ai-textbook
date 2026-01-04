@@ -32,9 +32,10 @@ class QdrantStore:
         self.client = AsyncQdrantClient(
             url=settings.qdrant_url,
             api_key=settings.qdrant_api_key,
+            timeout=60.0,  # Increase timeout to 60 seconds for slow cloud instances
         )
         self.collection_name = settings.qdrant_collection_name
-        logger.info(f"Qdrant client initialized at {settings.qdrant_url}")
+        logger.info(f"Qdrant client initialized at {settings.qdrant_url} with 60s timeout")
 
     async def initialize_collection(
         self,
@@ -79,8 +80,11 @@ class QdrantStore:
             logger.info(f"Collection info: {collection_info.points_count} points")
 
         except Exception as e:
-            logger.error(f"Failed to initialize collection: {e}")
-            raise QdrantError(f"Failed to initialize collection: {str(e)}")
+            logger.error(f"Failed to initialize collection: {type(e).__name__}: {e}")
+            logger.error(f"Exception details: {repr(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            raise QdrantError(f"Failed to initialize collection: {type(e).__name__}: {str(e)}")
 
     async def upsert_vectors(
         self,
@@ -105,8 +109,11 @@ class QdrantStore:
             logger.info(f"Upserted {len(points)} vectors")
             return len(points)
         except Exception as e:
-            logger.error(f"Failed to upsert vectors: {e}")
-            raise QdrantError(f"Failed to upsert vectors: {str(e)}")
+            logger.error(f"Failed to upsert vectors: {type(e).__name__}: {e}")
+            logger.error(f"Exception details: {repr(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            raise QdrantError(f"Failed to upsert vectors: {type(e).__name__}: {str(e)}")
 
     async def search(
         self,
@@ -148,8 +155,11 @@ class QdrantStore:
             logger.debug(f"Search returned {len(results)} results")
             return results
         except Exception as e:
-            logger.error(f"Search failed: {e}")
-            raise QdrantError(f"Search failed: {str(e)}")
+            logger.error(f"Search failed: {type(e).__name__}: {e}")
+            logger.error(f"Exception details: {repr(e)}")
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            raise QdrantError(f"Search failed: {type(e).__name__}: {str(e)}")
 
     async def search_with_mode(
         self,

@@ -16,23 +16,25 @@ class SignUpRequest(BaseModel):
     password: str = Field(..., min_length=8, max_length=255, description="Password (minimum 8 characters)")
     name: str = Field(..., min_length=1, max_length=255, description="User's full name")
 
-    # Background information
+    # Background information (optional)
     programming_backgrounds: Optional[List[str]] = Field(
         default_factory=list,
-        description="List of programming languages/backgrounds (e.g., ['Python', 'JavaScript'])"
+        description="List of programming languages/backgrounds"
     )
     frameworks_known: Optional[List[str]] = Field(
         default_factory=list,
-        description="List of frameworks known (e.g., ['React', 'FastAPI'])"
+        description="List of frameworks known"
     )
     hardware_experience: Optional[List[str]] = Field(
         default_factory=list,
-        description="List of hardware platforms (e.g., ['Arduino', 'Raspberry Pi'])"
+        description="List of hardware platforms"
     )
+
+    # Experience and interests (optional)
     robotics_interest: Optional[str] = Field(
         default=None,
         max_length=255,
-        description="Interest in robotics (optional description)"
+        description="Interest in robotics"
     )
     experience_level: str = Field(
         default="beginner",

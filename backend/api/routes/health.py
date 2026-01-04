@@ -25,4 +25,5 @@ async def health_check():
         collection_exists=True,
         collection_count=0,
         cohere_available=True,
+        message="RAG system is healthy"
     )

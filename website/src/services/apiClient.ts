@@ -50,15 +50,6 @@ class APIClient {
       timeout: 60000, // 60s timeout for streaming responses
     });
 
-    // Add request interceptor to include auth token
-    this.client.interceptors.request.use((config) => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
-
     // Add response interceptor for error handling
     this.client.interceptors.response.use(
       (response) => response,
@@ -70,17 +61,12 @@ class APIClient {
   }
 
   /**
-   * Get authorization headers with token from localStorage
+   * Get headers for requests (no authentication)
    */
   private getAuthHeaders(): Record<string, string> {
-    const headers: Record<string, string> = {
+    return {
       'Content-Type': 'application/json',
     };
-    const token = typeof window !== 'undefined' ? localStorage.getItem('auth_token') : null;
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-    return headers;
   }
 
   /**

@@ -20,6 +20,9 @@ export interface RAGChatConfig {
 
   /** Default container height */
   defaultHeight: string;
+
+  /** Maximum query length */
+  maxQueryLength: number;
 }
 
 /**
@@ -57,6 +60,7 @@ export const getRagConfig = (): RAGChatConfig => {
     enableStreaming: true,
     enableHistory: true,
     defaultHeight: '700px',
+    maxQueryLength: 5000,
   };
 };
 
@@ -69,6 +73,7 @@ export const defaultRagConfig: RAGChatConfig = {
   enableStreaming: true,
   enableHistory: true,
   defaultHeight: '700px',
+  maxQueryLength: 5000,
 };
 
 /**

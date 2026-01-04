@@ -182,6 +182,374 @@
   font-size: 14px;
 }
 
+/* Multi-Step Form Styles */
+.formContainer {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.progressContainer {
+  margin-bottom: 30px;
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background-color: #e0e0e0;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  transition: width 0.3s ease;
+}
+
+.stepIndicator {
+  text-align: center;
+  font-size: 12px;
+  color: #999;
+  font-weight: 500;
+}
+
+.stepTitle {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+  color: #333;
+}
+
+.stepDescription {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 20px 0;
+}
+
+.step {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.errorBanner {
+  background-color: #fee;
+  border-left: 4px solid #f44;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #d32f2f;
+  font-size: 14px;
+}
+
+.closeBanner {
+  background: none;
+  border: none;
+  color: #d32f2f;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  margin-left: 10px;
+}
+
+.closeBanner:hover {
+  opacity: 0.7;
+}
+
+.form {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.required {
+  color: #f44;
+}
+
+.helpText {
+  font-size: 12px;
+  color: #999;
+  margin: -4px 0 8px 0;
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.input.error,
+.select.error {
+  border-color: #f44;
+  box-shadow: 0 0 0 3px rgba(244, 68, 68, 0.1);
+}
+
+.input:disabled,
+.select:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.strengthMeter {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.strength-weak {
+  background-color: #ffebee;
+  color: #f44;
+}
+
+.strength-fair {
+  background-color: #fff3e0;
+  color: #ff9800;
+}
+
+.strength-good {
+  background-color: #f1f8e9;
+  color: #7cb342;
+}
+
+.strength-strong {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.errorText {
+  display: block;
+  font-size: 12px;
+  color: #f44;
+  margin-top: 4px;
+}
+
+.checkboxGroup,
+.radioGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.radio input {
+  margin-right: 8px;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #667eea;
+}
+
+.radio:hover {
+  opacity: 0.8;
+}
+
+.radio input:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+  align-items: center;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.primaryButton,
+.secondaryButton {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.primaryButton {
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  flex: 1;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.primaryButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.primaryButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.primaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+  flex: 1;
+  justify-content: center;
+  min-height: 44px;
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background-color: #e0e0e0;
+  border-color: #999;
+}
+
+.secondaryButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.footer {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  font-size: 14px;
+  color: #666;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.linkGroup {
+  margin-bottom: 15px;
+}
+
+.signupPrompt {
+  margin-top: 15px;
+}
+
+.link {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #764ba2;
+  text-decoration: underline;
+}
+
+.summarySection {
+  background-color: #f9f9f9;
+  padding: 16px;
+  border-radius: 6px;
+  margin-top: 20px;
+  border-left: 3px solid #667eea;
+}
+
+.summaryTitle {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.summaryText {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
 @media (max-width: 600px) {
   .authCard {
     padding: 20px;
@@ -200,4 +568,91 @@
     padding-top: 20px;
     padding-bottom: 20px;
   }
+
+  .formContainer {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .subtitle {
+    font-size: 13px;
+  }
+
+  .stepTitle {
+    font-size: 18px;
+  }
+
+  .buttonGroup {
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+  }
+
+  .spacer {
+    display: none;
+  }
+
+  .checkboxGroup,
+  .radioGroup {
+    gap: 12px;
+  }
+
+  .radio {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .formContainer {
+    margin: 10px;
+    padding: 16px;
+    border-radius: 8px;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .input,
+  .select {
+    font-size: 16px;
+  }
+}
+
+/* RTL Support for Urdu */
+html[dir='rtl'] .errorBanner {
+  border-left: none;
+  border-right: 4px solid #f44;
+  padding: 12px 16px 12px 12px;
+}
+
+html[dir='rtl'] .checkbox,
+html[dir='rtl'] .radio {
+  flex-direction: row-reverse;
+}
+
+html[dir='rtl'] .checkbox input,
+html[dir='rtl'] .radio input {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+html[dir='rtl'] .label {
+  text-align: right;
+}
+
+html[dir='rtl'] .formGroup {
+  direction: rtl;
 }

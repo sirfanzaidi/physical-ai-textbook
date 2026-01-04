@@ -455,3 +455,9 @@
     transition: none;
   }
 }
+
+/* Error Message */
+.rag-widget__message--error .rag-widget__message-content {
+  background-color: #fef2f2;
+  color: #ef4444;
+}

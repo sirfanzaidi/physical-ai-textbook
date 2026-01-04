@@ -226,21 +226,20 @@ if (typeof window.RAGChatWidget === 'undefined') {
    */
   async sendQuery() {
     const query = this.queryInput.value.trim();
-
     if (!query) {
       this.setStatus('Please enter a question', 'warning');
       return;
     }
 
-    if (this.isLoading) {
-      return;
-    }
+    if (this.isLoading) return;
 
-    // Validate selected text if in selected mode
     if (this.currentMode === 'selected' && !this.selectedText) {
       this.setStatus('Please select text to query', 'warning');
       return;
     }
+
+    this.isLoading = true;
+    this.setStatus('Thinking...');
 
     // Add user message
     const userMsg = MessageFormatter.formatMessage(query, 'user');
@@ -248,10 +247,6 @@ if (typeof window.RAGChatWidget === 'undefined') {
     this.renderMessages();
     this.queryInput.value = '';
     this.queryInput.focus();
-
-    // Send request
-    this.isLoading = true;
-    this.setStatus('Thinking...');
 
     try {
       const request = {
@@ -264,33 +259,34 @@ if (typeof window.RAGChatWidget === 'undefined') {
         request.selected_text = this.selectedText;
       }
 
-      let response;
-
+      let finalResponse;
       if (this.enableStreaming) {
-        response = await this.chatWithStreaming(request);
+        finalResponse = await this.chatWithStreaming(request);
       } else {
-        response = await this.apiClient.chat(request);
+        const response = await this.apiClient.chat(request);
+        const assistantMsg = MessageFormatter.formatMessage(
+          response.response_text,
+          'assistant'
+        );
+        assistantMsg.confidence = response.confidence;
+        assistantMsg.latency = response.latency_ms;
+        this.messages.push(assistantMsg);
+        finalResponse = response;
       }
 
-      // Add assistant message
-      const assistantMsg = MessageFormatter.formatMessage(
-        MessageFormatter.formatResponseWithCitations(response),
-        'assistant'
-      );
-      assistantMsg.confidence = response.confidence;
-      assistantMsg.latency = response.latency_ms;
-
-      this.messages.push(assistantMsg);
       this.saveMessages();
       this.renderMessages();
 
-      const confidence = MessageFormatter.formatConfidence(response.confidence);
-      const latency = MessageFormatter.formatLatency(response.latency_ms);
+      const confidence = MessageFormatter.formatConfidence(finalResponse.confidence);
+      const latency = MessageFormatter.formatLatency(finalResponse.latency_ms);
       this.setStatus(`Confidence: ${confidence} | Latency: ${latency}`);
+
     } catch (error) {
       this.setStatus(`Error: ${error.message}`, 'error');
-      // Remove failed user message
-      this.messages.pop();
+      // The streaming function handles its own error message display
+      if (!this.enableStreaming) {
+        this.messages.pop(); // Remove the user message if the request failed outright
+      }
       this.renderMessages();
     } finally {
       this.isLoading = false;
@@ -301,36 +297,68 @@ if (typeof window.RAGChatWidget === 'undefined') {
    * Stream chat response from server.
    *
    * @param {object} request - Chat request
-   * @returns {Promise<object>} Final response
+   * @returns {Promise<object>} Final response object
    */
   async chatWithStreaming(request) {
-    let fullResponse = '';
+    // 1. Add a placeholder for the assistant's message
+    const assistantMsg = MessageFormatter.formatMessage('...', 'assistant');
+    this.messages.push(assistantMsg);
+    this.renderMessages();
+
+    let fullContent = '';
     let metadata = {};
 
     return new Promise((resolve, reject) => {
+      const onChunk = (chunk) => {
+        try {
+          // Handle different chunk types
+          if (chunk.type === 'error') {
+            assistantMsg.text = `Error: ${chunk.message}`;
+            assistantMsg.isError = true;
+            this.renderMessages();
+            reject(new Error(chunk.message));
+            return;
+          }
+
+          if (chunk.type === 'text') {
+            fullContent += chunk.content;
+            assistantMsg.text = MessageFormatter.formatResponseWithCitations({ response: fullContent, ...metadata });
+          } else {
+            // Collect metadata from non-text chunks
+            Object.assign(metadata, chunk);
+            assistantMsg.confidence = metadata.confidence;
+            assistantMsg.latency = metadata.latency_ms; // Corrected latency property name
+          }
+
+          // Re-render the message with updated content/metadata
+          this.renderMessages();
+          this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
+
+        } catch (e) {
+          console.error('Error processing chunk:', e);
+          assistantMsg.text = `Error: Malformed data received from server.`;
+          assistantMsg.isError = true;
+          this.renderMessages();
+          reject(new Error('Malformed data from server.'));
+        }
+      };
+
       this.apiClient
-        .chatStream(request, (chunk) => {
-          if (chunk.response) {
-            fullResponse += chunk.response;
-            this.updateStreamingMessage(fullResponse);
-          }
-          if (chunk.citations) {
-            metadata.citations = chunk.citations;
-          }
-          if (chunk.confidence !== undefined) {
-            metadata.confidence = chunk.confidence;
-          }
-          if (chunk.latency_ms !== undefined) {
-            metadata.latency_ms = chunk.latency_ms;
-          }
-        })
+        .chatStream(request, onChunk)
         .then(() => {
-          resolve({
-            response: fullResponse,
-            ...metadata,
-          });
+          // Finalize the message content and metadata
+          assistantMsg.text = MessageFormatter.formatResponseWithCitations({ response: fullContent, ...metadata });
+          Object.assign(assistantMsg, metadata);
+          this.saveMessages();
+          this.renderMessages();
+          resolve({ response: fullContent, ...metadata });
         })
-        .catch(reject);
+        .catch((err) => {
+          assistantMsg.text = `Error: ${err.message}`;
+          assistantMsg.isError = true;
+          this.renderMessages();
+          reject(err);
+        });
     });
   }
 
@@ -340,13 +368,13 @@ if (typeof window.RAGChatWidget === 'undefined') {
    * @param {string} text - Current response text
    */
   updateStreamingMessage(text) {
-    if (this.messages.length === 0) return;
-
+    // This function is no longer the primary method for updating the display,
+    // as the new `chatWithStreaming` handles it directly.
+    // It can be kept for now or removed if no longer used elsewhere.
     const lastMsg = this.messages[this.messages.length - 1];
-    if (lastMsg.role === 'assistant') {
+    if (lastMsg && lastMsg.role === 'assistant') {
       lastMsg.text = text;
       this.renderMessages();
-      // Auto-scroll to bottom
       this.messagesContainer.scrollTop = this.messagesContainer.scrollHeight;
     }
   }
@@ -371,6 +399,7 @@ if (typeof window.RAGChatWidget === 'undefined') {
    */
   renderMessage(msg) {
     const roleClass = `rag-widget__message--${msg.role}`;
+    const errorClass = msg.isError ? 'rag-widget__message--error' : '';
     const confidenceHTML =
       msg.confidence !== undefined
         ? `<small class="rag-widget__confidence">
@@ -379,7 +408,7 @@ if (typeof window.RAGChatWidget === 'undefined') {
         : '';
 
     return `
-      <div class="rag-widget__message ${roleClass}">
+      <div class="rag-widget__message ${roleClass} ${errorClass}">
         <div class="rag-widget__message-content">
           ${this.escapeHTML(msg.text)}
         </div>

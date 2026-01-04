@@ -1,116 +1,39 @@
-import React, { useState } from 'react';
-import Layout from '@theme/Layout';
-import { useForm, Controller } from 'react-hook-form';
-import { useHistory } from '@docusaurus/router';
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { useAuthContext } from '../context/AuthContext';
+import { SigninForm } from '../components/auth/SigninForm';
+import { LanguageSelector } from '../components/LanguageSelector';
 import styles from './auth.module.css';
-import { API_BASE_URL } from '../lib/apiConfig';
 
-interface SigninFormData {
-  email: string;
-  password: string;
-}
-
-export default function SigninPage(): JSX.Element {
-  const { control, handleSubmit, formState: { errors } } = useForm<SigninFormData>({
-    defaultValues: {
-      email: '',
-      password: '',
-    },
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+/**
+ * Signin Page
+ * Displays the signin form with language selector
+ */
+export default function SigninPage() {
+  const { isAuthenticated } = useAuthContext();
   const history = useHistory();
 
-  const onSubmit = async (data: SigninFormData) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/signin`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-        }),
-      });
-
-      if (!response.ok) {
-        try {
-          const errorData = await response.json();
-          const errorMsg = errorData.detail?.error || errorData.detail || 'Signin failed';
-          setError(errorMsg);
-        } catch {
-          setError('Signin failed. Please try again.');
-        }
-        return;
-      }
-
-      const responseData = await response.json();
-      // Store the token
-      if (responseData.token) {
-        localStorage.setItem('auth_token', responseData.token);
-      }
-
-      // Redirect to home on successful signin
-      setTimeout(() => {
-        history.push('/');
-      }, 300);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      history.push('/profile');
     }
-  };
+  }, [isAuthenticated, history]);
 
   return (
-    <Layout title="Sign In" description="Sign in to your account">
-      <div className={styles.authContainer}>
-        <div className={styles.authCard}>
-          <h1>Welcome Back</h1>
-          <p className={styles.subtitle}>Sign in to your account to continue learning</p>
-
-          {error && <div className={styles.errorMessage}>{error}</div>}
-
-          <form onSubmit={handleSubmit(onSubmit)}>
-            <div className={styles.formSection}>
-              <div className={styles.formGroup}>
-                <label>Email *</label>
-                <Controller
-                  name="email"
-                  control={control}
-                  rules={{
-                    required: 'Email is required',
-                    pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: 'Invalid email' },
-                  }}
-                  render={({ field }) => <input type="email" {...field} placeholder="you@example.com" />}
-                />
-                {errors.email && <span className={styles.error}>{errors.email.message}</span>}
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Password *</label>
-                <Controller
-                  name="password"
-                  control={control}
-                  rules={{ required: 'Password is required' }}
-                  render={({ field }) => <input type="password" {...field} placeholder="••••••••" />}
-                />
-                {errors.password && <span className={styles.error}>{errors.password.message}</span>}
-              </div>
-            </div>
-
-            <button type="submit" className={styles.submitButton} disabled={loading}>
-              {loading ? 'Signing In...' : 'Sign In'}
-            </button>
-
-            <p className={styles.signupLink}>
-              Don't have an account? <a href="/signup">Sign Up</a>
-            </p>
-          </form>
-        </div>
+    <div className={styles.authContainer}>
+      {/* Language Selector */}
+      <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>
+        <LanguageSelector />
       </div>
-    </Layout>
+
+      {/* Signin Form Card */}
+      <div className={styles.authCard}>
+        <SigninForm
+          redirectUrl="/profile"
+          apiBaseUrl="http://localhost:8000"
+        />
+      </div>
+    </div>
   );
 }

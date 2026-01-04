@@ -1,85 +1,49 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import axios from 'axios';
-import { API_BASE_URL } from '../lib/apiConfig';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-export interface UserProfile {
+interface User {
   id: string;
   email: string;
   name: string;
+  experience_level: 'beginner' | 'intermediate' | 'advanced';
   programmingBackgrounds: string[];
   frameworksKnown: string[];
   hardwareExperience: string[];
   roboticsInterest: string;
-  experience_level: 'beginner' | 'intermediate' | 'advanced';
-  completed_onboarding: boolean;
 }
 
 interface AuthContextType {
-  user: UserProfile | null;
-  isLoading: boolean;
+  user: User | null;
   isAuthenticated: boolean;
-  updateProfile: (profile: Partial<UserProfile>) => Promise<void>;
+  isLoading: boolean;
+  login: (token: string, user: User) => void;
+  logout: () => void;
+  updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    // Check if user is already authenticated
-    const checkAuth = async () => {
-      try {
-        const token = localStorage.getItem('auth_token');
-        if (!token) {
-          setUser(null);
-          setIsLoading(false);
-          return;
-        }
-
-        const response = await axios.get(`${API_BASE_URL}/api/auth/session`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-        if (response.data.user) {
-          setUser(response.data.user);
-        }
-      } catch (error) {
-        // User not authenticated
-        localStorage.removeItem('auth_token');
-        setUser(null);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  const updateProfile = async (profile: Partial<UserProfile>) => {
-    try {
-      const token = localStorage.getItem('auth_token');
-      const response = await axios.put(`${API_BASE_URL}/api/users/profile`, profile, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setUser(response.data);
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      throw error;
-    }
+  // Always authenticated as anonymous user
+  const user: User = {
+    id: 'anonymous',
+    email: 'guest@example.com',
+    name: 'Guest User',
+    experience_level: 'beginner',
+    programmingBackgrounds: [],
+    frameworksKnown: [],
+    hardwareExperience: [],
+    roboticsInterest: 'I am interested in everything!',
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isLoading,
-        isAuthenticated: !!user,
-        updateProfile,
+        isAuthenticated: true,
+        isLoading: false,
+        login: () => {},
+        logout: () => {},
+        updateProfile: async () => { console.log('Update profile mocked'); },
       }}
     >
       {children}
@@ -89,8 +53,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useAuthContext = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuthContext must be used within AuthProvider');
+  if (context === undefined) {
+    throw new Error('useAuthContext must be used within an AuthProvider');
   }
   return context;
 };

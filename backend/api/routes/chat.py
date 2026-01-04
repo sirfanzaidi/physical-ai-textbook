@@ -7,7 +7,6 @@ from fastapi.responses import StreamingResponse
 from ..config import Settings
 from ..models import ChatRequest, ChatResponse, ErrorResponse
 from ..services import OpenRouterClient, QdrantStore, RAGChatbot
-from ..middleware.auth import get_current_user_id
 from ..utils import (
     get_logger,
     validate_query_length,
@@ -68,13 +67,12 @@ async def initialize_services(settings: Settings) -> None:
 @router.post("/chat-stream", response_class=StreamingResponse)
 async def chat_stream(
     request: ChatRequest,
-    user_id: str = Depends(get_current_user_id),
     chatbot: RAGChatbot = Depends(get_rag_chatbot),
     settings: Settings = Depends(lambda: Settings()),
 ) -> StreamingResponse:
     """Stream chat responses with RAG augmentation.
 
-    Requires authentication. Query format:
+    No authentication required. Query format:
     ```json
     {
         "query": "What is reinforcement learning?",
@@ -95,9 +93,10 @@ async def chat_stream(
     ```
     """
     request_id = str(uuid.uuid4())
+    user_id = "anonymous"
 
     try:
-        logger.info(f"[{request_id}] Chat request from user {user_id}: mode={request.mode}, top_k={request.top_k}")
+        logger.info(f"[{request_id}] Chat request from user {user_id}: mode={request.mode}, top_k={request.top_k} (AUTH DISABLED)")
 
         # Validate input
         validate_query_length(request.query, max_length=5000)
@@ -117,6 +116,7 @@ async def chat_stream(
                     mode=request.mode,
                     selected_text=request.selected_text,
                     top_k=request.top_k,
+                    language=request.language,
                 ):
                     # Convert chunk to JSON line
                     if chunk_dict["type"] == "citations":
@@ -147,7 +147,7 @@ async def chat_stream(
                             "model": chunk_dict["model"],
                             "mode": chunk_dict["mode"],
                             "request_id": request_id,
-                            "user_id": user_id,
+                            "user_id": "anonymous",
                         })
                     else:
                         continue
@@ -201,18 +201,17 @@ async def chat_stream(
 @router.post("/chat")
 async def chat(
     request: ChatRequest,
-    user_id: str = Depends(get_current_user_id),
     chatbot: RAGChatbot = Depends(get_rag_chatbot),
     settings: Settings = Depends(lambda: Settings()),
 ) -> ChatResponse:
     """Non-streaming chat endpoint for compatibility.
 
-    Requires authentication.
+    No authentication required.
     """
     request_id = str(uuid.uuid4())
 
     try:
-        logger.info(f"[{request_id}] Chat request from user {user_id}: mode={request.mode}")
+        logger.info(f"[{request_id}] Chat request: mode={request.mode}")
 
         # Validate input
         validate_query_length(request.query)
@@ -226,6 +225,7 @@ async def chat(
             mode=request.mode,
             selected_text=request.selected_text,
             top_k=request.top_k,
+            language=request.language,
         )
 
         response = ChatResponse(

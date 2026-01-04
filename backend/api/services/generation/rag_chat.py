@@ -82,6 +82,7 @@ class RAGChatbot:
         context_chunks: List[Dict[str, Any]],
         mode: str = "full",
         selected_text: Optional[str] = None,
+        language: str = "en",
     ) -> str:
         """Build augmented prompt from query and context.
 
@@ -103,6 +104,12 @@ class RAGChatbot:
             ]
         )
 
+        # Build language instruction
+        if language == "ur":
+            language_instruction = "Please provide the answer in Urdu."
+        else:
+            language_instruction = "Please provide the answer in English."
+
         # Build mode-specific instruction
         mode_instruction = ""
         if mode == "selected":
@@ -119,6 +126,7 @@ class RAGChatbot:
             f"Answer the user's question based ONLY on the provided context from the textbook. "
             f"If the answer is not in the context, say 'This information is not covered in the textbook.' "
             f"Always cite which chapter or section your answer comes from."
+            f"{language_instruction}\n"
             f"{mode_instruction}\n\n"
             f"CONTEXT:\n{context_text}\n\n"
             f"USER QUESTION:\n{query}\n\n"
@@ -218,6 +226,7 @@ class RAGChatbot:
         mode: str = "full",
         selected_text: Optional[str] = None,
         top_k: int = 5,
+        language: str = "en",
     ) -> Dict[str, Any]:
         """Answer query using RAG pipeline.
 
@@ -245,7 +254,7 @@ class RAGChatbot:
             )
 
             # Step 2: Build prompt
-            prompt = self.build_prompt(query, context_chunks, mode, selected_text)
+            prompt = self.build_prompt(query, context_chunks, mode, selected_text, language)
 
             # Step 3: Generate response
             response_text = await self.generate_response(prompt)
@@ -287,6 +296,7 @@ class RAGChatbot:
         mode: str = "full",
         selected_text: Optional[str] = None,
         top_k: int = 5,
+        language: str = "en",
     ) -> AsyncGenerator[Dict[str, Any], None]:
         """Answer query with streaming response.
 
@@ -326,13 +336,8 @@ class RAGChatbot:
                 for chunk in context_chunks
             ]
 
-            yield {
-                "type": "citations",
-                "citations": citations,
-            }
-
             # Step 2: Build prompt
-            prompt = self.build_prompt(query, context_chunks, mode, selected_text)
+            prompt = self.build_prompt(query, context_chunks, mode, selected_text, language)
 
             # Step 3: Stream response
             async for chunk in self.generate_response_stream(prompt):

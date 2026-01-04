@@ -28,7 +28,7 @@ class User:
         experience_level: str = "beginner",
         completed_onboarding: bool = False,
         created_at: Optional[datetime] = None,
-        updated_at: Optional[datetime] = None
+        updated_at: Optional[datetime] = None,
     ):
         """Initialize a User object."""
         self.id = id

@@ -82,20 +82,17 @@ async def signup(request: SignUpRequest, req: Request) -> AuthResponse:
             )
 
         # Validate password strength
-        if len(request.password) < 8:
+        if len(request.password) < 4:
             logger.warning(f"Signup validation failed: weak password from {req.client.host}")
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail={
-                    "error": "Password must be at least 8 characters",
+                    "error": "Password must be at least 4 characters",
                     "code": "VALIDATION_ERROR"
                 }
             )
 
-        # Validate experience level
-        valid_levels = ["beginner", "intermediate", "advanced"]
-        if request.experience_level not in valid_levels:
-            request.experience_level = "beginner"
+
 
         # Check if user already exists
         if user_service.user_exists(request.email):
@@ -331,7 +328,7 @@ async def get_session(user_info: dict = Depends(get_current_user)) -> SessionRes
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail={
-                "error": "An error occurred",
+                "error": "An error occurred while retrieving session",
                 "code": "SERVER_ERROR"
             }
         )

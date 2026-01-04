@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     """Application settings loaded from environment variables."""
 
     # API Settings - CORS origins as comma-separated string in .env
-    cors_origins: str = "http://localhost:3000,http://localhost:3002,http://localhost:8000"
+    cors_origins: str = "http://localhost:3000,http://localhost:3002,http://localhost:3003,http://localhost:8000"
 
     # OpenRouter Configuration
     openrouter_api_key: str = ""

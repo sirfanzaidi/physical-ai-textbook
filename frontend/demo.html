@@ -325,12 +325,16 @@ Response (streamed JSON lines):
     <script>
       // Initialize widget with demo book
       document.addEventListener('DOMContentLoaded', () => {
-        new RAGChatWidget({
-          bookId: 'demo-book',
+        console.log('Initializing RAGChatWidget...');
+        console.log('window.location.origin:', window.location.origin);
+        const widget = new RAGChatWidget({
+          bookId: 'physical-ai-textbook',
           containerId: 'rag-widget',
+          apiBaseURL: 'http://localhost:8001',
           enableStreaming: true,
           enableHistory: true,
         });
+        console.log('Widget apiClient.baseURL:', widget.apiClient.baseURL);
       });
     </script>
   </body>

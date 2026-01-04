@@ -41,6 +41,11 @@ class ChatRequest(BaseModel):
         None,
         description="Optional conversation ID for context (future feature for multi-turn)"
     )
+    language: Optional[str] = Field(
+        'en',
+        pattern="^(en|ur)$",
+        description="Language preference for the response"
+    )
 
 
 class ChatResponseChunk(BaseModel):
@@ -89,12 +94,12 @@ class IngestResponse(BaseModel):
 class HealthResponse(BaseModel):
     """Health check response."""
 
-    status: str = Field(..., description="Overall health status: healthy, degraded, or unhealthy")
+    status: str = Field(..., description="Overall health status")
     timestamp: datetime = Field(default_factory=datetime.utcnow, description="Health check timestamp")
-    services: dict = Field(
-        default_factory=dict,
-        description="Individual service health status"
-    )
+    qdrant_connected: bool = Field(default=False)
+    collection_exists: bool = Field(default=False)
+    collection_count: int = Field(default=0)
+    cohere_available: bool = Field(default=False)
     message: str = Field(default="", description="Additional status message")
 
 
