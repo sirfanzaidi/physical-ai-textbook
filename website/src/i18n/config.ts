@@ -3,8 +3,9 @@ import { initReactI18next } from 'react-i18next';
 import enTranslations from './en.json';
 import urTranslations from './ur.json';
 
-// Detect browser language
+// Detect browser language (only on client side)
 const getBrowserLanguage = (): string => {
+  if (typeof navigator === 'undefined') return 'en';
   const browserLang = navigator.language || navigator.languages?.[0] || 'en';
   if (browserLang.startsWith('ur')) {
     return 'ur';
@@ -20,7 +21,7 @@ i18n
       en: enTranslations,
       ur: urTranslations,
     },
-    lng: localStorage.getItem('language_preference') || getBrowserLanguage(),
+    lng: typeof localStorage !== 'undefined' ? (localStorage.getItem('language_preference') || getBrowserLanguage()) : 'en',
     fallbackLng: 'en',
     defaultNS: 'common',
     ns: ['common', 'auth', 'forms', 'chat', 'errors'],

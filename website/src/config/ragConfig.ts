@@ -78,5 +78,6 @@ export const defaultRagConfig: RAGChatConfig = {
 
 /**
  * Instantiated configuration for use throughout the app
+ * Uses default config during SSR, then switches to environment-specific config on client
  */
-export const ragConfig = getRagConfig();
+export const ragConfig = typeof window !== 'undefined' ? getRagConfig() : defaultRagConfig;
