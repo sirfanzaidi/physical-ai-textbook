@@ -37,10 +37,6 @@
   ],
   "env": {
     "DOCUSAURUS_BASEURL": "/",
-    "NODE_ENV": "production",
-    "BACKEND_URL": {
-      "description": "Backend API URL (e.g., https://backend.railway.app or http://localhost:8000)",
-      "example": "https://your-api.railway.app"
-    }
+    "NODE_ENV": "production"
   }
 }
