@@ -4,12 +4,12 @@
  */
 
 export function getApiUrl(): string {
-  // For development, use the backend on port 8000
+  // For development, use the backend on port 8001
   // For production, use Railway deployed backend
   if (typeof window !== 'undefined') {
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     if (isDevelopment) {
-      return 'http://localhost:8000';
+      return 'http://localhost:8001';
     }
   }
 

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useHistory } from '@docusaurus/router';
+import { customSignIn } from '../../lib/customAuthService';
+import { useAuthContext } from '../../context/AuthContext';
 import styles from '../../pages/auth.module.css';
 
 interface SigninFormData {
@@ -20,12 +22,13 @@ interface SigninFormProps {
  * Simple email/password signin with bilingual support
  */
 export const SigninForm: React.FC<SigninFormProps> = ({
-  apiBaseUrl = 'http://localhost:8000',
+  apiBaseUrl = 'http://localhost:8001',
   redirectUrl = '/profile',
   onSuccess,
 }) => {
   const { i18n } = useTranslation(['auth', 'errors']);
   const history = useHistory();
+  const { login } = useAuthContext();
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,45 +49,17 @@ export const SigninForm: React.FC<SigninFormProps> = ({
       setIsLoading(true);
       setGlobalError(null);
 
-      const response = await fetch(`${apiBaseUrl}/api/auth/signin`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: data.email,
-          password: data.password,
-        }),
+      const response = await customSignIn({
+        email: data.email,
+        password: data.password,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        let errorMessage = 'Invalid request';
-        if (typeof errorData.detail === 'string') {
-          errorMessage = errorData.detail;
-        } else if (errorData.detail?.message) {
-          errorMessage = errorData.detail.message;
-        } else if (typeof errorData.message === 'string') {
-          errorMessage = errorData.message;
-        }
-        setGlobalError(errorMessage);
-        return;
-      }
-
-      const responseData = await response.json();
-
-      // Store session token
-      localStorage.setItem('session_token', responseData.session_token);
-
-      // Store language preference if available
-      if (responseData.profile?.language_preference) {
-        localStorage.setItem('language_preference', responseData.profile.language_preference);
-        i18n.changeLanguage(responseData.profile.language_preference);
-      }
+      // Update auth context
+      login(response.token, response.user as any);
 
       // Call success callback
       if (onSuccess) {
-        onSuccess(responseData.user_id);
+        onSuccess(response.user.id);
       }
 
       // Redirect
@@ -94,9 +69,7 @@ export const SigninForm: React.FC<SigninFormProps> = ({
     } catch (error) {
       console.error('Signin error:', error);
       let errorMessage = 'Failed to connect to server';
-      if (error instanceof TypeError && error.message.includes('fetch')) {
-        errorMessage = 'Cannot reach the server. Make sure the backend is running at http://localhost:8000';
-      } else if (error instanceof Error) {
+      if (error instanceof Error) {
         errorMessage = error.message;
       }
       setGlobalError(errorMessage);

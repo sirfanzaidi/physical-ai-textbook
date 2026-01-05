@@ -51,6 +51,50 @@
   text-decoration: none;
 }
 
+/* Auth overlay styles */
+.authOverlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding-right: 20px;
+  pointer-events: none;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  pointer-events: all;
+}
+
+.userName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ifm-navbar-link-color);
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: rgba(102, 126, 234, 0.1);
+}
+
+.logoutButton {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  background-color: rgba(204, 51, 51, 0.1);
+  color: #c33;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.logoutButton:hover {
+  background-color: rgba(204, 51, 51, 0.2);
+}
+
 @media (max-width: 768px) {
   .authButtons {
     gap: 8px;
@@ -64,5 +108,19 @@
 
   .signup {
     padding: 6px 12px;
+  }
+
+  .authOverlay {
+    padding-right: 10px;
+  }
+
+  .userName {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+
+  .logoutButton {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }

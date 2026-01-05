@@ -17,7 +17,6 @@ export default function ProfilePage(): JSX.Element {
 
 function ProfileContent(): JSX.Element {
   const { user, updateProfile } = useAuthContext();
-  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

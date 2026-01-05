@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { getCurrentUser, isAuthenticated as checkAuth, getSession, customSignOut } from '../lib/customAuthService';
 
 interface User {
   id: string;
@@ -23,27 +24,63 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Always authenticated as anonymous user
-  const user: User = {
-    id: 'anonymous',
-    email: 'guest@example.com',
-    name: 'Guest User',
-    experience_level: 'beginner',
-    programmingBackgrounds: [],
-    frameworksKnown: [],
-    hardwareExperience: [],
-    roboticsInterest: 'I am interested in everything!',
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Check if user is authenticated on mount
+    const initAuth = async () => {
+      try {
+        if (checkAuth()) {
+          const currentUser = getCurrentUser();
+          if (currentUser) {
+            setUser(currentUser);
+          } else {
+            // Try to get session from server
+            const session = await getSession();
+            if (session) {
+              setUser(session.user as User);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initAuth();
+  }, []);
+
+  const login = (token: string, userData: User) => {
+    setUser(userData);
+  };
+
+  const logout = async () => {
+    await customSignOut();
+    setUser(null);
+  };
+
+  const updateProfile = async (data: Partial<User>) => {
+    // This would call your backend API to update the profile
+    console.log('Update profile:', data);
+    if (user) {
+      const updatedUser = { ...user, ...data };
+      setUser(updatedUser);
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        isAuthenticated: true,
-        isLoading: false,
-        login: () => {},
-        logout: () => {},
-        updateProfile: async () => { console.log('Update profile mocked'); },
+        isAuthenticated: !!user,
+        isLoading,
+        login,
+        logout,
+        updateProfile,
       }}
     >
       {children}

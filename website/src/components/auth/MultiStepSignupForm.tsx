@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
-import { signUp } from '../../lib/authClient';
+import { useHistory } from '@docusaurus/router';
+import { customSignUp } from '../../lib/customAuthService';
+import { useAuthContext } from '../../context/AuthContext';
 import SignupStep1 from './SignupStep1';
 import SignupStep2 from './SignupStep2';
 import SignupStep3 from './SignupStep3';
@@ -35,10 +36,11 @@ interface SignupFormData {
 export const MultiStepSignupForm: React.FC<MultiStepSignupFormProps> = ({
   onSuccess,
   redirectUrl = '/profile',
-  apiBaseUrl = 'http://localhost:8000',
+  apiBaseUrl = 'http://localhost:8001',
 }) => {
   const { i18n } = useTranslation(['auth', 'forms', 'errors']);
   const history = useHistory();
+  const { login } = useAuthContext();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
@@ -134,30 +136,24 @@ export const MultiStepSignupForm: React.FC<MultiStepSignupFormProps> = ({
       };
 
       // Call signup API
-      const response = await signUp.email({
+      const response = await customSignUp({
         email: payload.email,
         password: payload.password,
         name: payload.name,
-        data: {
-          language_preference: payload.language_preference,
-          programming_backgrounds: payload.programming_backgrounds,
-          frameworks_known: payload.frameworks_known,
-          hardware_experience: payload.hardware_experience,
-          robotics_interest: payload.robotics_interest,
-          experience_level: payload.experience_level,
-        },
+        programming_backgrounds: payload.programming_backgrounds,
+        frameworks_known: payload.frameworks_known,
+        hardware_experience: payload.hardware_experience,
+        robotics_interest: payload.robotics_interest,
+        experience_level: payload.experience_level,
       });
 
-      if (response.error) {
-        setGlobalError(response.error.message || 'Signup failed. Please try again.');
-        setIsSubmitting(false);
-        return;
-      }
-
       // Success
-      if (response.data?.user?.id) {
+      if (response.user?.id) {
+        // Update auth context
+        login(response.token, response.user as any);
+
         if (onSuccess) {
-          onSuccess(response.data.user.id);
+          onSuccess(response.user.id);
         }
         // Redirect to profile or specified URL
         history.push(redirectUrl);

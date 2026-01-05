@@ -28,7 +28,7 @@ export interface RAGChatConfig {
 /**
  * Get RAG chat configuration based on environment
  *
- * Development: Uses localhost:8000
+ * Development: Uses localhost:8001
  * Production: Uses relative /api path (configured via vercel.json)
  * Staging: Uses staging API URL
  */
@@ -47,7 +47,7 @@ export const getRagConfig = (): RAGChatConfig => {
     typeof window !== 'undefined' && window.location.hostname.includes('vercel.app');
 
   // Determine API base URL
-  let apiBaseURL = 'http://localhost:8000'; // Default to local backend
+  let apiBaseURL = 'http://localhost:8001'; // Default to local backend
 
   if (isProduction) {
     // Use Vercel rewrites configured in vercel.json

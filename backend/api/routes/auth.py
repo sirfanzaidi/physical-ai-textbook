@@ -30,7 +30,13 @@ logger = logging.getLogger(__name__)
 user_service: Optional[UserService] = None
 settings: Optional[Settings] = None
 
-router = APIRouter(prefix="/api/auth", tags=["authentication"])
+router = APIRouter(prefix="/api", tags=["authentication"])
+
+
+@router.get("/auth/test")
+async def test_route():
+    """Simple test route to verify router is working."""
+    return {"message": "Auth router is working!"}
 
 
 def set_services(user_svc: UserService, config: Settings):
@@ -41,7 +47,7 @@ def set_services(user_svc: UserService, config: Settings):
 
 
 @router.post(
-    "/signup",
+    "/auth/signup",
     response_model=AuthResponse,
     status_code=status.HTTP_201_CREATED,
     responses={
@@ -147,7 +153,7 @@ async def signup(request: SignUpRequest, req: Request) -> AuthResponse:
 
 
 @router.post(
-    "/signin",
+    "/auth/signin",
     response_model=AuthResponse,
     responses={
         401: {"model": ErrorResponse, "description": "Invalid credentials"},
@@ -234,7 +240,7 @@ async def signin(request: SignInRequest, req: Request) -> AuthResponse:
 
 
 @router.post(
-    "/signout",
+    "/auth/signout",
     response_model=SuccessResponse,
     responses={
         500: {"model": ErrorResponse, "description": "Server error"}
@@ -278,7 +284,7 @@ async def signout(user_info: dict = Depends(get_current_user)) -> SuccessRespons
 
 
 @router.get(
-    "/session",
+    "/auth/session",
     response_model=SessionResponse,
     responses={
         401: {"model": ErrorResponse, "description": "Not authenticated"},

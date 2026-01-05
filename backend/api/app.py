@@ -5,9 +5,11 @@ import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .config import Settings
-from .routes import health, chat, ingest
+from .routes import health, chat, ingest, auth
 from .routes.chat import initialize_services
 from .routes.ingest import initialize_ingestion_service
+from .services.user_service import UserService
+import psycopg2.pool
 
 # Configure logging
 logging.basicConfig(
@@ -49,15 +51,36 @@ app.include_router(health.router)
 app.include_router(chat.router)
 app.include_router(ingest.router)
 
+# Debug: Log auth router before including it
+logger.info(f"Auth router has {len(auth.router.routes)} routes before including")
+for route in auth.router.routes:
+    logger.info(f"  - Route path: {route.path}, methods: {getattr(route, 'methods', 'N/A')}")
+
+app.include_router(auth.router)
+logger.info(f"Auth router included")
+
+logger.info("Route registration complete")
+
 
 @app.on_event("startup")
 async def startup_event():
     """Startup event handler."""
 
     logger.info("=" * 70)
-    logger.info("Starting Physical AI Textbook API with RAG (Auth Disabled)")
+    logger.info("Starting Physical AI Textbook API with RAG and Authentication")
     logger.info("=" * 70)
     logger.info("API documentation available at /api/docs")
+
+    # Debug: Log all registered routes
+    all_paths = [r.path for r in app.routes if hasattr(r, 'path')]
+    auth_paths = [p for p in all_paths if '/auth' in p]
+    logger.info(f"Total routes registered: {len(all_paths)}")
+    logger.info(f"Auth routes registered: {len(auth_paths)}")
+    if auth_paths:
+        for path in auth_paths:
+            logger.info(f"  Auth route: {path}")
+    else:
+        logger.warning("NO AUTH ROUTES FOUND!")
 
     try:
         # Initialize RAG services (chat + retrieval + generation)
@@ -74,6 +97,24 @@ async def startup_event():
             settings=settings,
         )
         logger.info("Ingestion service initialized successfully")
+
+        # Initialize authentication services
+        if settings.database_url:
+            try:
+                # Create database connection pool
+                db_pool = psycopg2.pool.SimpleConnectionPool(
+                    minconn=1,
+                    maxconn=10,
+                    dsn=settings.database_url
+                )
+                user_service = UserService(db_pool)
+                auth.set_services(user_service, settings)
+                logger.info("Authentication services initialized successfully")
+            except Exception as db_error:
+                logger.error(f"Failed to initialize database pool: {db_error}")
+                logger.warning("Authentication features will be unavailable")
+        else:
+            logger.warning("DATABASE_URL not configured - authentication features will be unavailable")
 
     except Exception as e:
         logger.error(f"Failed to initialize services: {e}")
@@ -98,7 +139,30 @@ async def root():
     }
 
 
+@app.get("/debug/routes")
+async def debug_routes():
+    """Debug endpoint to show all registered routes."""
+    routes_info = []
+    for route in app.routes:
+        if hasattr(route, 'path'):
+            routes_info.append({
+                "path": route.path,
+                "methods": list(route.methods) if hasattr(route, 'methods') else None,
+                "name": route.name if hasattr(route, 'name') else None
+            })
+
+    auth_routes = [r for r in routes_info if '/auth' in r['path']]
+
+    return {
+        "total_routes": len(routes_info),
+        "auth_routes_count": len(auth_routes),
+        "auth_routes": auth_routes,
+        "all_routes": routes_info
+    }
+
+
 if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
+

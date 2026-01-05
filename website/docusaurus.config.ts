@@ -103,6 +103,16 @@ const config: Config = {
           position: 'left',
         },
         {
+          to: '/signin',
+          label: 'Sign In',
+          position: 'right',
+        },
+        {
+          to: '/signup',
+          label: 'Sign Up',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/sirfanzaidi/physical-ai-textbook',
           label: 'GitHub',
           position: 'right',
